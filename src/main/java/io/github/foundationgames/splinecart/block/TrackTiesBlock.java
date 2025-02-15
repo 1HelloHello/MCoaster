@@ -37,12 +37,10 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
     public static final IntProperty BANKING = IntProperty.of("banking", 0, ORIENTATION_RESOLUTION - 1);
 
     public static final int OUTLINE_SHAPE_MARGIN = 2;
-    public static final VoxelShape[] SHAPES = new VoxelShape[Direction.values().length];
 
     public TrackTiesBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState()
-                //.with(FACING, Direction.UP)
                 .with(HEADING, 0)
                 .with(PITCHING, 0)
                 .with(BANKING, 0)
@@ -55,15 +53,8 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
         builder.add(HEADING, PITCHING, BANKING);
     }
 
-//    @Nullable
-//    @Override
-//    public BlockState getPlacementState(ItemPlacementContext ctx) {
-//        return getDefaultState().with(FACING, ctx.getSide());
-//    }
-
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        //return SHAPES[state.get(FACING).ordinal()];
         return createCuboidShape(OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN,
                 16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN); //TODO
     }
@@ -92,26 +83,6 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        // TODO add new items to change blockstate
-
-//        if (player.canModifyBlocks() &&
-//                !(player.getStackInHand(Hand.MAIN_HAND).getItem() instanceof TrackItem) &&
-//                world.getBlockEntity(pos) instanceof TrackTiesBlockEntity tie) {
-//            if (tie.prev() == null && tie.next() == null) {
-//                if (world.isClient()) {
-//                    return ActionResult.SUCCESS;
-//                } else {
-//                    var newState = state.with(HEADING, (state.get(HEADING) + 1) % ORIENTATION_RESOLUTION);
-//                    world.setBlockState(pos, newState);
-//                    tie.updatePose(pos, newState);
-//                    tie.markDirty();
-//                    tie.sync();
-//
-//                    return ActionResult.CONSUME;
-//                }
-//            }
-//        }
-
         return super.onUse(state, world, pos, player, hit);
     }
 
@@ -151,26 +122,4 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
         return new TrackTiesBlockEntity(pos, state);
     }
 
-    static {
-        for (var dir : Direction.values()) {
-            int idx = dir.ordinal();
-            var min = new Vector3d(-8, -8, -8);
-            var max = new Vector3d(8, -6, 8);
-
-            var rot = dir.getRotationQuaternion();
-            rot.transform(min);
-            rot.transform(max);
-
-            min.add(8, 8, 8);
-            max.add(8, 8, 8);
-
-            SHAPES[idx] = createCuboidShape(
-                    Math.min(min.x(), max.x()),
-                    Math.min(min.y(), max.y()),
-                    Math.min(min.z(), max.z()),
-                    Math.max(min.x(), max.x()),
-                    Math.max(min.y(), max.y()),
-                    Math.max(min.z(), max.z()));
-        }
-    }
 }
