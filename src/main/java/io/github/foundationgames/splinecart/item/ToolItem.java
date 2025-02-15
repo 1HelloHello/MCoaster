@@ -1,12 +1,15 @@
 package io.github.foundationgames.splinecart.item;
 
+import io.github.foundationgames.splinecart.block.TrackTiesBlock;
 import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.Orientation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -65,24 +68,26 @@ public class ToolItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    private boolean use(PlayerEntity player, BlockState blockState, WorldAccess world, BlockPos pos, boolean rightClick, ItemStack stack) {
+    private boolean use(PlayerEntity player, BlockState blockState, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
         if(!(world.getBlockEntity(pos) instanceof TrackTiesBlockEntity)) {
             sendErrorNoMarker(player);
             return false;
         }
-        sendMsgCurrentState(player, blockState);
-
-        return true;
-    }
-
-    private void sendMsgCurrentState(PlayerEntity player, BlockState blockState) {
-
+        TrackTiesBlockEntity tie = (TrackTiesBlockEntity) world.getBlockEntity(pos);
         sendMessage(player, Text.of(type.currentStateMsg.get(blockState.get(type.property))));
+        int clickResolution = player.isSneaking() ? 1 : TrackTiesBlock.ORIENTATION_RESOLUTION / 8;
+        BlockState newState = blockState.with((IntProperty)type.property,
+                (blockState.get((IntProperty)type.property) + (rightClick ? -clickResolution : clickResolution) + TrackTiesBlock.ORIENTATION_RESOLUTION) % TrackTiesBlock.ORIENTATION_RESOLUTION);
+        world.setBlockState(pos, newState);
+        tie.updatePose(pos, newState);
+        tie.markDirty();
+        tie.sync();
+        return true;
     }
 
     private void sendErrorNoMarker(PlayerEntity player) {
         MutableText text = Text.translatable("item.splinecart.tools.error_no_marker");
-        text.withColor(Colors.BLACK);
+        text.withColor(Colors.WHITE);
         sendMessage(player, text);
     }
 
