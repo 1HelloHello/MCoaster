@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "splinecart:block/track_ties_block"
+    }
+  }
+}

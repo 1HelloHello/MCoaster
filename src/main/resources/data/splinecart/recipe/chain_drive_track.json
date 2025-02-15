@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:activator_rail",
+    "B": "minecraft:iron_block",
+    "C": "minecraft:chain"
+  },
+  "pattern": [
+    " B ",
+    "CAC",
+    " B "
+  ],
+  "result": {
+    "count": 4,
+    "id": "splinecart:chain_drive_track"
+  }
+}
