@@ -130,14 +130,6 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTi
             }
 
             matrices.translate(0, -0.4375, 0);
-
-            // renders the tracktexture on the trackties TODO
-//            buffer.vertex(entry, 0.5f, 0, z0).color(WHITE).texture(0.25f, v0).overlay(overlay).light(light).normal(entry, 0, 1, 0);
-//            buffer.vertex(entry, -0.5f, 0, z0).color(WHITE).texture(0, v0).overlay(overlay).light(light).normal(entry, 0, 1, 0);
-//
-//            buffer.vertex(entry, -0.5f, 0, z1).color(WHITE).texture(0, v1).overlay(overlay).light(light).normal(entry, 0, 1, 0);
-//            buffer.vertex(entry, 0.5f, 0, z1).color(WHITE).texture(0.25f, v1).overlay(overlay).light(light).normal(entry, 0, 1, 0);
-
             matrices.pop();
         }
     }

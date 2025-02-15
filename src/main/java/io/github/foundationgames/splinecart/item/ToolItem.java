@@ -1,6 +1,5 @@
 package io.github.foundationgames.splinecart.item;
 
-import io.github.foundationgames.splinecart.block.TrackTiesBlock;
 import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
