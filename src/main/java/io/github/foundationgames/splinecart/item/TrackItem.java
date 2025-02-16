@@ -49,7 +49,6 @@ public class TrackItem extends Item {
                 var oPos = origin.pos();
                 if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackTiesBlockEntity oTies && oTies.next() == null && ties.prev() == null) {
                     oTies.setNext(pos, this.track);
-
                     world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
                 }
 

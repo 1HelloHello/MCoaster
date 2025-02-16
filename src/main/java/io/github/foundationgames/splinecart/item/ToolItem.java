@@ -3,7 +3,6 @@ package io.github.foundationgames.splinecart.item;
 import io.github.foundationgames.splinecart.block.TrackTiesBlock;
 import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.enums.Orientation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +14,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,14 +72,14 @@ public class ToolItem extends Item {
             return false;
         }
         TrackTiesBlockEntity tie = (TrackTiesBlockEntity) world.getBlockEntity(pos);
-        sendMessage(player, Text.of(type.currentStateMsg.get(blockState.get(type.property))));
         int clickResolution = player.isSneaking() ? 1 : TrackTiesBlock.ORIENTATION_RESOLUTION / 8;
-        BlockState newState = blockState.with((IntProperty)type.property,
-                (blockState.get((IntProperty)type.property) + (rightClick ? -clickResolution : clickResolution) + TrackTiesBlock.ORIENTATION_RESOLUTION) % TrackTiesBlock.ORIENTATION_RESOLUTION);
+        var newValue = (blockState.get((IntProperty)type.property) + (rightClick ? -clickResolution : clickResolution) + TrackTiesBlock.ORIENTATION_RESOLUTION) % TrackTiesBlock.ORIENTATION_RESOLUTION;
+        BlockState newState = blockState.with((IntProperty)type.property, newValue);
         world.setBlockState(pos, newState);
         tie.updatePose(pos, newState);
         tie.markDirty();
         tie.sync();
+        sendMessage(player, Text.of(type.currentStateMsg.get(newValue)));
         return true;
     }
 
