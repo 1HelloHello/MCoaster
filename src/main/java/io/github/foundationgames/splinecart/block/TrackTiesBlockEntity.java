@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.TrackType;
+import io.github.foundationgames.splinecart.item.ToolType;
 import io.github.foundationgames.splinecart.item.TrackItem;
 import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.util.SUtil;
@@ -15,15 +16,18 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Spline;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.AxisAngle4d;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 
 public class TrackTiesBlockEntity extends BlockEntity {
 
+    public static final int ORIENTATION_RESOLUTION = 16;
     public static final boolean DROP_TRACK = false;
 
     public float clientTime = 0;
@@ -37,17 +41,29 @@ public class TrackTiesBlockEntity extends BlockEntity {
 
     private int power = -1;
 
+    private int heading = 0;
+    private int pitching = 0;
+    private int banking = 0;
+
     public TrackTiesBlockEntity(BlockPos pos, BlockState state) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
         updatePose(pos, state);
     }
 
-    public void updatePose(BlockPos pos, BlockState state) {
-        if (state.getBlock() instanceof TrackTiesBlock ties) {
-            this.pose = ties.getPose(state, pos);
-        } else {
-            this.pose = new Pose(new Vector3d(), new Matrix3d().identity());
-        }
+    public void updatePose(BlockPos blockPos, BlockState state) {
+        updatePose(blockPos);
+    }
+
+    public void updatePose(BlockPos blockPos) {
+        Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+
+        Matrix3d basis = new Matrix3d();
+
+        basis.rotate(new AxisAngle4d(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION), 0, 1, 0));
+        basis.rotateX(pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateZ(banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+
+        this.pose = new Pose(pos, basis);
     }
 
     @Override
@@ -130,6 +146,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
     }
 
     public Pose pose() {
+        updatePose(super.getPos());
         return this.pose;
     }
 
@@ -184,6 +201,10 @@ public class TrackTiesBlockEntity extends BlockEntity {
         this.nextType = TrackType.read(nbt.getInt("next_id"));
 
         this.power = nbt.getInt("power");
+
+        this.heading = nbt.getInt("heading");
+        this.pitching = nbt.getInt("pitching");
+        this.banking = nbt.getInt("banking");
     }
 
     @Override
@@ -197,6 +218,10 @@ public class TrackTiesBlockEntity extends BlockEntity {
         nbt.putInt("next_id", this.nextType.write());
 
         nbt.putInt("power", this.power);
+
+        nbt.putInt("heading", this.heading);
+        nbt.putInt("pitching", this.pitching);
+        nbt.putInt("banking", this.banking);
     }
 
     @Nullable
@@ -215,4 +240,26 @@ public class TrackTiesBlockEntity extends BlockEntity {
     public void sync() {
         getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 3);
     }
+
+    public int getValueForTool(ToolType toolType) {
+        return switch(toolType) {
+            case HEADING -> heading;
+            case PITCHING -> pitching;
+            case BANKING -> banking;
+        };
+    }
+
+    /**
+     * Need to update after setting the values
+     * @param toolType
+     * @param value
+     */
+    public void setValueForTool(ToolType toolType, int value) {
+        switch (toolType) {
+            case HEADING -> heading = value;
+            case PITCHING -> pitching = value;
+            case BANKING -> banking = value;
+        }
+    }
+
 }
