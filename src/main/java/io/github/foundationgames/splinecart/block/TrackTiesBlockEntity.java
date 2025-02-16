@@ -27,7 +27,7 @@ import org.joml.Vector3d;
 
 public class TrackTiesBlockEntity extends BlockEntity {
 
-    public static final int ORIENTATION_RESOLUTION = 16;
+    public static final int ORIENTATION_RESOLUTION = 360;
     public static final boolean DROP_TRACK = false;
 
     public float clientTime = 0;

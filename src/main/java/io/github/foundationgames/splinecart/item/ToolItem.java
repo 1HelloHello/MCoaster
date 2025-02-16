@@ -42,7 +42,7 @@ public class ToolItem extends Item {
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         if (!world.isClient) {
-            this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
+            this.use(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
         }
         return false;
     }
@@ -58,7 +58,7 @@ public class ToolItem extends Item {
         World world = context.getWorld();
         if (!world.isClient && playerEntity != null) {
             BlockPos blockPos = context.getBlockPos();
-            if (!this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack())) {
+            if (!this.use(playerEntity, world, blockPos, true, context.getStack())) {
                 return ActionResult.FAIL;
             }
         }
@@ -66,13 +66,13 @@ public class ToolItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    private boolean use(PlayerEntity player, BlockState blockState, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
+    private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
         if(!(world.getBlockEntity(pos) instanceof TrackTiesBlockEntity tie)) {
             sendErrorNoMarker(player);
             return false;
         }
 
-        int clickResolution = player.isSneaking() ? 1 : TrackTiesBlockEntity.ORIENTATION_RESOLUTION / 8;
+        int clickResolution = player.isSneaking() ? 5 : TrackTiesBlockEntity.ORIENTATION_RESOLUTION / 8;
 
         int value = tie.getValueForTool(type);
         int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackTiesBlockEntity.ORIENTATION_RESOLUTION))) % TrackTiesBlockEntity.ORIENTATION_RESOLUTION;
@@ -80,34 +80,8 @@ public class ToolItem extends Item {
         tie.updatePose(pos);
         tie.sync();
         tie.markDirty();
-        //updateNBTByBlockState(world, pos, blockState);
-
-//        var newValue = (blockState.get((IntProperty)type.property) + (rightClick ? -clickResolution : clickResolution) + TrackTiesBlock.ORIENTATION_RESOLUTION) % TrackTiesBlock.ORIENTATION_RESOLUTION;
-//        BlockState newState = blockState.with((IntProperty)type.property, newValue);
-//        tie.updatePose(pos, newState);
-//        tie.markDirty();
-//        tie.sync();
-
-
-
         sendMessage(player, Text.of(type.currentStateMsg.get(newVal)));
         return true;
-////        var newValue = (blockState.get((IntProperty)type.property) + (rightClick ? -clickResolution : clickResolution) + TrackTiesBlock.ORIENTATION_RESOLUTION) % TrackTiesBlock.ORIENTATION_RESOLUTION;
-////        BlockState newState = blockState.with((IntProperty)type.property, newValue);
-////        world.setBlockState(pos, newState);
-
-//        sendMessage(player, Text.of(type.currentStateMsg.get(newValue)));
-//        return true;
-    }
-
-    /**
-     * this shouldnt be necessary, but the block wont update untill the blockstate changes...
-     * @param world
-     * @param pos
-     * @param blockState
-     */
-    private void updateNBTByBlockState(World world, BlockPos pos, BlockState blockState) {
-        world.setBlockState(pos, blockState.with((IntProperty)type.property, blockState.get((IntProperty)type.property) == 0 ? 1 : 0));
     }
 
     private void sendErrorNoMarker(PlayerEntity player) {

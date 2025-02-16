@@ -28,35 +28,18 @@ import org.joml.Vector3d;
 
 public class TrackTiesBlock extends Block implements BlockEntityProvider {
 
-    public static final int ORIENTATION_RESOLUTION = 16;
-    public static final double TRACK_HIGHT = (double) 0; // 0 means half a block above the floor; -7/16 (default) means almost on the floor
-
     public static final MapCodec<TrackTiesBlock> CODEC = createCodec(TrackTiesBlock::new);
-    public static final IntProperty HEADING = IntProperty.of("heading", 0, ORIENTATION_RESOLUTION - 1);
-    public static final IntProperty PITCHING = IntProperty.of("pitching", 0, ORIENTATION_RESOLUTION - 1);
-    public static final IntProperty BANKING = IntProperty.of("banking", 0, ORIENTATION_RESOLUTION - 1);
 
     public static final int OUTLINE_SHAPE_MARGIN = 2;
 
     public TrackTiesBlock(Settings settings) {
         super(settings);
-        setDefaultState(getDefaultState()
-                .with(HEADING, 0)
-                .with(PITCHING, 0)
-                .with(BANKING, 0)
-        );
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(HEADING, PITCHING, BANKING);
     }
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return createCuboidShape(OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN,
-                16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN); //TODO
+                16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN);
     }
 
     @Override
@@ -79,36 +62,6 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
         if (world.getBlockEntity(pos) instanceof TrackTiesBlockEntity tie) {
             tie.updatePower();
         }
-    }
-
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        return super.onUse(state, world, pos, player, hit);
-    }
-
-    public Pose getPose(BlockState state, BlockPos blockPos) {
-        if (!state.contains(HEADING) || !state.contains(PITCHING)) {
-            return null;
-        }
-        //final Direction facing = state.get(FACING);
-        final int heading = state.get(HEADING);
-        final int pitching = state.get(PITCHING);
-        final int banking = state.get(BANKING);
-
-        //final Vec3i facingVec = facing.getVector();
-//        Vector3d pos = new Vector3d(facingVec.getX(), facingVec.getY(), facingVec.getZ())
-//                .mul(TRACK_HIGHT) // scalar: -7/16 TODO
-//                .add(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-
-        Matrix3d basis = new Matrix3d();
-
-        basis.rotate(new AxisAngle4d(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION), 0, 1, 0));
-        //basis.rotate(facing.getRotationQuaternion());
-        basis.rotateX(pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateZ(banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-
-        return new Pose(pos, basis);
     }
 
     @Override
