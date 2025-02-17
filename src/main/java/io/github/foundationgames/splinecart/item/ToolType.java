@@ -1,8 +1,6 @@
 package io.github.foundationgames.splinecart.item;
 
 import com.mojang.brigadier.Message;
-import io.github.foundationgames.splinecart.block.TrackTiesBlock;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -22,6 +20,11 @@ public enum ToolType {
     BANKING(property -> {
         MutableText text = Text.translatable("item.splinecart.banking_tool.msg").append(Text.of(property.toString()));
         text.withColor(Colors.YELLOW);
+        return text;
+    }),
+    RELATIVE_ORIENTATION(property -> {
+        MutableText text = Text.translatable("item.splinecart.relative_orientation_tool.msg").append(Text.of(property.toString()));
+        text.withColor(Colors.RED);
         return text;
     });
 

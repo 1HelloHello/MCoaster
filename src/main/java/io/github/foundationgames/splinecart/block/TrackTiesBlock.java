@@ -48,7 +48,7 @@ public class TrackTiesBlock extends Block implements BlockEntityProvider {
             if (!newState.isOf(state.getBlock())) {
                 if (!world.isClient()) tie.onDestroy();
             } else {
-                tie.updatePose(pos, newState);
+                tie.updatePose(pos);
             }
         }
 

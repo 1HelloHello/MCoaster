@@ -70,6 +70,10 @@ public class Splinecart implements ModInitializer {
 			(i, k) -> new ToolItem(ToolType.BANKING, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.banking_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
+	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, id("relative_orientation_tool"),
+			(i, k) -> new ToolItem(ToolType.RELATIVE_ORIENTATION, new Item.Settings().component(DataComponentTypes.LORE,
+					lore(Text.translatable("item.splinecart.relative_orientation_tool.desc").formatted(Formatting.GRAY))
+			).registryKey(k)));
 
 
 	public static final ComponentType<OriginComponent> ORIGIN_POS = Registry.register(Registries.DATA_COMPONENT_TYPE, id("origin"),
@@ -96,6 +100,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(HEADING_TOOL.getDefaultStack());
 			entries.add(PITCHING_TOOL.getDefaultStack());
 			entries.add(BANKING_TOOL.getDefaultStack());
+			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
 		});
 	}
 

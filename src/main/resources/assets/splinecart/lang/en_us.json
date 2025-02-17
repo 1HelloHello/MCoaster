@@ -12,15 +12,18 @@
   "item.splinecart.heading_tool": "Heading Tool",
   "item.splinecart.pitching_tool": "Pitching Tool",
   "item.splinecart.banking_tool": "Banking Tool",
+  "item.splinecart.relative_orientation_tool": "Relative Orientation Tool",
 
   "item.splinecart.heading_tool.desc": "To Be Continued...",
   "item.splinecart.pitching_tool.desc": "To Be Continued...",
   "item.splinecart.banking_tool.desc": "To Be Continued...",
+  "item.splinecart.relative_orientation_tool.desc": "To Be Continued...",
 
   "item.splinecart.tools.error_no_marker": "Track Tool items can only be used on Track Markers.",
   "item.splinecart.heading_tool.msg": "Heading: ",
   "item.splinecart.pitching_tool.msg": "Pitching: ",
   "item.splinecart.banking_tool.msg": "Banking: ",
+  "item.splinecart.relative_orientation_tool.msg": "Relative Orientation: ",
 
 
   "item.splinecart.track.origin": "First track selected",

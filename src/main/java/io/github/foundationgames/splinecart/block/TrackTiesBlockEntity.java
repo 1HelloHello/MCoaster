@@ -44,14 +44,11 @@ public class TrackTiesBlockEntity extends BlockEntity {
     private int heading = 0;
     private int pitching = 0;
     private int banking = 0;
+    private int relative_orientation = 0;
 
     public TrackTiesBlockEntity(BlockPos pos, BlockState state) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
-        updatePose(pos, state);
-    }
-
-    public void updatePose(BlockPos blockPos, BlockState state) {
-        updatePose(blockPos);
+        updatePose(pos);
     }
 
     public void updatePose(BlockPos blockPos) {
@@ -59,8 +56,10 @@ public class TrackTiesBlockEntity extends BlockEntity {
 
         Matrix3d basis = new Matrix3d();
 
-        basis.rotate(new AxisAngle4d(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION), 0, 1, 0));
+        //basis.rotate(new AxisAngle4d(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION), 0, 1, 0));
+        basis.rotateY(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
         basis.rotateX(pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateY(relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
         basis.rotateZ(banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
 
         this.pose = new Pose(pos, basis);
@@ -70,7 +69,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
 
-        updatePose(this.getPos(), this.getCachedState());
+        updatePose(this.getPos());
     }
 
     public static @Nullable TrackTiesBlockEntity of(World world, @Nullable BlockPos pos) {
@@ -205,6 +204,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
         this.heading = nbt.getInt("heading");
         this.pitching = nbt.getInt("pitching");
         this.banking = nbt.getInt("banking");
+        this.relative_orientation = nbt.getInt("relative_orientation");
     }
 
     @Override
@@ -222,6 +222,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
         nbt.putInt("heading", this.heading);
         nbt.putInt("pitching", this.pitching);
         nbt.putInt("banking", this.banking);
+        nbt.putInt("relative_orientation", this.relative_orientation);
     }
 
     @Nullable
@@ -246,6 +247,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
             case HEADING -> heading;
             case PITCHING -> pitching;
             case BANKING -> banking;
+            case RELATIVE_ORIENTATION -> relative_orientation;
         };
     }
 
@@ -259,6 +261,7 @@ public class TrackTiesBlockEntity extends BlockEntity {
             case HEADING -> heading = value;
             case PITCHING -> pitching = value;
             case BANKING -> banking = value;
+            case RELATIVE_ORIENTATION -> relative_orientation = value;
         }
     }
 
