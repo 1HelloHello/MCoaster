@@ -1,5 +1,6 @@
 package io.github.foundationgames.splinecart.block;
 
+import com.mojang.logging.LogUtils;
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.TrackType;
 import io.github.foundationgames.splinecart.item.ToolType;
@@ -22,8 +23,11 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
+import org.slf4j.Logger;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final int ORIENTATION_RESOLUTION = 360;
     public static final boolean DROP_TRACK = false;
@@ -31,10 +35,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     public float clientTime = 0;
 
     private TrackType nextType = TrackType.DEFAULT;
-    private TrackType prevType = TrackType.DEFAULT;
 
-    private @Nullable TrackMarkerBlockEntity nextTrackMarker;
-    private @Nullable TrackMarkerBlockEntity prevTrackMarker;
+    private @Nullable BlockPos nextTrackMarkerPos = null;
+    private @Nullable BlockPos prevTrackMarkerPos = null;
 
     private Pose pose;
 
@@ -96,24 +99,21 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      */
     public void setNext(@Nullable BlockPos pos, @Nullable TrackType type) {
         if (pos == null) { // not sure how that would happen
-            var oldNextE = nextMarker();
-            this.nextTrackMarker = null;
+            var oldNextE = getNextMarker();
+            this.nextTrackMarkerPos = null;
             if (oldNextE != null) {
-                oldNextE.prevTrackMarker = null;
+                oldNextE.prevTrackMarkerPos = null;
                 oldNextE.sync();
                 oldNextE.markDirty();
             }
         } else {
-            nextTrackMarker = (TrackMarkerBlockEntity) world.getBlockEntity(pos);
+            nextTrackMarkerPos = pos;
             if (type != null) {
                 this.nextType = type;
             }
-            var nextE = nextMarker();
+            var nextE = getNextMarker();
             if (nextE != null) {
-                nextE.prevTrackMarker = this;
-                if (type != null) {
-                    nextE.prevType = type;
-                }
+                nextE.prevTrackMarkerPos = getPos();
                 nextE.sync();
                 nextE.markDirty();
             }
@@ -123,28 +123,30 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         markDirty();
     }
 
-    public @Nullable TrackMarkerBlockEntity nextMarker() {
-        return nextTrackMarker;
+    public @Nullable TrackMarkerBlockEntity getNextMarker() {
+        return nextTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(nextTrackMarkerPos);
     }
 
-    public @Nullable TrackMarkerBlockEntity prevMarker() {
-        return prevTrackMarker;
+    public @Nullable TrackMarkerBlockEntity getPrevMarker() {
+        return prevTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(prevTrackMarkerPos);
     }
 
     public @Nullable BlockPos nextMarkerPos() {
-        if(nextTrackMarker == null)
-            return null;
-        return nextTrackMarker.getPos();
+        return nextTrackMarkerPos;
     }
 
     public @Nullable BlockPos prevMarkerPos() {
-        if(prevTrackMarker == null)
-            return null;
-        return prevTrackMarker.getPos();
+        return prevTrackMarkerPos;
     }
 
     public @Nullable TrackType nextType() {
         return this.nextType;
+    }
+
+    public @Nullable TrackType prevType() {
+        if(getPrevMarker() == null)
+            return null;
+        return getPrevMarker().nextType();
     }
 
     public Pose pose() {
@@ -174,22 +176,22 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      * Gets called when the Track Marker Block gets broken.
      */
     public void onDestroy() {
-        if (prevTrackMarker != null) {
-            this.dropTrack(this.prevType);
+        if (getPrevMarker() != null) {
+            this.dropTrack(this.prevType());
         }
-        if (prevTrackMarker != null) {
-            this.dropTrack(this.nextType);
+        if (getPrevMarker() != null) {
+            this.dropTrack(this.nextType());
         }
 
-        var prevE = prevMarker();
+        var prevE = getPrevMarker();
         if (prevE != null) {
-            prevE.nextTrackMarker = null;
+            prevE.nextTrackMarkerPos = null;
             prevE.sync();
             prevE.markDirty();
         }
-        var nextE = nextMarker();
+        var nextE = getNextMarker();
         if (nextE != null) {
-            nextE.prevTrackMarker = null;
+            nextE.prevTrackMarkerPos = null;
             nextE.sync();
             nextE.markDirty();
         }
@@ -200,18 +202,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         super.readNbt(nbt, registryLookup);
 
         assert world != null;
-        BlockPos prevMarkerPos = SUtil.getBlockPos(nbt, "prev");
-        if(prevMarkerPos == null)
-            prevTrackMarker = null;
-        else
-            prevTrackMarker = (TrackMarkerBlockEntity) world.getBlockEntity(prevMarkerPos);
+        prevTrackMarkerPos = SUtil.getBlockPos(nbt, "prev");
 
-        BlockPos nextMarkerPos = SUtil.getBlockPos(nbt, "next");
-        if(nextMarkerPos == null)
-            nextTrackMarker = null;
-        else
-            nextTrackMarker = (TrackMarkerBlockEntity) world.getBlockEntity(nextMarkerPos);
-
+        nextTrackMarkerPos = SUtil.getBlockPos(nbt, "next");
         this.nextType = TrackType.read(nbt.getInt("track_type"));
 
         this.power = nbt.getInt("power");
@@ -225,6 +218,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
+        LOGGER.info("writeNBT()");
 
         SUtil.putBlockPos(nbt, prevMarkerPos(), "prev");
         SUtil.putBlockPos(nbt, nextMarkerPos(), "next");

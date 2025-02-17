@@ -18,7 +18,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class TrackItem extends Item {
             var origin = stack.get(Splinecart.ORIGIN_POS);
             if (origin != null) {
                 var oPos = origin.pos();
-                if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies && oTies.nextMarker() == null && marker.prevMarker() == null) {
+                if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies && oTies.getNextMarker() == null && marker.getPrevMarker() == null) {
                     oTies.setNext(pos, this.track);
                     world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
                 }

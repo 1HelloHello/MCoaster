@@ -50,7 +50,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));
         boolean reinitBuffer = false;
-        var nextE = entity.nextMarker();
+        var nextE = entity.getNextMarker();
         if (nextE != null) {
             var end = nextE.pose();
             var world = entity.getWorld();
@@ -97,7 +97,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             matrices.pop();
         }
 
-        var prevE = entity.prevMarker();
+        var prevE = entity.getPrevMarker();
         if ((prevE == null) ^ (nextE == null)) {
             if (reinitBuffer) {
                 buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));

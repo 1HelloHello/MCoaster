@@ -223,7 +223,7 @@ public class TrackFollowerEntity extends Entity {
             if (this.splinePieceProgress > 1) {
                 this.splinePieceProgress -= 1;
 
-                var nextE = endE.nextMarker();
+                var nextE = endE.getNextMarker();
                 if (nextE == null) {
                     this.flyOffTrack(passenger);
                     return;
@@ -235,7 +235,7 @@ public class TrackFollowerEntity extends Entity {
             } else if (this.splinePieceProgress < 0) {
                 this.splinePieceProgress += 1;
 
-                var prevE = startE.prevMarker();
+                var prevE = startE.getPrevMarker();
                 if (prevE == null) {
                     this.flyOffTrack(passenger);
                     return;
