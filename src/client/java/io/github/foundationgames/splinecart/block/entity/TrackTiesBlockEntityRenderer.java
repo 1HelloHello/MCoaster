@@ -2,7 +2,7 @@ package io.github.foundationgames.splinecart.block.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.SplinecartClient;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -22,7 +22,7 @@ import org.joml.Matrix3d;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
-public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTiesBlockEntity> {
+public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMarkerBlockEntity> {
     public static final int WHITE = 0xFFFFFFFF;
     public static final Vector3f WHITEF = new Vector3f(1, 1, 1);
     public static final Identifier TRACK_TEXTURE = Splinecart.id("textures/track.png");
@@ -33,7 +33,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTi
     }
 
     @Override
-    public void render(TrackTiesBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(TrackMarkerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         var start = entity.pose();
         var pos = entity.getPos();
 
@@ -50,7 +50,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTi
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));
         boolean reinitBuffer = false;
-        var nextE = entity.next();
+        var nextE = entity.nextMarker();
         if (nextE != null) {
             var end = nextE.pose();
             var world = entity.getWorld();
@@ -97,7 +97,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTi
             matrices.pop();
         }
 
-        var prevE = entity.prev();
+        var prevE = entity.prevMarker();
         if ((prevE == null) ^ (nextE == null)) {
             if (reinitBuffer) {
                 buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));
@@ -143,7 +143,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackTi
     }
 
     @Override
-    public boolean rendersOutsideBoundingBox(TrackTiesBlockEntity blockEntity) {
+    public boolean rendersOutsideBoundingBox(TrackMarkerBlockEntity blockEntity) {
         return true;
     }
 

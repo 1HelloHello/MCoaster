@@ -1,10 +1,8 @@
 package io.github.foundationgames.splinecart;
 
-import io.github.foundationgames.splinecart.block.TrackTiesBlock;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlock;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.component.OriginComponent;
-import io.github.foundationgames.splinecart.config.Config;
-import io.github.foundationgames.splinecart.config.ConfigOption;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.item.ToolItem;
 import io.github.foundationgames.splinecart.item.ToolType;
@@ -13,7 +11,6 @@ import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -40,10 +37,10 @@ import java.util.List;
 public class Splinecart implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("splinecart");
 
-	public static final TrackTiesBlock TRACK_TIES = SUtil.register(Registries.BLOCK, id("track_ties"),
-			(i, k) -> new TrackTiesBlock(AbstractBlock.Settings.copy(Blocks.RAIL).registryKey(k)));
-	public static final BlockEntityType<TrackTiesBlockEntity> TRACK_TIES_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, id("track_ties"),
-			FabricBlockEntityTypeBuilder.create(TrackTiesBlockEntity::new, TRACK_TIES).build());
+	public static final TrackMarkerBlock TRACK_TIES = SUtil.register(Registries.BLOCK, id("track_ties"),
+			(i, k) -> new TrackMarkerBlock(AbstractBlock.Settings.copy(Blocks.RAIL).registryKey(k)));
+	public static final BlockEntityType<TrackMarkerBlockEntity> TRACK_TIES_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, id("track_ties"),
+			FabricBlockEntityTypeBuilder.create(TrackMarkerBlockEntity::new, TRACK_TIES).build());
 
 	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, id("track"),
 			(i, k) -> new TrackItem(TrackType.DEFAULT, new Item.Settings().component(DataComponentTypes.LORE,

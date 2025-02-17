@@ -1,7 +1,7 @@
 package io.github.foundationgames.splinecart.item;
 
 import com.mojang.brigadier.Message;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -44,10 +44,10 @@ public enum ToolType {
         if(val == 0) {
             return "0";
         }
-        if(val < TrackTiesBlockEntity.ORIENTATION_RESOLUTION / 2) {
+        if(val < TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 2) {
             return "-" + val + "°";
         }
-        return (TrackTiesBlockEntity.ORIENTATION_RESOLUTION - val) + "°";
+        return (TrackMarkerBlockEntity.ORIENTATION_RESOLUTION - val) + "°";
     }
 
     private static String valToQuarterDirection(int val) {

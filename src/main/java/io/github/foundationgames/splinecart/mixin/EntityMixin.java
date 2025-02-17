@@ -1,7 +1,7 @@
 package io.github.foundationgames.splinecart.mixin;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -25,7 +25,7 @@ public class EntityMixin {
         }
 
         var start = self.getBlockPos();
-        if (world.getBlockEntity(start) instanceof TrackTiesBlockEntity) { // checks if theres a TrackTiesBlockEntity at this position
+        if (world.getBlockEntity(start) instanceof TrackMarkerBlockEntity) { // checks if theres a TrackTiesBlockEntity at this position
             TrackFollowerEntity follower = TrackFollowerEntity.create(world, self.getPos(), start, self.getVelocity());
             if (follower != null) {
                 world.spawnEntity(follower);

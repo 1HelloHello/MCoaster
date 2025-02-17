@@ -1,7 +1,7 @@
 package io.github.foundationgames.splinecart.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.entity.Entity;
@@ -71,7 +71,7 @@ public class TrackFollowerEntity extends Entity {
      * @return
      */
     public static @Nullable TrackFollowerEntity create(World world, Vec3d startPos, BlockPos tie, Vec3d velocity) {
-        var tieE = TrackTiesBlockEntity.of(world, tie);
+        var tieE = TrackMarkerBlockEntity.of(world, tie);
         if(tieE == null) {
             return null;
         }
@@ -83,16 +83,16 @@ public class TrackFollowerEntity extends Entity {
         if (tieDir.dot(velDir) >= 0) { // Heading in positive direction (in the direction of the arrows)
             trackVelocity = velocity.length();
             start = tie;
-            end = tieE.nextPos();
+            end = tieE.nextMarkerPos();
             progress = 0;
         }else {
             trackVelocity = -velocity.length();
-            start = tieE.prevPos();
+            start = tieE.prevMarkerPos();
             end = tie;
             progress = 1;
         }
 
-        var startE = TrackTiesBlockEntity.of(world, start);
+        var startE = TrackMarkerBlockEntity.of(world, start);
         if (startE != null) {
             var follower = new TrackFollowerEntity(world);
             follower.trackVelocity = trackVelocity;
@@ -212,8 +212,8 @@ public class TrackFollowerEntity extends Entity {
             hadPassenger = true;
         } else {
             var world = this.getWorld();
-            TrackTiesBlockEntity startE = TrackTiesBlockEntity.of(world, this.startTie);
-            TrackTiesBlockEntity endE = TrackTiesBlockEntity.of(world, this.endTie);
+            TrackMarkerBlockEntity startE = TrackMarkerBlockEntity.of(world, this.startTie);
+            TrackMarkerBlockEntity endE = TrackMarkerBlockEntity.of(world, this.endTie);
             if (startE == null || endE == null) {
                 this.destroy();
                 return;
@@ -223,7 +223,7 @@ public class TrackFollowerEntity extends Entity {
             if (this.splinePieceProgress > 1) {
                 this.splinePieceProgress -= 1;
 
-                var nextE = endE.next();
+                var nextE = endE.nextMarker();
                 if (nextE == null) {
                     this.flyOffTrack(passenger);
                     return;
@@ -235,7 +235,7 @@ public class TrackFollowerEntity extends Entity {
             } else if (this.splinePieceProgress < 0) {
                 this.splinePieceProgress += 1;
 
-                var prevE = startE.prev();
+                var prevE = startE.prevMarker();
                 if (prevE == null) {
                     this.flyOffTrack(passenger);
                     return;

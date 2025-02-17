@@ -1,14 +1,12 @@
 package io.github.foundationgames.splinecart.item;
 
-import io.github.foundationgames.splinecart.block.TrackTiesBlock;
-import io.github.foundationgames.splinecart.block.TrackTiesBlockEntity;
+import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -67,15 +65,15 @@ public class ToolItem extends Item {
     }
 
     private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackTiesBlockEntity tie)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity tie)) {
             sendErrorNoMarker(player);
             return false;
         }
 
-        int clickResolution = player.isSneaking() ? 5 : TrackTiesBlockEntity.ORIENTATION_RESOLUTION / 8;
+        int clickResolution = player.isSneaking() ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
 
         int value = tie.getValueForTool(type);
-        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackTiesBlockEntity.ORIENTATION_RESOLUTION))) % TrackTiesBlockEntity.ORIENTATION_RESOLUTION;
+        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
         tie.setValueForTool(type, newVal);
         tie.updatePose(pos);
         tie.sync();
