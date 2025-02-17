@@ -63,7 +63,7 @@ public class TrackItem extends Item {
             var origin = stack.get(Splinecart.ORIGIN_POS);
             if (origin != null) {
                 var oPos = origin.pos();
-                if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies && oTies.getNextMarker() == null && marker.getPrevMarker() == null) {
+                if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies) {
                     oTies.setNext(pos, this.track);
                     world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
                 }

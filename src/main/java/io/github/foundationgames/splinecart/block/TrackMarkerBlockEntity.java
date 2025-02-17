@@ -27,8 +27,6 @@ import org.slf4j.Logger;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
 
-    private static final Logger LOGGER = LogUtils.getLogger();
-
     public static final int ORIENTATION_RESOLUTION = 360;
     public static final boolean DROP_TRACK = false;
 
@@ -124,10 +122,12 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public @Nullable TrackMarkerBlockEntity getNextMarker() {
+        assert world != null;
         return nextTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(nextTrackMarkerPos);
     }
 
     public @Nullable TrackMarkerBlockEntity getPrevMarker() {
+        assert world != null;
         return prevTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(prevTrackMarkerPos);
     }
 
@@ -218,7 +218,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        LOGGER.info("writeNBT()");
 
         SUtil.putBlockPos(nbt, prevMarkerPos(), "prev");
         SUtil.putBlockPos(nbt, nextMarkerPos(), "next");
