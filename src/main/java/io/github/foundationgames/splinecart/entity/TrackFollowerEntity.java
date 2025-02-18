@@ -30,6 +30,8 @@ public class TrackFollowerEntity extends Entity {
 
     private static final double GRAVITY = 0.04; // 0.04
 
+    private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
+
     private @Nullable BlockPos startTie;
     private @Nullable BlockPos endTie;
     private double splinePieceProgress = 0; // t
@@ -188,6 +190,11 @@ public class TrackFollowerEntity extends Entity {
     }
 
     private void flyOffTrack(Entity firstPassenger) {
+        if(DESTROY_MINECART_END_OF_TRACK) {
+            firstPassenger.remove(RemovalReason.KILLED);
+            this.destroy();
+            return;
+        }
         firstPassenger.stopRiding();
 
         var newVel = new Vector3d(0, 0, this.trackVelocity).mul(this.basis);
@@ -214,7 +221,7 @@ public class TrackFollowerEntity extends Entity {
             var world = this.getWorld();
             TrackMarkerBlockEntity startE = TrackMarkerBlockEntity.of(world, this.startTie);
             TrackMarkerBlockEntity endE = TrackMarkerBlockEntity.of(world, this.endTie);
-            if (startE == null || endE == null) {
+            if (startE == null || endE == null) { // Backup; shouldn't normally execute
                 this.destroy();
                 return;
             }
