@@ -1,6 +1,5 @@
 package io.github.foundationgames.splinecart.block;
 
-import com.mojang.logging.LogUtils;
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.TrackType;
 import io.github.foundationgames.splinecart.item.ToolType;
@@ -23,7 +22,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
-import org.slf4j.Logger;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
 
