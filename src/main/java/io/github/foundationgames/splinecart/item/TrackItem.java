@@ -55,7 +55,7 @@ public class TrackItem extends Item {
     }
 
     private ActionResult rightClick(World world, BlockPos pos, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
             return ActionResult.PASS;
         }
         if (world.isClient()) {
