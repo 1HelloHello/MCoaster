@@ -25,6 +25,9 @@
   "item.splinecart.banking_tool.msg": "Banking: ",
   "item.splinecart.relative_orientation_tool.msg": "Relative Orientation: ",
 
+  "item.splinecart.coaster_cart.error_no_marker": "Coaster Cart items can only be used on Track Markers",
+  "item.splinecart.coaster_cart": "Coaster Cart",
+  "item.splinecart.coaster_cart.desc": "To Be Continued",
 
   "item.splinecart.track.origin": "First track selected",
   "item.splinecart.track.clear_hint": "Cancel first selection by using on a non-track block",

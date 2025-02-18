@@ -4,6 +4,7 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlock;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.component.OriginComponent;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
+import io.github.foundationgames.splinecart.item.CoasterCartItem;
 import io.github.foundationgames.splinecart.item.ToolItem;
 import io.github.foundationgames.splinecart.item.ToolType;
 import io.github.foundationgames.splinecart.item.TrackItem;
@@ -72,6 +73,10 @@ public class Splinecart implements ModInitializer {
 					lore(Text.translatable("item.splinecart.relative_orientation_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 
+	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, id("coaster_cart"),
+			(i, k) -> new CoasterCartItem(new Item.Settings().component(DataComponentTypes.LORE,
+					lore(Text.translatable("item.splinecart.coaster_cart.desc").formatted(Formatting.GRAY))
+			).registryKey(k)));
 
 	public static final ComponentType<OriginComponent> ORIGIN_POS = Registry.register(Registries.DATA_COMPONENT_TYPE, id("origin"),
 			ComponentType.<OriginComponent>builder().codec(OriginComponent.CODEC).build());
@@ -98,6 +103,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(PITCHING_TOOL.getDefaultStack());
 			entries.add(BANKING_TOOL.getDefaultStack());
 			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
+			entries.add(COASTER_CART_ITEM.getDefaultStack());
 		});
 	}
 

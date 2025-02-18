@@ -7,6 +7,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -41,4 +43,9 @@ public enum SUtil {;
         RegistryKey<V> key = RegistryKey.of(registry.getKey(), id);
         return Registry.register(registry, id, obj.apply(id, key));
     }
+
+    public static Vec3d toCenteredVec3d(Vec3i vec) {
+        return new Vec3d(vec.getX() + .5, vec.getY() + .5, vec.getZ() + .5);
+    }
+
 }

@@ -68,45 +68,66 @@ public class TrackFollowerEntity extends Entity {
      * A minecart enters a splinetrack and the trackfollowerentity gets created.
      * @param world
      * @param startPos
-     * @param tie
+     * @param markerPos
      * @param velocity
      * @return
      */
-    public static @Nullable TrackFollowerEntity create(World world, Vec3d startPos, BlockPos tie, Vec3d velocity) {
-        var tieE = TrackMarkerBlockEntity.of(world, tie);
-        if(tieE == null) {
+    public static @Nullable TrackFollowerEntity create(World world, Vec3d startPos, BlockPos markerPos, Vec3d velocity) {
+        var marker = TrackMarkerBlockEntity.of(world, markerPos);
+        if(marker == null) {
             return null;
         }
         double trackVelocity, progress;
-        BlockPos start, end;
-        var tieDir = new Vector3d(0, 0, 1).mul(tieE.pose().basis()).normalize();
-        var velDir = new Vector3d(velocity.getX(), velocity.getY(), velocity.getZ()).normalize();
+        BlockPos startMarkerPos, endMarkerPos;
+        var markerDirection = new Vector3d(0, 0, 1).mul(marker.pose().basis()).normalize();
+        var velocityDirection = new Vector3d(velocity.getX(), velocity.getY(), velocity.getZ()).normalize();
 
-        if (tieDir.dot(velDir) >= 0) { // Heading in positive direction (in the direction of the arrows)
+        if (markerDirection.dot(velocityDirection) >= 0) { // Heading in positive direction (in the direction of the arrows)
             trackVelocity = velocity.length();
-            start = tie;
-            end = tieE.nextMarkerPos();
+            startMarkerPos = markerPos;
+            endMarkerPos = marker.nextMarkerPos();
             progress = 0;
         }else {
             trackVelocity = -velocity.length();
-            start = tieE.prevMarkerPos();
-            end = tie;
+            startMarkerPos = marker.prevMarkerPos();
+            endMarkerPos = markerPos;
             progress = 1;
         }
 
-        var startE = TrackMarkerBlockEntity.of(world, start);
-        if (startE != null) {
-            var follower = new TrackFollowerEntity(world);
-            follower.trackVelocity = trackVelocity;
-            follower.splinePieceProgress = progress;
-            follower.setStretch(start, end);
-            follower.setPosition(startPos);
-            follower.getDataTracker().set(ORIENTATION, startE.pose().basis().getNormalizedRotation(new Quaternionf()));
-
-            return follower;
+        var startMarker = TrackMarkerBlockEntity.of(world, startMarkerPos);
+        if(startMarker == null) {
+            return null;
         }
+        var follower = new TrackFollowerEntity(world);
+        follower.trackVelocity = trackVelocity;
+        follower.splinePieceProgress = progress;
+        follower.setStretch(startMarkerPos, endMarkerPos);
+        follower.setPosition(startPos);
+        follower.getDataTracker().set(ORIENTATION, startMarker.pose().basis().getNormalizedRotation(new Quaternionf()));
+        return follower;
+    }
 
-        return null;
+    public static @Nullable TrackFollowerEntity create(World world, BlockPos markerPos, double trackVelocity) { // TODO refactor
+        var marker = TrackMarkerBlockEntity.of(world, markerPos);
+        if(marker == null) {
+            return null;
+        }
+        BlockPos startMarkerPos, endMarkerPos;
+
+        startMarkerPos = markerPos;
+        endMarkerPos = marker.nextMarkerPos();
+
+        var startMarker = TrackMarkerBlockEntity.of(world, startMarkerPos);
+        if(startMarker == null) {
+            return null;
+        }
+        var follower = new TrackFollowerEntity(world);
+        follower.trackVelocity = trackVelocity;
+        follower.splinePieceProgress = 0;
+        follower.setStretch(startMarkerPos, endMarkerPos);
+        follower.setPosition(SUtil.toCenteredVec3d(markerPos));
+        follower.getDataTracker().set(ORIENTATION, startMarker.pose().basis().getNormalizedRotation(new Quaternionf()));
+        return follower;
     }
 
     public void setStretch(@Nullable BlockPos start, @Nullable BlockPos end) {
@@ -335,8 +356,8 @@ public class TrackFollowerEntity extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        this.startTie = SUtil.getBlockPos(nbt, "start");
-        this.endTie = SUtil.getBlockPos(nbt, "end");
+        this.startTie = SUtil.getBlockPos(nbt, "startMarkerPos");
+        this.endTie = SUtil.getBlockPos(nbt, "endMarkerPos");
         this.trackVelocity = nbt.getDouble("track_velocity");
         this.motionScale = nbt.getDouble("motion_scale");
         this.splinePieceProgress = nbt.getDouble("spline_piece_progress");
@@ -344,8 +365,8 @@ public class TrackFollowerEntity extends Entity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        SUtil.putBlockPos(nbt, this.startTie, "start");
-        SUtil.putBlockPos(nbt, this.endTie, "end");
+        SUtil.putBlockPos(nbt, this.startTie, "startMarkerPos");
+        SUtil.putBlockPos(nbt, this.endTie, "endMarkerPos");
         nbt.putDouble("track_velocity", this.trackVelocity);
         nbt.putDouble("motion_scale", this.motionScale);
         nbt.putDouble("spline_piece_progress", this.splinePieceProgress);
