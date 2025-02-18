@@ -1,5 +1,7 @@
 package io.github.foundationgames.splinecart.track;
 
+import org.joml.Vector3f;
+
 public enum TrackColor {
 
     WHITE(0, 0,0),
@@ -25,6 +27,10 @@ public enum TrackColor {
         }
 
         return values()[type];
+    }
+
+    public Vector3f getVec() {
+        return new Vector3f(r, g, b);
     }
 
 }
