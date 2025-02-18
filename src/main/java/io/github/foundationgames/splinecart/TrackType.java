@@ -9,7 +9,7 @@ public enum TrackType {
     DEFAULT(0, MotionModifier.FRICTION, null),
     CHAIN_DRIVE(1,
             (m, g, p) -> Math.max(m * TrackFollowerEntity.FRICTION, TrackFollowerEntity.CHAIN_DRIVE_SPEED * ((double) p /15)),
-            (p, t, col, v) -> v[0] = t * 0.05f
+            (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f) // 0.05 original
     ),
     MAGNETIC(2,
             (m, g, p) -> {
