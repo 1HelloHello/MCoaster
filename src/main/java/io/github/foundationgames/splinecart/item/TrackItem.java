@@ -55,22 +55,22 @@ public class TrackItem extends Item {
     }
 
     private ActionResult rightClick(World world, BlockPos pos, ItemStack stack) {
-        if (world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker) { // you aim at a marker block
-            if (world.isClient()) {
-                return ActionResult.SUCCESS;
-            }
-
-            var origin = stack.get(Splinecart.ORIGIN_POS);
-            if (origin != null) {
-                var oPos = origin.pos();
-                if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies) {
-                    oTies.setNext(pos, this.track);
-                    world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
-                }
-                stack.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
-            }
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
+            return ActionResult.PASS;
         }
-
+        if (world.isClient()) {
+            return ActionResult.SUCCESS;
+        }
+        var origin = stack.get(Splinecart.ORIGIN_POS);
+        if(origin == null) {
+            return ActionResult.PASS;
+        }
+        var oPos = origin.pos();
+        if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies) {
+            oTies.setNext(pos, this.track);
+            world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
+        }
+        stack.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
         return ActionResult.PASS;
     }
 
