@@ -153,6 +153,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return this.nextColor;
     }
 
+    public void setNextColor(TrackColor color) {
+        nextColor = color;
+    }
+
     public @Nullable TrackType prevType() {
         if(getPrevMarker() == null)
             return null;

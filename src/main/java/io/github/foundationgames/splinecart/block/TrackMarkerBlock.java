@@ -1,11 +1,18 @@
 package io.github.foundationgames.splinecart.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.foundationgames.splinecart.track.TrackColor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -27,6 +34,22 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return createCuboidShape(OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN,
                 16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN);
+    }
+
+    @Override
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if(stack.getItem() instanceof  DyeItem item) {
+            for(TrackColor trackColor : TrackColor.values()) {
+                if(item.getColor() == trackColor.item) {
+                    TrackMarkerBlockEntity blockEntity = (TrackMarkerBlockEntity) world.getBlockEntity(pos);
+                    blockEntity.setNextColor(trackColor);
+                    blockEntity.markDirty();
+                    blockEntity.sync();
+                    return ActionResult.SUCCESS;
+                }
+            }
+        }
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Override
