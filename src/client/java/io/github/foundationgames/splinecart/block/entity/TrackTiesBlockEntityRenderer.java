@@ -25,113 +25,70 @@ import org.joml.Vector3f;
 public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMarkerBlockEntity> {
     public static final int WHITE = 0xFFFFFFFF;
     public static final Vector3f WHITEF = new Vector3f(1, 1, 1);
-    public static final Identifier TRACK_TEXTURE = Splinecart.id("textures/track.png");
-    public static final Identifier TRACK_OVERLAY_TEXTURE = Splinecart.id("textures/track_overlay.png");
-    public static final Identifier POSE_TEXTURE_DEBUG = Splinecart.id("textures/debug.png");
+    public static final Identifier TRACK_TEXTURE = Splinecart.id("textures/track/track.png");
+    public static final Identifier TRACK_OVERLAY_TEXTURE = Splinecart.id("textures/track/track_overlay.png");
+    public static final Identifier POSE_TEXTURE_DEBUG = Splinecart.id("textures/track/debug.png");
 
-    public TrackTiesBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-    }
+    public TrackTiesBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {}
 
     @Override
-    public void render(TrackMarkerBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        var start = entity.pose();
-        var pos = entity.getPos();
+    public void render(TrackMarkerBlockEntity marker, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        var pose = marker.pose();
+        var pos = marker.getPos();
 
-        entity.clientTime += tickDelta;
+        marker.clientTime += tickDelta;
 
         if (SplinecartClient.CFG_SHOW_DEBUG.get() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud()) {
-            matrices.push();
-            matrices.translate(0.51, 0.51, 0.51); // 0 -> .5 TODO
-            var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
-            renderDebug(start, matrices.peek(), buffer);
-
-            matrices.pop();
+            renderDebugPre(matrices, vertexConsumers, pose);
         }
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));
-        boolean reinitBuffer = false;
-        var nextE = entity.getNextMarker();
-        if (nextE != null) {
-            var end = nextE.pose();
-            var world = entity.getWorld();
+        var nextMarker = marker.getNextMarker();
+        if(nextMarker == null) {
+            return;
+        }
+        var nextMarkerPose = nextMarker.pose();
+        var world = marker.getWorld();
 
-            matrices.push();
+        matrices.push();
 
-            matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
+        matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
 
-            var trackType = entity.nextType();
+        var trackType = marker.nextType();
 
-            float u0 = trackType.textureU * 0.25f;
-            float u1 = u0 + 0.25f;
+        float u0 = trackType.textureU * 0.25f;
+        float u1 = u0 + 0.25f;
 
-            int segs = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) start.translation().distance(end.translation()), 2);
-            var origin = new Vector3d(start.translation());
-            var basis = new Matrix3d(start.basis());
-            var grad = new Vector3d(0, 0, 1).mul(start.basis());
-            double[] totalDist = {0};
+        int segs = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
+        var origin = new Vector3d(pose.translation());
+        var basis = new Matrix3d(pose.basis());
+        var grad = new Vector3d(0, 0, 1).mul(pose.basis());
+        double[] totalDist = {0};
+
+        for (int i = 0; i < segs; i++) {
+            double t0 = (double)i / segs;
+            double t1 = (double)(i + 1) / segs;
+
+            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, WHITEF, t0, t1, totalDist, origin, basis, grad, overlay);
+        }
+
+        if (trackType.overlay != null) { // renders the overlay (chain track moving, powered magnetic track
+            var olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTrackOverlayTexture()));
+
+            float[] olVOffset = {0};
+            Vector3f olColor = new Vector3f(WHITEF);
+            int power = Math.max(marker.power(), nextMarker.power());
+            trackType.overlay.calculateEffects(power, marker.clientTime, olColor, olVOffset);
 
             for (int i = 0; i < segs; i++) {
                 double t0 = (double)i / segs;
                 double t1 = (double)(i + 1) / segs;
 
-                renderPart(world, matrices.peek(), buffer, start, end, u0, u1, 0, WHITEF, t0, t1, totalDist, origin, basis, grad, overlay);
+                renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
             }
-
-            if (trackType.overlay != null) {
-                reinitBuffer = true;
-                var olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTrackOverlayTexture()));
-
-                float[] olVOffset = {0};
-                Vector3f olColor = new Vector3f(WHITEF);
-                int power = Math.max(entity.power(), nextE.power());
-                trackType.overlay.calculateEffects(power, entity.clientTime, olColor, olVOffset);
-
-                for (int i = 0; i < segs; i++) {
-                    double t0 = (double)i / segs;
-                    double t1 = (double)(i + 1) / segs;
-
-                    renderPart(world, matrices.peek(), olBuffer, start, end, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
-                }
-            }
-
-            matrices.pop();
         }
 
-        var prevE = entity.getPrevMarker();
-        if ((prevE == null) ^ (nextE == null)) {
-            if (reinitBuffer) {
-                buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture()));
-            }
-
-            float z0 = -0.5f;
-            float z1 = 0;
-            float v0 = 1;
-            float v1 = 0.5f;
-
-            if (nextE == null) {
-                z0 = 0;
-                z1 = 0.5f;
-                v0 = 0.5f;
-                v1 = 0;
-            }
-
-            matrices.push();
-
-            matrices.translate(0.5, 0.5, 0.5);
-
-            var entry = matrices.peek();
-            var posMat = entry.getPositionMatrix();
-            var nmlMat = entry.getNormalMatrix();
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    posMat.setRowColumn(x, y, (float) start.basis().getRowColumn(x, y));
-                    nmlMat.setRowColumn(x, y, (float) start.basis().getRowColumn(x, y));
-                }
-            }
-
-            matrices.translate(0, -0.4375, 0);
-            matrices.pop();
-        }
+        matrices.pop();
     }
 
     protected Identifier getTexture() {
@@ -150,6 +107,16 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     @Override
     public int getRenderDistance() {
         return SplinecartClient.CFG_TRACK_RENDER_DISTANCE.get() * 16;
+    }
+
+
+    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Pose start) {
+        matrices.push();
+        matrices.translate(0.51, 0.51, 0.51); // 0 -> .5 TODO
+        var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
+        renderDebug(start, matrices.peek(), buffer);
+
+        matrices.pop();
     }
 
     private void renderDebug(Pose pose, MatrixStack.Entry entry, VertexConsumer buffer) {
