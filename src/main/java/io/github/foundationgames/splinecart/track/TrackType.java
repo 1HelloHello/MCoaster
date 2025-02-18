@@ -1,4 +1,4 @@
-package io.github.foundationgames.splinecart;
+package io.github.foundationgames.splinecart.track;
 
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.util.SUtil;
@@ -20,6 +20,9 @@ public enum TrackType {
             (p, t, col, v) -> col.set(SUtil.REDSTONE_COLOR_LUT[p])
     );
 
+    public static final int CANVAS_SIZE = 4;
+    public static final float INVERSE_CANVAS_SIZE = (float) 1 / CANVAS_SIZE;
+
     public final int textureU;
     public final MotionModifier motion;
     public final @Nullable Overlay overlay;
@@ -36,10 +39,6 @@ public enum TrackType {
         }
 
         return values()[type];
-    }
-
-    public int write() {
-        return ordinal();
     }
 
     @FunctionalInterface

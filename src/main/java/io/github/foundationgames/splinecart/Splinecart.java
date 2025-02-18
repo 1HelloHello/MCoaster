@@ -8,6 +8,7 @@ import io.github.foundationgames.splinecart.item.CoasterCartItem;
 import io.github.foundationgames.splinecart.item.ToolItem;
 import io.github.foundationgames.splinecart.item.ToolType;
 import io.github.foundationgames.splinecart.item.TrackItem;
+import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;

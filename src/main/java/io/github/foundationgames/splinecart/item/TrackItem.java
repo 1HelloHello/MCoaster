@@ -1,7 +1,7 @@
 package io.github.foundationgames.splinecart.item;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.TrackType;
+import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.component.OriginComponent;
 import net.minecraft.block.BlockState;

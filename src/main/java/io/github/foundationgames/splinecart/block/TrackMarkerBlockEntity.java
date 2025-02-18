@@ -1,7 +1,9 @@
 package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.TrackType;
+import io.github.foundationgames.splinecart.track.TrackColor;
+import io.github.foundationgames.splinecart.track.TrackStyle;
+import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.item.ToolType;
 import io.github.foundationgames.splinecart.item.TrackItem;
 import io.github.foundationgames.splinecart.util.Pose;
@@ -31,6 +33,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     public float clientTime = 0;
 
     private TrackType nextType = TrackType.DEFAULT;
+    private TrackStyle nextStyle = TrackStyle.DEFAULT;
+    private TrackColor nextColor = TrackColor.BLACK;
 
     private @Nullable BlockPos nextTrackMarkerPos = null;
     private @Nullable BlockPos prevTrackMarkerPos = null;
@@ -137,14 +141,22 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return prevTrackMarkerPos;
     }
 
-    public @Nullable TrackType nextType() {
+    public TrackType getNextType() {
         return this.nextType;
+    }
+
+    public TrackStyle getNextStyle() {
+        return this.nextStyle;
+    }
+
+    public TrackColor getNextColor() {
+        return this.nextColor;
     }
 
     public @Nullable TrackType prevType() {
         if(getPrevMarker() == null)
             return null;
-        return getPrevMarker().nextType();
+        return getPrevMarker().getNextType();
     }
 
     public Pose pose() {
@@ -154,7 +166,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public void updatePower() {
         int oldPower = this.power;
-        this.power = getWorld().getReceivedRedstonePower(getPos());
+        assert world != null;
+        this.power = world.getReceivedRedstonePower(getPos());
 
         if (oldPower != this.power) {
             sync();
@@ -178,7 +191,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             this.dropTrack(this.prevType());
         }
         if (getPrevMarker() != null) {
-            this.dropTrack(this.nextType());
+            this.dropTrack(this.getNextType());
         }
 
         var prevE = getPrevMarker();
@@ -201,16 +214,18 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         assert world != null;
         prevTrackMarkerPos = SUtil.getBlockPos(nbt, "prev");
-
         nextTrackMarkerPos = SUtil.getBlockPos(nbt, "next");
-        this.nextType = TrackType.read(nbt.getInt("track_type"));
 
-        this.power = nbt.getInt("power");
+        nextType = TrackType.read(nbt.getInt("track_type"));
+        nextStyle = TrackStyle.read(nbt.getInt("track_style"));
+        nextColor = TrackColor.read(nbt.getInt("track_color"));
 
-        this.heading = nbt.getInt("heading");
-        this.pitching = nbt.getInt("pitching");
-        this.banking = nbt.getInt("banking");
-        this.relative_orientation = nbt.getInt("relative_orientation");
+        power = nbt.getInt("power");
+
+        heading = nbt.getInt("heading");
+        pitching = nbt.getInt("pitching");
+        banking = nbt.getInt("banking");
+        relative_orientation = nbt.getInt("relative_orientation");
     }
 
     @Override
@@ -220,7 +235,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         SUtil.putBlockPos(nbt, prevMarkerPos(), "prev");
         SUtil.putBlockPos(nbt, nextMarkerPos(), "next");
 
-        nbt.putInt("track_type", this.nextType.write());
+        nbt.putInt("track_type", this.nextType.ordinal());
+        nbt.putInt("track_style", this.nextStyle.ordinal());
+        nbt.putInt("track_color", this.nextColor.ordinal());
 
         nbt.putInt("power", this.power);
 

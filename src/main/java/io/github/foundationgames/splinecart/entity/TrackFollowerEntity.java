@@ -308,7 +308,7 @@ public class TrackFollowerEntity extends Entity {
             int power = Math.max(startE.power(), endE.power());
 
             this.trackVelocity += gravity;
-            this.trackVelocity = startE.nextType().motion.calculate(this.trackVelocity, gradeVec.length(), power);
+            this.trackVelocity = startE.getNextType().motion.calculate(this.trackVelocity, gradeVec.length(), power);
         }
     }
 
