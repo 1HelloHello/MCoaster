@@ -10,15 +10,20 @@ public class TrackToolItem extends ToolItem {
 
     @Override
     public int click(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
-        int value = marker.getValueForTool(type);
-        value += rightClick ? 1 : -1;
-        if(value >= type.settings) {
-            value -= type.settings;
-        } else if (value < 0) {
-            value += type.settings;
+        int oldValue = marker.getValueForTool(type);
+        int newValue = oldValue + (rightClick ? 1 : -1);
+        if(newValue >= type.settings) {
+            newValue -= type.settings;
+        } else if (newValue < 0) {
+            newValue += type.settings;
         }
-        marker.setValueForTool(type, value);
-        return value;
+        do {
+            marker.setValueForTool(type, newValue);
+            marker.markDirty();
+            marker.sync();
+            marker = marker.getNextMarker();
+        } while(isSneaking && marker.getValueForTool(type) == oldValue);
+        return newValue;
     }
 
 }
