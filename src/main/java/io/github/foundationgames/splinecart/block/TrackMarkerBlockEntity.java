@@ -103,6 +103,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             TrackMarkerBlockEntity prevMarker = getPrevMarker();
             if(prevMarker != null) {
                 nextColor = prevMarker.getNextColor();
+                nextStyle = prevMarker.getNextStyle();
+                nextType = prevMarker.getNextType();
             }
             var nextE = getNextMarker();
             if (nextE != null) {
