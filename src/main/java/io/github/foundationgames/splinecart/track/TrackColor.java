@@ -2,17 +2,7 @@ package io.github.foundationgames.splinecart.track;
 
 import org.joml.Vector3f;
 
-public class TrackColor {
-
-    private final int hex;
-
-    public TrackColor(int hex) {
-        this.hex = hex;
-    }
-
-    public int getHex() {
-        return hex;
-    }
+public record TrackColor(int hex) {
 
     public float getR() {
         return (float) ((hex & 0xff0000) >> 16) / 0xff;
@@ -32,8 +22,8 @@ public class TrackColor {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof  TrackColor other) {
-            return hex == other.hex;
+        if (obj instanceof TrackColor(int other)) {
+            return hex == other;
         }
         return false;
     }

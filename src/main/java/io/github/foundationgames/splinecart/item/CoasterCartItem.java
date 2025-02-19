@@ -51,7 +51,7 @@ public class CoasterCartItem extends Item {
     }
 
     private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity tie)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
             sendErrorNoMarker(player);
             return false;
         }

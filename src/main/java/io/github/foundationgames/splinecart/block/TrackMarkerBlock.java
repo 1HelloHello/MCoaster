@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -44,6 +43,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
             for(TrackColorPreset trackColor : TrackColorPreset.values()) {
                 if(item.getColor() == trackColor.item) {
                     TrackMarkerBlockEntity blockEntity = (TrackMarkerBlockEntity) world.getBlockEntity(pos);
+                    assert blockEntity != null;
                     onColorTrack(blockEntity, trackColor.get(),
                             hit.isInsideBlock());
                     return ActionResult.SUCCESS;

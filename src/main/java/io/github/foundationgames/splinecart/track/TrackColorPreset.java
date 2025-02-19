@@ -1,7 +1,6 @@
 package io.github.foundationgames.splinecart.track;
 
 import net.minecraft.util.DyeColor;
-import org.joml.Vector3f;
 
 public enum TrackColorPreset {
 
@@ -29,14 +28,6 @@ public enum TrackColorPreset {
     TrackColorPreset(int hex, DyeColor item) {
         this.hex = hex;
         this.item = item;
-    }
-
-    public static TrackColorPreset read(int type) {
-        if (type < 0 || type >= values().length) {
-            return WHITE;
-        }
-
-        return values()[type];
     }
 
     public TrackColor get() {

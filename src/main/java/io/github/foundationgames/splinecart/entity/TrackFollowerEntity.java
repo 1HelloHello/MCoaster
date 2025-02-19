@@ -64,14 +64,6 @@ public class TrackFollowerEntity extends Entity {
         this(Splinecart.TRACK_FOLLOWER, world);
     }
 
-    /**
-     * A minecart enters a splinetrack and the trackfollowerentity gets created.
-     * @param world
-     * @param startPos
-     * @param markerPos
-     * @param velocity
-     * @return
-     */
     public static @Nullable TrackFollowerEntity create(World world, Vec3d startPos, BlockPos markerPos, Vec3d velocity) {
         var marker = TrackMarkerBlockEntity.of(world, markerPos);
         if(marker == null) {

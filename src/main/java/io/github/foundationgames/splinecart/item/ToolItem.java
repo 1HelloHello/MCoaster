@@ -4,7 +4,6 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -12,9 +11,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class ToolItem extends Item {
 
@@ -25,14 +21,6 @@ public abstract class ToolItem extends Item {
         this.type = type;
     }
 
-    /**
-     * Gets executed, when the player left clicks with the item.
-     * @param state
-     * @param world
-     * @param pos
-     * @param miner
-     * @return
-     */
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         if (!world.isClient) {
@@ -41,11 +29,6 @@ public abstract class ToolItem extends Item {
         return false;
     }
 
-    /**
-     * Gets executed, when the player right clicks with the item.
-     * @param context the usage context
-     * @return
-     */
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         PlayerEntity playerEntity = context.getPlayer();

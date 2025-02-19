@@ -26,13 +26,13 @@ import org.joml.Vector3f;
 
 public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMarkerBlockEntity> {
     public static final int WHITE = 0xFFFFFFFF;
-    public static final Vector3f WHITEF = new Vector3f(1, 1, 1);
+    public static final Vector3f WHITE_FLOAT = new Vector3f(1, 1, 1);
     public static final Identifier TRACK_TEXTURE = Splinecart.id("textures/track/track.png");
     public static final Identifier TRACK_ANIMATION_OVERLAY_TEXTURE = Splinecart.id("textures/track/track_animation_overlay.png");
     public static final Identifier TRACK_OVERLAY_TEXTURE = Splinecart.id("textures/track/track_overlay.png");
     public static final Identifier POSE_TEXTURE_DEBUG = Splinecart.id("textures/track/debug.png");
 
-    public TrackTiesBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {}
+    public TrackTiesBlockEntityRenderer(BlockEntityRendererFactory.Context ignoredCtx) {}
 
     @Override
     public void render(TrackMarkerBlockEntity marker, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -61,15 +61,15 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         float u0 = trackStyle.textureU * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
-        int segs = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
+        int segments = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
         var origin = new Vector3d(pose.translation());
         var basis = new Matrix3d(pose.basis());
         var grad = new Vector3d(0, 0, 1).mul(pose.basis());
         double[] totalDist = {0};
 
-        for (int i = 0; i < segs; i++) {
-            double t0 = (double)i / segs;
-            double t1 = (double)(i + 1) / segs;
+        for (int i = 0; i < segments; i++) {
+            double t0 = (double)i / segments;
+            double t1 = (double)(i + 1) / segments;
 
             renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.getNextColor().getVec3f(), t0, t1, totalDist, origin, basis, grad, overlay);
         }
@@ -82,11 +82,11 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
 
                 float[] olVOffset = {0};
-                Vector3f olColor = new Vector3f(WHITEF);
+                Vector3f olColor = new Vector3f(WHITE_FLOAT);
 
-                for (int i = 0; i < segs; i++) {
-                    double t0 = (double)i / segs;
-                    double t1 = (double)(i + 1) / segs;
+                for (int i = 0; i < segments; i++) {
+                    double t0 = (double)i / segments;
+                    double t1 = (double)(i + 1) / segments;
 
                     renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
                 }
@@ -95,13 +95,13 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
 
                 float[] olVOffset = {0};
-                Vector3f olColor = new Vector3f(WHITEF);
+                Vector3f olColor = new Vector3f(WHITE_FLOAT);
                 int power = Math.max(marker.power(), nextMarker.power());
                 trackType.overlay.calculateEffects(power, marker.clientTime, olColor, olVOffset);
 
-                for (int i = 0; i < segs; i++) {
-                    double t0 = (double)i / segs;
-                    double t1 = (double)(i + 1) / segs;
+                for (int i = 0; i < segments; i++) {
+                    double t0 = (double)i / segments;
+                    double t1 = (double)(i + 1) / segments;
 
                     renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
                 }

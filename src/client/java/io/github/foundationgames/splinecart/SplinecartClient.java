@@ -41,7 +41,7 @@ public class SplinecartClient implements ClientModInitializer {
 
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
 				dispatcher.register(
-					LiteralArgumentBuilder.<FabricClientCommandSource>literal("splinecartc")
+					LiteralArgumentBuilder.<FabricClientCommandSource>literal("splinecart")
 							.then(CONFIG.command(LiteralArgumentBuilder.literal("config"),
 									FabricClientCommandSource::sendFeedback))
 		));

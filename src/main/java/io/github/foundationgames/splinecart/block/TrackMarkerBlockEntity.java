@@ -6,13 +6,10 @@ import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.item.ToolType;
-import io.github.foundationgames.splinecart.item.TrackItem;
 import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -20,11 +17,12 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
+
+import java.util.Objects;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
 
@@ -66,6 +64,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.pose = new Pose(pos, basis);
     }
 
+
+    @SuppressWarnings("deprecation")
     @Override
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
@@ -153,12 +153,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextColor = color;
     }
 
-    public @Nullable TrackType prevType() {
-        if(getPrevMarker() == null)
-            return null;
-        return getPrevMarker().getNextType();
-    }
-
     public Pose pose() {
         updatePose(super.getPos());
         return this.pose;
@@ -230,7 +224,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putInt("track_type", this.nextType.ordinal());
         nbt.putInt("track_style", this.nextStyle.ordinal());
-        nbt.putInt("track_color", this.nextColor.getHex());
+        nbt.putInt("track_color", this.nextColor.hex());
 
         nbt.putInt("power", this.power);
 
@@ -254,7 +248,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public void sync() {
-        getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 3);
+        Objects.requireNonNull(getWorld()).updateListeners(getPos(), getCachedState(), getCachedState(), 3);
     }
 
     public int getValueForTool(ToolType toolType) {
@@ -270,8 +264,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     /**
      * Need to update after setting the values
-     * @param toolType
-     * @param value
      */
     public void setValueForTool(ToolType toolType, int value) {
         switch (toolType) {

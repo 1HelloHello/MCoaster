@@ -25,7 +25,7 @@ public class EntityMixin {
         }
 
         var start = self.getBlockPos();
-        if (world.getBlockEntity(start) instanceof TrackMarkerBlockEntity) { // checks if theres a TrackTiesBlockEntity at this position
+        if (world.getBlockEntity(start) instanceof TrackMarkerBlockEntity) { // checks if there is a TrackTiesBlockEntity at this position
             TrackFollowerEntity follower = TrackFollowerEntity.create(world, self.getPos(), start, self.getVelocity());
             if (follower != null) {
                 world.spawnEntity(follower);
