@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.block;
 
 import com.mojang.serialization.MapCodec;
 import io.github.foundationgames.splinecart.track.TrackColor;
+import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -39,17 +41,35 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if(stack.getItem() instanceof  DyeItem item) {
-            for(TrackColor trackColor : TrackColor.values()) {
+            for(TrackColorPreset trackColor : TrackColorPreset.values()) {
                 if(item.getColor() == trackColor.item) {
                     TrackMarkerBlockEntity blockEntity = (TrackMarkerBlockEntity) world.getBlockEntity(pos);
-                    blockEntity.setNextColor(trackColor);
-                    blockEntity.markDirty();
-                    blockEntity.sync();
+                    onColorTrack(blockEntity, trackColor.get(),
+                            hit.isInsideBlock());
                     return ActionResult.SUCCESS;
                 }
             }
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+    }
+
+    private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
+        TrackColor oldColor = trackMarker.getNextColor();
+        setNextColorWithUpdate(trackMarker, newColor);
+        if(!shiftClicked) {
+            return;
+        }
+        trackMarker = trackMarker.getNextMarker();
+        while (oldColor.equals(trackMarker.getNextColor())) {
+            trackMarker.setNextColor(newColor);
+            trackMarker = trackMarker.getNextMarker();
+        }
+    }
+
+    private void setNextColorWithUpdate(TrackMarkerBlockEntity blockEntity, TrackColor trackColor) {
+        blockEntity.setNextColor(trackColor);
+        blockEntity.markDirty();
+        blockEntity.sync();
     }
 
     @Override

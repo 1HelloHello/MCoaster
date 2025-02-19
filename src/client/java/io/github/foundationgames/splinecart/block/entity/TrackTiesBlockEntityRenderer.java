@@ -71,7 +71,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             double t0 = (double)i / segs;
             double t1 = (double)(i + 1) / segs;
 
-            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.getNextColor().getVec(), t0, t1, totalDist, origin, basis, grad, overlay);
+            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.getNextColor().getVec3f(), t0, t1, totalDist, origin, basis, grad, overlay);
         }
 
         var trackType = marker.getNextType();

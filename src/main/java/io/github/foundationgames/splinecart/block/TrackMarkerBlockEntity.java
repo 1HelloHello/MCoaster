@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.track.TrackColor;
+import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.item.ToolType;
@@ -34,7 +35,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private TrackType nextType = TrackType.DEFAULT;
     private TrackStyle nextStyle = TrackStyle.DEFAULT;
-    private TrackColor nextColor = TrackColor.BLACK;
+    private TrackColor nextColor = TrackColorPreset.BLACK.get();
 
     private @Nullable BlockPos nextTrackMarkerPos = null;
     private @Nullable BlockPos prevTrackMarkerPos = null;
@@ -222,7 +223,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nextType = TrackType.read(nbt.getInt("track_type"));
         nextStyle = TrackStyle.read(nbt.getInt("track_style"));
-        nextColor = TrackColor.read(nbt.getInt("track_color"));
+        nextColor = new TrackColor(nbt.getInt("track_color"));
 
         power = nbt.getInt("power");
 
@@ -241,7 +242,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putInt("track_type", this.nextType.ordinal());
         nbt.putInt("track_style", this.nextStyle.ordinal());
-        nbt.putInt("track_color", this.nextColor.ordinal());
+        nbt.putInt("track_color", this.nextColor.getHex());
 
         nbt.putInt("power", this.power);
 
