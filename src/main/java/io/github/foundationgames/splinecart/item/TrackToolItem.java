@@ -22,7 +22,7 @@ public class TrackToolItem extends ToolItem {
             marker.markDirty();
             marker.sync();
             marker = marker.getNextMarker();
-        } while(isSneaking && marker.getValueForTool(type) == oldValue);
+        } while(isSneaking && marker != null && marker.getValueForTool(type) == oldValue);
         return newValue;
     }
 
