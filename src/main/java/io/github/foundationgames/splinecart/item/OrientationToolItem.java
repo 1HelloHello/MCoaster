@@ -17,6 +17,8 @@ public class OrientationToolItem extends ToolItem {
         int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
         marker.setValueForTool(type, newVal);
         marker.updatePose(pos);
+        marker.sync();
+        marker.markDirty();
         return newVal;
     }
 

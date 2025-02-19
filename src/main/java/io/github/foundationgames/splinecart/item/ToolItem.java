@@ -50,8 +50,6 @@ public abstract class ToolItem extends Item {
         }
 
         int newVal = click(pos, marker, rightClick, player.isSneaking());
-        marker.sync();
-        marker.markDirty();
 
         sendMessage(player, Text.of(type.currentStateMsg.get(newVal)));
         return true;
