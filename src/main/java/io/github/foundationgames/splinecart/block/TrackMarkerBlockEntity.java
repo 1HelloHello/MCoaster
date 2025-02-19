@@ -112,9 +112,14 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             if (type != null) {
                 this.nextType = type;
             }
+            TrackMarkerBlockEntity prevMarker = getPrevMarker();
+            if(prevMarker != null) {
+                nextColor = prevMarker.getNextColor();
+            }
             var nextE = getNextMarker();
             if (nextE != null) {
                 nextE.prevTrackMarkerPos = getPos();
+
                 nextE.sync();
                 nextE.markDirty();
             }
