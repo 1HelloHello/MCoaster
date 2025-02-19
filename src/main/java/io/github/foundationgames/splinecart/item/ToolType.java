@@ -9,7 +9,6 @@ import net.minecraft.util.Colors;
 public enum ToolType {
 
     HEADING(value -> {
-
         MutableText text = Text.translatable("item.splinecart.heading_tool.msg").append(Text.of(valToQuarterDirection(value) + " (" + value + "°)"));
         text.withColor(Colors.GREEN);
         return text;
@@ -26,6 +25,11 @@ public enum ToolType {
     }),
     RELATIVE_ORIENTATION(value -> {
         MutableText text = Text.translatable("item.splinecart.relative_orientation_tool.msg").append(Text.of(valToOrientation(value)));
+        text.withColor(Colors.RED);
+        return text;
+    }),
+    TRACK_STYLE(value -> {
+        MutableText text = Text.translatable("item.splinecart.track_style_tool.msg").append(Text.of(String.valueOf(value)));
         text.withColor(Colors.RED);
         return text;
     });

@@ -65,21 +65,37 @@ public class ToolItem extends Item {
     }
 
     private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity tie)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
             sendErrorNoMarker(player);
             return false;
         }
 
-        int clickResolution = player.isSneaking() ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
+        int newVal = switch (type) {
+            case HEADING, PITCHING, BANKING, RELATIVE_ORIENTATION ->
+                    useOrientationTool(player, pos, rightClick, marker);
+            case TRACK_STYLE ->
+                    useTrackTool(player, pos, rightClick, marker);
+        };
+        marker.sync();
+        marker.markDirty();
 
-        int value = tie.getValueForTool(type);
-        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
-        tie.setValueForTool(type, newVal);
-        tie.updatePose(pos);
-        tie.sync();
-        tie.markDirty();
         sendMessage(player, Text.of(type.currentStateMsg.get(newVal)));
         return true;
+    }
+
+    private int useOrientationTool(PlayerEntity player, BlockPos pos, boolean rightClick, TrackMarkerBlockEntity marker) {
+        int clickResolution = player.isSneaking() ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
+
+        int value = marker.getValueForTool(type);
+        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
+        marker.setValueForTool(type, newVal);
+        marker.updatePose(pos);
+        return newVal;
+    }
+
+    private int useTrackTool(PlayerEntity player, BlockPos pos, boolean rightClick, TrackMarkerBlockEntity marker) {
+
+        return 0;
     }
 
     private void sendErrorNoMarker(PlayerEntity player) {
