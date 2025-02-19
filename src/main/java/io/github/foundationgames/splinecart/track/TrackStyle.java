@@ -2,23 +2,25 @@ package io.github.foundationgames.splinecart.track;
 
 public enum TrackStyle {
 
-    DEFAULT(0),
-    ONE_CONNECTION(1),
-    TWO_CONNECTIONS(2),
-    BIG_SPLINE(3),
-    SMALL_SPLINE(4),
-    ARROW(5),
-    TEST_ONE(6),
-    TEST_TWO(7),
+    DEFAULT(0, "Default"),
+    ONE_CONNECTION(1, "One connection"),
+    TWO_CONNECTIONS(2, "Two connections"),
+    BIG_SPLINE(3, "Big Spline"),
+    SMALL_SPLINE(4, "Small Spline"),
+    ARROW(5, "Arrow"),
+    TEST_ONE(6, "Test1"),
+    TEST_TWO(7, "Test2"),
     ;
 
     public static final int CANVAS_SIZE = 8;
     public static final float INVERSE_CANVAS_SIZE = (float) 1 / CANVAS_SIZE;
 
     public final int textureU;
+    public final String name;
 
-    TrackStyle(int textureU) {
+    TrackStyle(int textureU, String name) {
         this.textureU = textureU;
+        this.name = name;
     }
 
     public static TrackStyle read(int type) {

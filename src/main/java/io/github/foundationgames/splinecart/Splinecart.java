@@ -4,10 +4,7 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlock;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.component.OriginComponent;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
-import io.github.foundationgames.splinecart.item.CoasterCartItem;
-import io.github.foundationgames.splinecart.item.ToolItem;
-import io.github.foundationgames.splinecart.item.ToolType;
-import io.github.foundationgames.splinecart.item.TrackItem;
+import io.github.foundationgames.splinecart.item.*;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
@@ -58,27 +55,27 @@ public class Splinecart implements ModInitializer {
 			).registryKey(k)));
 
 	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, id("heading_tool"),
-			(i, k) -> new ToolItem(ToolType.HEADING, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new OrientationToolItem(ToolType.HEADING, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.heading_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 	public static final ToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, id("pitching_tool"),
-			(i, k) -> new ToolItem(ToolType.PITCHING, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new OrientationToolItem(ToolType.PITCHING, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.pitching_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 	public static final ToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, id("banking_tool"),
-			(i, k) -> new ToolItem(ToolType.BANKING, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new OrientationToolItem(ToolType.BANKING, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.banking_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, id("relative_orientation_tool"),
-			(i, k) -> new ToolItem(ToolType.RELATIVE_ORIENTATION, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new OrientationToolItem(ToolType.RELATIVE_ORIENTATION, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.relative_orientation_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 	public static final ToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, id("track_style_tool"),
-			(i, k) -> new ToolItem(ToolType.TRACK_STYLE, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new TrackToolItem(ToolType.TRACK_STYLE, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.track_style_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, id("track_type_tool"),
-			(i, k) -> new ToolItem(ToolType.TRACK_TYPE, new Item.Settings().component(DataComponentTypes.LORE,
+			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.track_type_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 

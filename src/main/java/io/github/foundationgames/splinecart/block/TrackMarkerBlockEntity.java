@@ -29,7 +29,6 @@ import org.joml.Vector3d;
 public class TrackMarkerBlockEntity extends BlockEntity {
 
     public static final int ORIENTATION_RESOLUTION = 360;
-    public static final boolean DROP_TRACK = false;
 
     public float clientTime = 0;
 
@@ -80,17 +79,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         }
 
         return null;
-    }
-
-    private void dropTrack(TrackType type) {
-        if(!DROP_TRACK) {
-            return;
-        }
-        var world = getWorld();
-        var pos = Vec3d.ofCenter(getPos());
-        var item = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(TrackItem.ITEMS_BY_TYPE.get(type)));
-
-        world.spawnEntity(item);
     }
 
     /**
@@ -197,13 +185,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      * Gets called when the Track Marker Block gets broken.
      */
     public void onDestroy() {
-        if (getPrevMarker() != null) {
-            this.dropTrack(this.prevType());
-        }
-        if (getPrevMarker() != null) {
-            this.dropTrack(this.getNextType());
-        }
-
         var prevE = getPrevMarker();
         if (prevE != null) {
             prevE.nextTrackMarkerPos = null;

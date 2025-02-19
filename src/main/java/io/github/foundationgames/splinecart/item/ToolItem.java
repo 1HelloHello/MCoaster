@@ -16,17 +16,13 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ToolItem extends Item {
-
-    public static final Map<ToolType, Item> ITEMS_BY_TYPE = new HashMap<>();
+public abstract class ToolItem extends Item {
 
     public final ToolType type;
 
     public ToolItem(ToolType type, Settings settings) {
         super(settings);
-
         this.type = type;
-        ITEMS_BY_TYPE.put(type, this);
     }
 
     /**
@@ -40,7 +36,7 @@ public class ToolItem extends Item {
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         if (!world.isClient) {
-            this.use(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
+            this.use(miner, world, pos, false);
         }
         return false;
     }
@@ -56,7 +52,7 @@ public class ToolItem extends Item {
         World world = context.getWorld();
         if (!world.isClient && playerEntity != null) {
             BlockPos blockPos = context.getBlockPos();
-            if (!this.use(playerEntity, world, blockPos, true, context.getStack())) {
+            if (!this.use(playerEntity, world, blockPos, true)) {
                 return ActionResult.FAIL;
             }
         }
@@ -64,18 +60,13 @@ public class ToolItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
+    private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick) {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
             sendErrorNoMarker(player);
             return false;
         }
 
-        int newVal = switch (type) {
-            case HEADING, PITCHING, BANKING, RELATIVE_ORIENTATION ->
-                    useOrientationTool(player, pos, rightClick, marker);
-            case TRACK_STYLE, TRACK_TYPE ->
-                    useTrackTool(player, pos, rightClick, marker);
-        };
+        int newVal = click(pos, marker, rightClick, player.isSneaking());
         marker.sync();
         marker.markDirty();
 
@@ -83,20 +74,7 @@ public class ToolItem extends Item {
         return true;
     }
 
-    private int useOrientationTool(PlayerEntity player, BlockPos pos, boolean rightClick, TrackMarkerBlockEntity marker) {
-        int clickResolution = player.isSneaking() ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
-
-        int value = marker.getValueForTool(type);
-        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
-        marker.setValueForTool(type, newVal);
-        marker.updatePose(pos);
-        return newVal;
-    }
-
-    private int useTrackTool(PlayerEntity player, BlockPos pos, boolean rightClick, TrackMarkerBlockEntity marker) {
-
-        return 0;
-    }
+    public abstract int click(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking);
 
     private void sendErrorNoMarker(PlayerEntity player) {
         MutableText text = Text.translatable("item.splinecart.tools.error_no_marker");

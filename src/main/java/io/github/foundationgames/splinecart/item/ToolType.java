@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.item;
 
 import com.mojang.brigadier.Message;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import io.github.foundationgames.splinecart.track.TrackStyle;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -29,20 +30,27 @@ public enum ToolType {
         return text;
     }),
     TRACK_STYLE(value -> {
-        MutableText text = Text.translatable("item.splinecart.track_style_tool.msg").append(Text.of(String.valueOf(value)));
+        MutableText text = Text.translatable("item.splinecart.track_style_tool.msg").append(Text.of(TrackStyle.values()[value].name + " (" + (value + 1) + ")"));
         text.withColor(Colors.RED);
         return text;
-    }),
+    }, 8),
     TRACK_TYPE(value -> {
         MutableText text = Text.translatable("item.splinecart.track_type_tool.msg").append(Text.of(String.valueOf(value)));
         text.withColor(Colors.RED);
         return text;
-    });
+    }, 3);
 
     public final MessageBuilder currentStateMsg;
+    public final int settings;
 
     ToolType(MessageBuilder currentStateMsg) {
         this.currentStateMsg = currentStateMsg;
+        settings = 0;
+    }
+
+    ToolType(MessageBuilder currentStateMsg, int settings) {
+        this.currentStateMsg = currentStateMsg;
+        this.settings = settings;
     }
 
     public interface MessageBuilder {
