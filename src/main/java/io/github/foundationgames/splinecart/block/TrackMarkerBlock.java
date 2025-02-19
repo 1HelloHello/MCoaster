@@ -56,7 +56,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
         TrackColor oldColor = trackMarker.getNextColor();
          do {
-            trackMarker.setNextColor(newColor);
+             setNextColorWithUpdate(trackMarker, newColor);
             trackMarker = trackMarker.getNextMarker();
         }while (shiftClicked && trackMarker != null && oldColor.equals(trackMarker.getNextColor()));
     }
@@ -64,7 +64,6 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     private void setNextColorWithUpdate(TrackMarkerBlockEntity blockEntity, TrackColor trackColor) {
         blockEntity.setNextColor(trackColor);
         blockEntity.markDirty();
-        blockEntity.sync();
     }
 
     @Override
