@@ -73,7 +73,7 @@ public class ToolItem extends Item {
         int newVal = switch (type) {
             case HEADING, PITCHING, BANKING, RELATIVE_ORIENTATION ->
                     useOrientationTool(player, pos, rightClick, marker);
-            case TRACK_STYLE ->
+            case TRACK_STYLE, TRACK_TYPE ->
                     useTrackTool(player, pos, rightClick, marker);
         };
         marker.sync();

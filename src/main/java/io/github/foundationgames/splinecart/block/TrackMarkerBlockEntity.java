@@ -279,8 +279,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case HEADING -> heading;
             case PITCHING -> pitching;
             case BANKING -> banking;
-            case TRACK_STYLE -> nextStyle.textureU;
             case RELATIVE_ORIENTATION -> relative_orientation;
+            case TRACK_STYLE -> nextStyle.textureU;
+            case TRACK_TYPE -> nextType.textureU;
         };
     }
 
@@ -294,8 +295,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case HEADING -> heading = value;
             case PITCHING -> pitching = value;
             case BANKING -> banking = value;
-            case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
             case RELATIVE_ORIENTATION -> relative_orientation = value;
+            case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
+            case TRACK_TYPE -> nextType = TrackType.values()[value];
         }
     }
 

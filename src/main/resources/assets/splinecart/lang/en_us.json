@@ -14,12 +14,14 @@
   "item.splinecart.banking_tool": "Banking Tool",
   "item.splinecart.relative_orientation_tool": "Relative Orientation Tool",
   "item.splinecart.track_style_tool": "Track Style Tool",
+  "item.splinecart.track_type_tool": "Track Type Tool",
 
   "item.splinecart.heading_tool.desc": "To Be Continued...",
   "item.splinecart.pitching_tool.desc": "To Be Continued...",
   "item.splinecart.banking_tool.desc": "To Be Continued...",
   "item.splinecart.relative_orientation_tool.desc": "To Be Continued...",
   "item.splinecart.track_style_tool.desc": "To Be Continued...",
+  "item.splinecart.track_type_tool.desc": "To Be Continued...",
 
   "item.splinecart.tools.error_no_marker": "Track Tool items can only be used on Track Markers.",
   "item.splinecart.heading_tool.msg": "Heading: ",
@@ -27,6 +29,7 @@
   "item.splinecart.banking_tool.msg": "Banking: ",
   "item.splinecart.relative_orientation_tool.msg": "Relative Orientation: ",
   "item.splinecart.track_style_tool.msg": "Track Style: ",
+  "item.splinecart.track_type_tool.msg": "Track Type: ",
 
   "item.splinecart.coaster_cart.error_no_marker": "Coaster Cart items can only be used on Track Markers",
   "item.splinecart.coaster_cart": "Coaster Cart",

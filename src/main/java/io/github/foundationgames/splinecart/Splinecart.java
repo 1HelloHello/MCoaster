@@ -77,6 +77,10 @@ public class Splinecart implements ModInitializer {
 			(i, k) -> new ToolItem(ToolType.TRACK_STYLE, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.track_style_tool.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
+	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, id("track_type_tool"),
+			(i, k) -> new ToolItem(ToolType.TRACK_TYPE, new Item.Settings().component(DataComponentTypes.LORE,
+					lore(Text.translatable("item.splinecart.track_type_tool.desc").formatted(Formatting.GRAY))
+			).registryKey(k)));
 
 
 	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, id("coaster_cart"),
@@ -110,6 +114,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(BANKING_TOOL.getDefaultStack());
 			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
+			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
 			entries.add(COASTER_CART_ITEM.getDefaultStack());
 		});
 	}
