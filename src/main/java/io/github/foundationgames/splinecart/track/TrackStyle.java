@@ -3,13 +3,13 @@ package io.github.foundationgames.splinecart.track;
 public enum TrackStyle {
 
     DEFAULT(0, "Default"),
-    ONE_CONNECTION(1, "One connection"),
-    TWO_CONNECTIONS(2, "Two connections"),
-    BIG_SPLINE(3, "Big Spline"),
-    SMALL_SPLINE(4, "Small Spline"),
-    ARROW(5, "Arrow"),
-    TEST_ONE(6, "Test1"),
-    TEST_TWO(7, "Test2"),
+    ONE_CONNECTION(1, "Single Beam"),
+    TWO_CONNECTIONS(2, "Double Beam"),
+    BIG_SPLINE(3, "Single Beam Triangle"),
+    SMALL_SPLINE(4, "Double Beam Triangle"),
+    ARROW(5, "Spine"),
+    TEST_ONE(6, "Box"),
+    TEST_TWO(7, "Arrow"),
     ;
 
     public static final int CANVAS_SIZE = 8;
