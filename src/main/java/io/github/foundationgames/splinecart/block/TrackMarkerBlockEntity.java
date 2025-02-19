@@ -34,7 +34,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private TrackType nextType = TrackType.DEFAULT;
     private TrackStyle nextStyle = TrackStyle.DEFAULT;
-    private TrackColor nextColor = TrackColorPreset.BLACK.get();
+    private TrackColor nextColor = TrackColorPreset.WHITE.get();
 
     private @Nullable BlockPos nextTrackMarkerPos = null;
     private @Nullable BlockPos prevTrackMarkerPos = null;

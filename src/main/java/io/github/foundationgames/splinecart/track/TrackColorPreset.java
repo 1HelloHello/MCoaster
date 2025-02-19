@@ -33,7 +33,7 @@ public enum TrackColorPreset {
 
     public static TrackColorPreset read(int type) {
         if (type < 0 || type >= values().length) {
-            return BLACK;
+            return WHITE;
         }
 
         return values()[type];
