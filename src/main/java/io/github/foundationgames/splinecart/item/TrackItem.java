@@ -18,12 +18,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TrackItem extends Item {
-    public static final Map<TrackType, Item> ITEMS_BY_TYPE = new HashMap<>();
 
     public final TrackType track;
 
@@ -31,7 +28,6 @@ public class TrackItem extends Item {
         super(settings);
 
         this.track = track;
-        ITEMS_BY_TYPE.put(track, this);
     }
 
     @Override

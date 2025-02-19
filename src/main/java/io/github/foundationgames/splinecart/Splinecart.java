@@ -45,14 +45,6 @@ public class Splinecart implements ModInitializer {
 			(i, k) -> new TrackItem(TrackType.DEFAULT, new Item.Settings().component(DataComponentTypes.LORE,
 					lore(Text.translatable("item.splinecart.track.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
-	public static final TrackItem CHAIN_DRIVE_TRACK = SUtil.register(Registries.ITEM, id("chain_drive_track"),
-			(i, k) -> new TrackItem(TrackType.CHAIN_DRIVE, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.chain_drive_track.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final TrackItem MAGNETIC_TRACK = SUtil.register(Registries.ITEM, id("magnetic_track"),
-			(i, k) -> new TrackItem(TrackType.MAGNETIC, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.magnetic_track.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
 
 	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, id("heading_tool"),
 			(i, k) -> new OrientationToolItem(ToolType.HEADING, new Item.Settings().component(DataComponentTypes.LORE,
@@ -104,8 +96,6 @@ public class Splinecart implements ModInitializer {
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(entries -> {
 			entries.add(tieItem.getDefaultStack());
 			entries.add(TRACK.getDefaultStack());
-			entries.add(CHAIN_DRIVE_TRACK.getDefaultStack());
-			entries.add(MAGNETIC_TRACK.getDefaultStack());
 			entries.add(HEADING_TOOL.getDefaultStack());
 			entries.add(PITCHING_TOOL.getDefaultStack());
 			entries.add(BANKING_TOOL.getDefaultStack());

@@ -6,8 +6,6 @@
 
   "item.splinecart.track_ties.desc": "Use Track Tools to customize when placed",
   "item.splinecart.track.desc": "Links two Track Marker blocks together",
-  "item.splinecart.chain_drive_track.desc": "Track variant that pulls minecarts",
-  "item.splinecart.magnetic_track.desc": "Track variant that accelerates or slows minecarts",
 
   "item.splinecart.heading_tool": "Heading Tool",
   "item.splinecart.pitching_tool": "Pitching Tool",
