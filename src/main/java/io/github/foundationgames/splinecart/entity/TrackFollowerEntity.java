@@ -175,10 +175,11 @@ public class TrackFollowerEntity extends Entity {
     protected void updateSpeedInfo(PlayerEntity player) {
         double metersPerSecond = serverVelocity.length() *20;
         double kilometersPerHour = metersPerSecond * 3.6;
-        double milesPerHour = metersPerSecond + 2.236936;
-        player.sendMessage(Text.of(
-                (doubleToString(metersPerSecond, 2) + "m/s " + doubleToString(kilometersPerHour, 2) + "km/h " + doubleToString(milesPerHour, 2) + "mph")
-        ), true);
+//        double milesPerHour = metersPerSecond + 2.236936;
+        player.sendMessage(Text.of(doubleToString(kilometersPerHour, 2) + " km/h"), true);
+//        player.sendMessage(Text.of(
+//                (doubleToString(metersPerSecond, 2) + "m/s " + doubleToString(kilometersPerHour, 2) + "km/h " + doubleToString(milesPerHour, 2) + "mph")
+//        ), true);
     }
 
     private static String doubleToString(double value, int digitsOfPrecision) {
