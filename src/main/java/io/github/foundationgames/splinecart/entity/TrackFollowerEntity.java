@@ -52,6 +52,7 @@ public class TrackFollowerEntity extends Entity {
     private final Quaternionf clientOrientation = new Quaternionf();
 
     private boolean hadPassenger = false;
+    private boolean hadPlayerPassenger = false;
 
     private boolean firstPositionUpdate = true;
     private boolean firstOriUpdate = true;
@@ -154,21 +155,35 @@ public class TrackFollowerEntity extends Entity {
         super.tick();
         if (super.getWorld().isClient()) {
             updateClient();
-            tryUpdateSpeedInfo();
+            updateRidingPassenger();
         } else {
             updateServer();
         }
     }
 
-    protected void tryUpdateSpeedInfo() {
+    protected void updateRidingPassenger() {
         Entity cart = super.getFirstPassenger();
         if(cart == null)
             return;
         Entity passenger = cart.getFirstPassenger();
+        updatePlayerFacing(passenger);
         if(passenger == null)
             return;
         if(passenger instanceof PlayerEntity player) {
             updateSpeedInfo(player);
+        }
+    }
+
+    protected void updatePlayerFacing(Entity passenger) {
+        if(passenger == null && hadPlayerPassenger) {
+            hadPlayerPassenger = false;
+        }
+        if(passenger != null && !hadPlayerPassenger) {
+            if(passenger instanceof PlayerEntity player) {
+                player.setYaw(90);
+                player.setPitch(0);
+            }
+            hadPlayerPassenger = true;
         }
     }
 
