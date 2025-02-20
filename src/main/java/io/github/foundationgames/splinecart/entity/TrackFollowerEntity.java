@@ -10,8 +10,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -150,30 +152,38 @@ public class TrackFollowerEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-
-        var world = this.getWorld();
-        if (world.isClient()) {
-            this.clientMotion = this.getPos().negate();
-            if (this.positionInterpSteps > 0) {
-                this.interpPos(this.positionInterpSteps);
-                this.positionInterpSteps--;
-            } else {
-                this.refreshPosition();
-                this.setVelocity(this.serverVelocity.x(), this.serverVelocity.y(), this.serverVelocity.z());
-            }
-            this.clientMotion = this.clientMotion.add(this.getPos());
-
-            this.lastClientOrientation.set(this.clientOrientation);
-            if (this.oriInterpSteps > 0) {
-                float delta = 1 / (float) oriInterpSteps;
-                this.clientOrientation.slerp(this.getDataTracker().get(ORIENTATION), delta);
-                this.oriInterpSteps--;
-            } else {
-                this.clientOrientation.set(this.getDataTracker().get(ORIENTATION));
-            }
+        if (super.getWorld().isClient()) {
+            updateClient();
+            tryUpdateSpeedInfo();
         } else {
-            this.updateServer();
+            updateServer();
         }
+    }
+
+    protected void tryUpdateSpeedInfo() {
+        Entity cart = super.getFirstPassenger();
+        if(cart == null)
+            return;
+        Entity passenger = cart.getFirstPassenger();
+        if(passenger == null)
+            return;
+        if(passenger instanceof PlayerEntity player) {
+            updateSpeedInfo(player);
+        }
+    }
+
+    protected void updateSpeedInfo(PlayerEntity player) {
+        double metersPerSecond = serverVelocity.length() *20;
+        double kilometersPerHour = metersPerSecond * 3.6;
+        double milesPerHour = metersPerSecond + 2.236936;
+        player.sendMessage(Text.of(
+                (doubleToString(metersPerSecond, 2) + "m/s " + doubleToString(kilometersPerHour, 2) + "km/h " + doubleToString(milesPerHour, 2) + "mph")
+        ), true);
+    }
+
+    private static String doubleToString(double value, int digitsOfPrecision) {
+        double mul = Math.pow(10, digitsOfPrecision);
+        return String.valueOf(((int) (value * mul)) / mul);
     }
 
     public void getClientOrientation(Quaternionf q, float tickDelta) {
@@ -213,6 +223,27 @@ public class TrackFollowerEntity extends Entity {
         var newVel = new Vector3d(0, 0, this.trackVelocity).mul(this.basis);
         firstPassenger.setVelocity(newVel.x(), newVel.y(), newVel.z());
         this.destroy();
+    }
+
+    protected  void updateClient() {
+        this.clientMotion = this.getPos().negate();
+        if (this.positionInterpSteps > 0) {
+            this.interpPos(this.positionInterpSteps);
+            this.positionInterpSteps--;
+        } else {
+            this.refreshPosition();
+            this.setVelocity(this.serverVelocity.x(), this.serverVelocity.y(), this.serverVelocity.z());
+        }
+        this.clientMotion = this.clientMotion.add(this.getPos());
+
+        this.lastClientOrientation.set(this.clientOrientation);
+        if (this.oriInterpSteps > 0) {
+            float delta = 1 / (float) oriInterpSteps;
+            this.clientOrientation.slerp(this.getDataTracker().get(ORIENTATION), delta);
+            this.oriInterpSteps--;
+        } else {
+            this.clientOrientation.set(this.getDataTracker().get(ORIENTATION));
+        }
     }
 
     protected void updateServer() {
