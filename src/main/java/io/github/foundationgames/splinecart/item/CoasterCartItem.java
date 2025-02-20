@@ -51,11 +51,11 @@ public class CoasterCartItem extends Item {
     }
 
     private boolean use(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
             sendErrorNoMarker(player);
             return false;
         }
-        TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, INITIAL_VELOCITY);
+        TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.getLastVelocity());
         if (follower != null) {
             world.spawnEntity(follower);
             MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,

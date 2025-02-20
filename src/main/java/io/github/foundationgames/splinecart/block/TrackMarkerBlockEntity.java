@@ -1,6 +1,7 @@
 package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
+import io.github.foundationgames.splinecart.item.CoasterCartItem;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
@@ -40,6 +41,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private Pose pose;
 
     private int power = -1;
+    private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
 
     private int heading = 0;
     private int pitching = 0;
@@ -149,6 +151,14 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return this.nextColor;
     }
 
+    public double getLastVelocity() {
+        return lastVelocity;
+    }
+
+    public void setLastVelocity(double lastVelocity) {
+        this.lastVelocity = lastVelocity;
+    }
+
     public void setNextColor(TrackColor color) {
         nextColor = color;
     }
@@ -208,6 +218,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextColor = new TrackColor(nbt.getInt("track_color"));
 
         power = nbt.getInt("power");
+        lastVelocity = nbt.getDouble("last_velocity");
 
         heading = nbt.getInt("heading");
         pitching = nbt.getInt("pitching");
@@ -227,6 +238,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nbt.putInt("track_color", this.nextColor.hex());
 
         nbt.putInt("power", this.power);
+        nbt.putDouble("last_velocity", this.lastVelocity);
 
         nbt.putInt("heading", this.heading);
         nbt.putInt("pitching", this.pitching);

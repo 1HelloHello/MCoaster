@@ -274,28 +274,28 @@ public class TrackFollowerEntity extends Entity {
             this.splinePieceProgress += this.trackVelocity * this.motionScale;
             if (this.splinePieceProgress > 1) {
                 this.splinePieceProgress -= 1;
+                endE.setLastVelocity(super.getVelocity().length());
 
                 var nextE = endE.getNextMarker();
                 if (nextE == null) {
                     this.flyOffTrack(passenger);
                     return;
-                } else {
-                    this.setStretch(this.endTie, nextE.getPos());
-                    startE = endE;
-                    endE = nextE;
                 }
+                this.setStretch(this.endTie, nextE.getPos());
+                startE = endE;
+                endE = nextE;
             } else if (this.splinePieceProgress < 0) {
                 this.splinePieceProgress += 1;
+                startE.setLastVelocity(super.getVelocity().length());
 
                 var prevE = startE.getPrevMarker();
                 if (prevE == null) {
                     this.flyOffTrack(passenger);
                     return;
-                } else {
-                    this.setStretch(prevE.getPos(), this.startTie);
-                    endE = startE;
-                    startE = prevE;
                 }
+                this.setStretch(prevE.getPos(), this.startTie);
+                endE = startE;
+                startE = prevE;
             }
 
             var pos = new Vector3d();
