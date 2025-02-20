@@ -29,7 +29,7 @@ public abstract class CameraMixin {
             var tf = vehicle.getVehicle();
             if (tf instanceof TrackFollowerEntity trackFollower) {
                 var world = self.getWorld();
-                var diff = self.getPos().add(0, self.getStandingEyeHeight(), 0).subtract(trackFollower.getPos());
+                var diff = self.getPos().add(0, SplinecartClient.CFG_SUSPENDED_VIEW.get() ? -1 : self.getStandingEyeHeight(), 0).subtract(trackFollower.getPos());
                 var camPos = new Vector3d(diff.getX(), diff.getY(), diff.getZ());
                 if (world.isClient()) {
                     var rot = new Quaternionf();

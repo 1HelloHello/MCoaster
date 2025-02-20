@@ -25,6 +25,7 @@ public class SplinecartClient implements ClientModInitializer {
 	public static final ConfigOption.IntOption CFG_TRACK_RESOLUTION = CONFIG.optInt("track_resolution", 3, 1, 16);
 	public static final ConfigOption.IntOption CFG_TRACK_RENDER_DISTANCE = CONFIG.optInt("track_render_distance", 8, 4, 32);
 	public static final ConfigOption.BooleanOption CFG_SHOW_DEBUG = CONFIG.optBool("show_debug", false);
+	public static final ConfigOption.BooleanOption CFG_SUSPENDED_VIEW = CONFIG.optBool("suspended_view", false);
 
 	@Override
 	public void onInitializeClient() {
