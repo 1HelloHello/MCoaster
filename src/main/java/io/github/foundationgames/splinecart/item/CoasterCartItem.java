@@ -30,9 +30,7 @@ public class CoasterCartItem extends Item {
 
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        if (!world.isClient) {
-            this.use(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
-        }
+        this.use(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
         return false;
     }
 
@@ -54,6 +52,11 @@ public class CoasterCartItem extends Item {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
             sendErrorNoMarker(player);
             return false;
+        }
+        if(world.isClient()) {
+            player.setYaw(90);
+            player.setPitch(0);
+            return true;
         }
         TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.getLastVelocity());
         if (follower != null) {
