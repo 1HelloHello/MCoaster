@@ -24,13 +24,15 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 public class TrackFollowerEntity extends Entity {
-    public static final double FRICTION = 0.997; //0.997
+
+    public static final double FRICTION = 0.002; // in b/t that are re removed for every b/t of speed every second
     public static final double CHAIN_DRIVE_SPEED = 0.36; //0.36
     public static final double MAGNETIC_SPEED_MAX_KMH = 108;
     public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_MAX_KMH / 68.75; //1.6 = 108 kmh
     public static final double MAGNETIC_ACCEL = 0.07; //0.07
 
-    private static final double GRAVITY = 0.04; // 0.04
+    private static final double GRAVITY_MPS2 = 9.81;
+    private static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)
 
     private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
 
@@ -40,7 +42,7 @@ public class TrackFollowerEntity extends Entity {
     private @Nullable BlockPos endTie;
     private double splinePieceProgress = 0; // t
     private double motionScale; // t-distance per block
-    private double trackVelocity;
+    private double trackVelocity; // velocity in blocks / tick
 
     private final Vector3d serverPosition = new Vector3d();
     private final Vector3d serverVelocity = new Vector3d();
