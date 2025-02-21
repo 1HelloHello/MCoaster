@@ -34,6 +34,8 @@ public class TrackFollowerEntity extends Entity {
 
     private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
 
+    private static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
+
     private @Nullable BlockPos startTie;
     private @Nullable BlockPos endTie;
     private double splinePieceProgress = 0; // t
@@ -53,6 +55,10 @@ public class TrackFollowerEntity extends Entity {
 
     private boolean hadPassenger = false;
     private boolean hadPlayerPassenger = false;
+
+    private double lastVelocity = 0;
+    private double secondLastVelocity = 0;
+    private double peakVelocity = 0;
 
     private boolean firstPositionUpdate = true;
     private boolean firstOriUpdate = true;
@@ -188,13 +194,22 @@ public class TrackFollowerEntity extends Entity {
     }
 
     protected void updateSpeedInfo(PlayerEntity player) {
-        double metersPerSecond = serverVelocity.length() *20;
-        double kilometersPerHour = metersPerSecond * 3.6;
-//        double milesPerHour = metersPerSecond + 2.236936;
-        player.sendMessage(Text.of(doubleToString(kilometersPerHour, 2) + " km/h"), true);
-//        player.sendMessage(Text.of(
-//                (doubleToString(metersPerSecond, 2) + "m/s " + doubleToString(kilometersPerHour, 2) + "km/h " + doubleToString(milesPerHour, 2) + "mph")
-//        ), true);
+        double currentVelocity = serverVelocity.length();
+
+        if(currentVelocity > lastVelocity && lastVelocity < secondLastVelocity) {
+            peakVelocity = lastVelocity;
+        }else if(currentVelocity < lastVelocity && lastVelocity > secondLastVelocity) {
+            peakVelocity = lastVelocity;
+        }
+
+        player.sendMessage(Text.of(
+                doubleToString(currentVelocity * METERS_PER_TICK_TO_KMH, 2)
+                        + " km/h --- peak: "
+                        + doubleToString(peakVelocity * METERS_PER_TICK_TO_KMH, 2)
+                        + " km/h")
+                , true);
+        secondLastVelocity = lastVelocity;
+        lastVelocity = currentVelocity;
     }
 
     private static String doubleToString(double value, int digitsOfPrecision) {
