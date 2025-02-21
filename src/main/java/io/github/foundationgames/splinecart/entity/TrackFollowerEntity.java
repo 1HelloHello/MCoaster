@@ -213,8 +213,9 @@ public class TrackFollowerEntity extends Entity {
     }
 
     private static String doubleToString(double value, int digitsOfPrecision) {
-        double mul = Math.pow(10, digitsOfPrecision);
-        return String.valueOf(((int) (value * mul)) / mul);
+        String str = value + "00000000000";
+        int index = str.indexOf(".");
+        return str.substring(0, index + digitsOfPrecision + 1);
     }
 
     public void getClientOrientation(Quaternionf q, float tickDelta) {
