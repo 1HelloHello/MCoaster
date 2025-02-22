@@ -153,7 +153,6 @@ public class TrackFollowerEntity extends Entity {
         var newClientVel = new Vector3d();
         Pose.cubicHermiteSpline(t, 1, clientPos, clientVel, this.serverPosition, this.serverVelocity,
                 newClientPos, newClientVel);
-
         this.setPosition(newClientPos.x(), newClientPos.y(), newClientPos.z());
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }
