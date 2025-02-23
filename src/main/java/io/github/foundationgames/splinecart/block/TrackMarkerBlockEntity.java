@@ -12,6 +12,8 @@ import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -41,6 +43,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private Pose pose;
 
     private double power = Double.POSITIVE_INFINITY;
+    public TrackMarkerTriggers triggers = TrackMarkerTriggers.EMPTY;
+
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
 
     private int heading = 0;
@@ -162,6 +166,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return 0;
     }
 
+    public void setPower(double power) {
+        this.power = power;
+    }
+
     public double getLastVelocity() {
         return lastVelocity;
     }
@@ -210,6 +218,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextColor = new TrackColor(nbt.getInt("track_color"));
 
         power = nbt.getDouble("power");
+        triggers = new TrackMarkerTriggers((NbtList) nbt.get("triggers"));
+
         lastVelocity = nbt.getDouble("last_velocity");
 
         heading = nbt.getInt("heading");
@@ -230,6 +240,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nbt.putInt("track_color", this.nextColor.hex());
 
         nbt.putDouble("power", this.power);
+        nbt.put("triggers", triggers.getNbt());
+
         nbt.putDouble("last_velocity", this.lastVelocity);
 
         nbt.putInt("heading", this.heading);
