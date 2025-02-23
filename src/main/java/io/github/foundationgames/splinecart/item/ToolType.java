@@ -39,7 +39,7 @@ public enum ToolType {
         MutableText text = Text.translatable("item.splinecart.track_type_tool.msg").append(Text.of(TrackType.values()[value].name + " (" + (value + 1) + ")"));
         text.withColor(Colors.GREEN);
         return text;
-    }, 3);
+    }, 4);
 
     public final MessageBuilder currentStateMsg;
     public final int settings;

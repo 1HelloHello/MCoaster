@@ -2,13 +2,16 @@ package io.github.foundationgames.splinecart.track;
 
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.util.SUtil;
+import net.fabricmc.fabric.impl.item.ItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public enum TrackType {
     DEFAULT(0, MotionModifier.FRICTION, null, "Default"),
     CHAIN_DRIVE(1,
-            (m, g, p) -> Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH),
+            (m, g, p) -> p >= 0
+                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
+                    : MotionModifier.FRICTION.calculate(m, g, p),
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // 0.05 original
             "Chain Drive"
     ),
@@ -20,7 +23,12 @@ public enum TrackType {
             },
             (p, t, col, v) -> col.set(SUtil.REDSTONE_COLOR_LUT[(int)p]),
             "Magnetic"
-    );
+    ),
+    TIRE_DRIVE(3,
+            (m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
+            (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
+            "Tire Drive"
+    ) ;
 
     public static final int CANVAS_SIZE = 4;
     public static final float INVERSE_CANVAS_SIZE = (float) 1 / CANVAS_SIZE;
