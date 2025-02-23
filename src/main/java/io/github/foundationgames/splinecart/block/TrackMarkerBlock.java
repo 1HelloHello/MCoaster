@@ -80,15 +80,6 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
-        super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);
-
-        if (world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity tie) {
-            tie.updatePower();
-        }
-    }
-
-    @Override
     protected MapCodec<TrackMarkerBlock> getCodec() {
         return CODEC;
     }

@@ -26,7 +26,6 @@ import org.joml.Vector3d;
 public class TrackFollowerEntity extends Entity {
 
     public static final double FRICTION = 0.002; // in b/t that are re removed for every b/t of speed every second
-    public static final double CHAIN_DRIVE_SPEED = 0.36; //0.36
     public static final double MAGNETIC_SPEED_MAX_KMH = 108;
     public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_MAX_KMH / 68.75; //1.6 = 108 kmh
     public static final double MAGNETIC_ACCEL = 0.07; //0.07
@@ -36,7 +35,7 @@ public class TrackFollowerEntity extends Entity {
 
     private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
 
-    private static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
+    public static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
 
     private @Nullable BlockPos startTie;
     private @Nullable BlockPos endTie;
@@ -363,7 +362,7 @@ public class TrackFollowerEntity extends Entity {
 
             var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
             gradeVec.mul(1, 0, 1);
-            int power = Math.max(startE.power(), endE.power());
+            double power = startE.getPower();
 
             this.trackVelocity += gravity;
             this.trackVelocity = startE.getNextType().motion.calculate(this.trackVelocity, gradeVec.length(), power);
