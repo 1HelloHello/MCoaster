@@ -28,6 +28,11 @@ public enum TrackType {
             (m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Tire Drive"
+    ) ,
+    HOLDING_BREAKS(3,
+            (m, g, p) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p) : 0,
+            (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
+            "Holding Breaks"
     ) ;
 
     public static final int CANVAS_SIZE = 4;

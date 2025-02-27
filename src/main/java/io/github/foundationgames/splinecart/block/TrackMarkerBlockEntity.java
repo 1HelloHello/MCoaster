@@ -157,12 +157,14 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public double getPower() {
         TrackMarkerBlockEntity marker = this;
+        int counter = 0;
         do {
             if(marker.power != Double.POSITIVE_INFINITY) {
                 return marker.power;
             }
             marker = marker.getPrevMarker();
-        }while(marker != null && marker != this);
+            counter++;
+        }while(marker != null && marker != this && counter < 100); 
         return 0;
     }
 
