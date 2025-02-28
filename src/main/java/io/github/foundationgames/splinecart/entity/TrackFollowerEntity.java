@@ -23,9 +23,11 @@ import org.joml.Matrix3dc;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
+import java.util.ArrayList;
+
 public class TrackFollowerEntity extends Entity {
 
-    public static final double FRICTION = 0.002; // in b/t that are re removed for every b/t of speed every second
+    public static final double FRICTION = 0.002; // in b/t that are removed for every b/t of speed every second
     public static final double MAGNETIC_SPEED_MAX_KMH = 108;
     public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_MAX_KMH / 68.75; //1.6 = 108 kmh
     public static final double MAGNETIC_ACCEL = 0.07; //0.07
@@ -57,9 +59,11 @@ public class TrackFollowerEntity extends Entity {
     private boolean hadPassenger = false;
     private boolean hadPlayerPassenger = false;
 
-    private double lastVelocity = 0;
-    private double secondLastVelocity = 0;
-    private double peakVelocity = 0;
+    // for velocity display
+    private Vector3d lastVelocity = new Vector3d();
+    private Vector3d secondLastVelocity = new Vector3d();
+    private Vector3d peakVelocity = new Vector3d();
+
 
     private boolean firstPositionUpdate = true;
     private boolean firstOriUpdate = true;
@@ -194,28 +198,43 @@ public class TrackFollowerEntity extends Entity {
     }
 
     protected void updateSpeedInfo(PlayerEntity player) {
-        double currentVelocity = serverVelocity.length();
+        Vector3d currentVelocity = serverVelocity;
 
-        if(currentVelocity > lastVelocity && lastVelocity < secondLastVelocity) {
-            peakVelocity = lastVelocity;
-        }else if(currentVelocity < lastVelocity && lastVelocity > secondLastVelocity) {
-            peakVelocity = lastVelocity;
+        if(currentVelocity.length() > lastVelocity.length() && lastVelocity.length() < secondLastVelocity.length()) {
+            peakVelocity = new Vector3d(lastVelocity);
+        }else if(currentVelocity.length() < lastVelocity.length() && lastVelocity.length() > secondLastVelocity.length()) {
+            peakVelocity = new Vector3d(lastVelocity);
         }
 
+        Vector3d acceleration = new Vector3d(currentVelocity).sub(secondLastVelocity).mul((double) 1 / 2).add(0, GRAVITY, 0).mul(clientOrientation.get(new Matrix3d()));
+
         player.sendMessage(Text.of(
-                doubleToString(currentVelocity * METERS_PER_TICK_TO_KMH, 2)
-                        + " km/h --- peak: "
-                        + doubleToString(peakVelocity * METERS_PER_TICK_TO_KMH, 2)
-                        + " km/h")
+                doubleToString(currentVelocity.length()* METERS_PER_TICK_TO_KMH)
+                        + " km/h peak: "
+                        + doubleToString(peakVelocity.length() * METERS_PER_TICK_TO_KMH)
+                        + " km/h --- acc: "
+                        + signedDoubleToString(acceleration.y / GRAVITY)
+                        + " Gv "
+                        + signedDoubleToString(acceleration.z / GRAVITY)
+                        + " Gh "
+                        + signedDoubleToString(acceleration.x / GRAVITY)
+                        + " Gl ")
                 , true);
-        secondLastVelocity = lastVelocity;
-        lastVelocity = currentVelocity;
+        secondLastVelocity = new Vector3d(lastVelocity);
+        lastVelocity = new Vector3d(currentVelocity);
     }
 
-    private static String doubleToString(double value, int digitsOfPrecision) {
-        String str = value + "00000000000";
+    private static String signedDoubleToString(double value) {
+        return (value < 0 ? "-" : "+") + doubleToString(Math.abs(value));
+    }
+
+    private static String doubleToString(double value) {
+        String str = value + "00";
+        if(str.contains("E")) {
+            return "0.00";
+        }
         int index = str.indexOf(".");
-        return str.substring(0, index + digitsOfPrecision + 1);
+        return str.substring(0, index + 2 + 1);
     }
 
     public void getClientOrientation(Quaternionf q, float tickDelta) {
