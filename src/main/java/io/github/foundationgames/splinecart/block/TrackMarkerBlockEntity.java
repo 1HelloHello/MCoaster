@@ -277,6 +277,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case RELATIVE_ORIENTATION -> relative_orientation;
             case TRACK_STYLE -> nextStyle.textureU;
             case TRACK_TYPE -> nextType.textureU;
+            case POWER -> (int)(power * 10);
         };
     }
 
@@ -291,6 +292,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case RELATIVE_ORIENTATION -> relative_orientation = value;
             case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
             case TRACK_TYPE -> nextType = TrackType.values()[value];
+            case POWER -> power = value;
         }
     }
 

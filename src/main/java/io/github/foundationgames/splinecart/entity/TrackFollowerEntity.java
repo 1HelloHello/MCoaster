@@ -215,9 +215,9 @@ public class TrackFollowerEntity extends Entity {
                         + " km/h --- acc: "
                         + signedDoubleToString(acceleration.y / GRAVITY)
                         + " Gv "
-                        + signedDoubleToString(acceleration.z / GRAVITY)
-                        + " Gh "
                         + signedDoubleToString(acceleration.x / GRAVITY)
+                        + " Gh "
+                        + signedDoubleToString(acceleration.z / GRAVITY)
                         + " Gl ")
                 , true);
         secondLastVelocity = new Vector3d(lastVelocity);

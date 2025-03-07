@@ -77,6 +77,11 @@ public class Splinecart implements ModInitializer {
 					lore(Text.translatable("item.splinecart.coaster_cart.desc").formatted(Formatting.GRAY))
 			).registryKey(k)));
 
+	public static final PowerToolItem POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, id("power_tool"),
+			(i, k) -> new PowerToolItem(new Item.Settings().component(DataComponentTypes.LORE,
+					lore(Text.translatable("item.splinecart.coaster_cart.desc").formatted(Formatting.GRAY))
+			).registryKey(k)));
+
 	public static final ComponentType<OriginComponent> ORIGIN_POS = Registry.register(Registries.DATA_COMPONENT_TYPE, id("origin"),
 			ComponentType.<OriginComponent>builder().codec(OriginComponent.CODEC).build());
 
@@ -103,6 +108,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
 			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
 			entries.add(COASTER_CART_ITEM.getDefaultStack());
+			entries.add(POWER_TOOL_ITEM.getDefaultStack());
 		});
 	}
 
