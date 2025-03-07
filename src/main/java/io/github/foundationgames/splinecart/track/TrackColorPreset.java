@@ -2,6 +2,9 @@ package io.github.foundationgames.splinecart.track;
 
 import net.minecraft.util.DyeColor;
 
+/**
+ * Contains a specific RGB color for every minecraft dye.
+ */
 public enum TrackColorPreset {
 
     WHITE(0xffffff, DyeColor.WHITE),

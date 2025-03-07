@@ -12,7 +12,6 @@ import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -275,7 +274,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case PITCHING -> pitching;
             case BANKING -> banking;
             case RELATIVE_ORIENTATION -> relative_orientation;
-            case TRACK_STYLE -> nextStyle.textureU;
+            case TRACK_STYLE -> nextStyle.id;
             case TRACK_TYPE -> nextType.textureU;
             case POWER -> (int)(power * 10);
         };

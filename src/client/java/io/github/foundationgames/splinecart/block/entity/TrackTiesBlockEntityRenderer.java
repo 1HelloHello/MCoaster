@@ -57,7 +57,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
 
         TrackStyle trackStyle = marker.getNextStyle();
-        float u0 = trackStyle.textureU * TrackStyle.INVERSE_CANVAS_SIZE;
+        float u0 = trackStyle.id * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
         int segments = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
