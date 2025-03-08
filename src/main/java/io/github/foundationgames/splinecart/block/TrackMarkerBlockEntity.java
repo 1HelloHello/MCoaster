@@ -142,6 +142,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return prevTrackMarkerPos;
     }
 
+    public boolean hasTrackConnected() {
+        return prevTrackMarkerPos != null || nextTrackMarkerPos != null;
+    }
+
     public TrackType getNextType() {
         return this.nextType;
     }

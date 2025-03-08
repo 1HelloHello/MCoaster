@@ -40,7 +40,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         var pos = marker.getPos();
 
         marker.clientTime += tickDelta;
-        if (MinecraftClient.isHudEnabled() && (SplinecartClient.CFG_SHOW_DEBUG.get() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
+        if (!marker.hasTrackConnected() || MinecraftClient.isHudEnabled() && (SplinecartClient.CFG_SHOW_DEBUG.get() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
             renderDebugPre(matrices, vertexConsumers, pose);
         }
 
