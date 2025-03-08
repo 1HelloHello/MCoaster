@@ -95,7 +95,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
                 float[] olVOffset = {0};
                 Vector3f olColor = new Vector3f(WHITE_FLOAT);
-                double power = marker.getPower();
+                int power = marker.getPower();
                 trackType.overlay.calculateEffects(power, marker.clientTime, olColor, olVOffset);
 
                 for (int i = 0; i < segments; i++) {

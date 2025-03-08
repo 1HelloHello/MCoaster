@@ -11,7 +11,7 @@ public enum TrackType {
     CHAIN_DRIVE((m, g, p) -> p >= 0
                     ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
                     : MotionModifier.FRICTION.calculate(m, g, p),
-            (p, t, col, v) -> v[0] = t * ((float) p / 10 / 15 * 0.05f), // 0.05 original
+            (p, t, col, v) -> v[0] = t * 0.0055f * ((float)p / 10),
             "Chain Drive"
     ),
     MAGNETIC((m, g, p) -> {
@@ -61,6 +61,6 @@ public enum TrackType {
 
     @FunctionalInterface
     public interface Overlay {
-        void calculateEffects(double power, float time, Vector3f outputColor, float[] outputVOffset);
+        void calculateEffects(int power, float time, Vector3f outputColor, float[] outputVOffset);
     }
 }
