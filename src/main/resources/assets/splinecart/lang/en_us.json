@@ -1,11 +1,10 @@
 {
   "block.splinecart.track_ties": "Track Marker",
-  "item.splinecart.track": "Normal Track",
-  "item.splinecart.chain_drive_track": "Chain Drive Track",
-  "item.splinecart.magnetic_track": "Magnetic Track",
+  "item.splinecart.track": "Track",
 
   "item.splinecart.track_ties.desc": "Use Track Tools to customize when placed",
   "item.splinecart.track.desc": "Links two Track Marker blocks together",
+  "item.splinecart.track.desc1": "Left click on first one, right click on second one",
 
   "item.splinecart.heading_tool": "Heading Tool",
   "item.splinecart.pitching_tool": "Pitching Tool",
@@ -42,7 +41,8 @@
 
   "item.splinecart.coaster_cart.error_no_marker": "Coaster Cart items can only be used on Track Markers",
   "item.splinecart.coaster_cart": "Coaster Cart",
-  "item.splinecart.coaster_cart.desc": "To Be Continued",
+  "item.splinecart.coaster_cart.desc": "Right click to place on Track Marker. It retains the last velocity",
+  "item.splinecart.coaster_cart.desc1": "Left click to automatically enter Cart.",
 
   "item.splinecart.track.origin": "First track selected",
   "item.splinecart.track.clear_hint": "Cancel first selection by using on a non-track block",
