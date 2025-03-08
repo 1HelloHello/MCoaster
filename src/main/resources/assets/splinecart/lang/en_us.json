@@ -13,7 +13,7 @@
   "item.splinecart.relative_orientation_tool": "Relative Orientation Tool",
   "item.splinecart.track_style_tool": "Track Style Tool",
   "item.splinecart.track_type_tool": "Track Type Tool",
-  "item.splinecart.power_tool": "Power Tool",
+  "item.splinecart.track_power_tool": "Power Tool",
 
   "item.splinecart.heading_tool.desc": "Changes the heading (horizontal orientation) of the Track Marker.",
   "item.splinecart.heading_tool.desc1": "Right / Left click to lower / higher value. Shift click for more precise control.",
