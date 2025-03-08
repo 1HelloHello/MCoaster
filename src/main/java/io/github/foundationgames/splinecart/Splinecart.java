@@ -56,13 +56,13 @@ public class Splinecart implements ModInitializer {
 			(i, k) -> new OrientationToolItem(ToolType.BANKING, "banking_tool", k));
 	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, "relative_orientation_tool",
 			(i, k) -> new OrientationToolItem(ToolType.RELATIVE_ORIENTATION, "relative_orientation_tool", k));
+
 	public static final ToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, "track_style_tool",
 			(i, k) -> new TrackToolItem(ToolType.TRACK_STYLE, "track_style_tool", k));
 	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
 			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, "track_type_tool", k));
-
-	public static final PowerToolItem POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "power_tool",
-			(i, k) -> new PowerToolItem("power_tool", k));
+	public static final PowerToolItem TRACK_POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_power_tool",
+			(i, k) -> new PowerToolItem("track_power_tool", k));
 
 	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, "coaster_cart",
 			(i, k) -> new CoasterCartItem("coaster_cart", k));
@@ -93,7 +93,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
 			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
 			entries.add(COASTER_CART_ITEM.getDefaultStack());
-			entries.add(POWER_TOOL_ITEM.getDefaultStack());
+			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
 		});
 	}
 
