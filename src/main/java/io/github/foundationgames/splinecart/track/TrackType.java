@@ -7,16 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public enum TrackType {
-    DEFAULT(0, MotionModifier.FRICTION, null, "Default"),
-    CHAIN_DRIVE(1,
-            (m, g, p) -> p >= 0
+    DEFAULT(MotionModifier.FRICTION, null, "Default"),
+    CHAIN_DRIVE((m, g, p) -> p >= 0
                     ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
                     : MotionModifier.FRICTION.calculate(m, g, p),
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // 0.05 original
             "Chain Drive"
     ),
-    MAGNETIC(2,
-            (m, g, p) -> {
+    MAGNETIC((m, g, p) -> {
                 double speed = (p / 15.0) * TrackFollowerEntity.MAGNETIC_SPEED_FACTOR;
                 m = (MotionModifier.FRICTION.calculate(m, g, p));
                 return m + ((speed - m) * TrackFollowerEntity.MAGNETIC_ACCEL * (1.0 - g));
@@ -24,13 +22,11 @@ public enum TrackType {
             (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 ? 15 : (int)p]),
             "Magnetic"
     ),
-    TIRE_DRIVE(3,
-            (m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
+    TIRE_DRIVE((m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Tire Drive"
     ) ,
-    HOLDING_BREAKS(3,
-            (m, g, p) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p) : 0,
+    HOLDING_BREAKS((m, g, p) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p) : 0,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Holding Breaks"
     ) ;
@@ -38,13 +34,11 @@ public enum TrackType {
     public static final int CANVAS_SIZE = 4;
     public static final float INVERSE_CANVAS_SIZE = (float) 1 / CANVAS_SIZE;
 
-    public final int textureU;
     public final MotionModifier motion;
     public final @Nullable Overlay overlay;
     public final String name;
 
-    TrackType(int textureU, MotionModifier motion, @Nullable Overlay overlay, String name) {
-        this.textureU = textureU;
+    TrackType(MotionModifier motion, @Nullable Overlay overlay, String name) {
         this.motion = motion;
         this.overlay = overlay;
         this.name = name;

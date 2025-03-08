@@ -17,12 +17,13 @@ public class TrackToolItem extends ToolItem {
     @Override
     public int use(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
         int oldValue = marker.getValueForTool(type);
-        int newValue = oldValue + (rightClick ? 1 : -1);
-        if(newValue >= type.settings) {
-            newValue -= type.settings;
-        } else if (newValue < 0) {
-            newValue += type.settings;
-        }
+        int newValue = (oldValue + (rightClick ? 1 : -1) + type.settings) % type.settings;
+        System.out.println("old: " + oldValue + ", new: " + newValue);
+//        if(newValue >= type.settings) {
+//            newValue -= type.settings;
+//        } else if (newValue < 0) {
+//            newValue += type.settings;
+//        }
         do {
             marker.setValueForTool(type, newValue);
             marker.markDirty();

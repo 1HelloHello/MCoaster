@@ -57,7 +57,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
 
         TrackStyle trackStyle = marker.getNextStyle();
-        float u0 = trackStyle.id * TrackStyle.INVERSE_CANVAS_SIZE;
+        float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
         int segments = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
@@ -75,7 +75,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
         var trackType = marker.getNextType();
         if (trackType.overlay != null) { // renders the overlay (chain track moving, powered magnetic track
-            u0 = trackType.textureU * TrackType.INVERSE_CANVAS_SIZE;
+            u0 = trackType.ordinal() * TrackType.INVERSE_CANVAS_SIZE;
             u1 = u0 + TrackType.INVERSE_CANVAS_SIZE;
             { // static overlay
                 VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));

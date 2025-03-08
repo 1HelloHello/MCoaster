@@ -5,14 +5,14 @@ package io.github.foundationgames.splinecart.track;
  */
 public enum TrackStyle {
 
-    DEFAULT(0, "Default"),
-    ONE_CONNECTION(1, "Single Beam"),
-    TWO_CONNECTIONS(2, "Double Beam"),
-    BIG_SPLINE(3, "Single Beam Triangle"),
-    SMALL_SPLINE(4, "Double Beam Triangle"),
-    ARROW(5, "Spine"),
-    TEST_ONE(6, "Box"),
-    TEST_TWO(7, "Arrow"),
+    DEFAULT("Default"),
+    ONE_CONNECTION("Single Beam"),
+    TWO_CONNECTIONS("Double Beam"),
+    BIG_SPLINE("Single Beam Triangle"),
+    SMALL_SPLINE("Double Beam Triangle"),
+    ARROW("Spine"),
+    TEST_ONE("Box"),
+    TEST_TWO("Arrow"),
     ;
 
     /**
@@ -25,15 +25,12 @@ public enum TrackStyle {
      */
     public static final float INVERSE_CANVAS_SIZE = (float) 1 / CANVAS_SIZE;
 
-    public final int id;
-
     /**
      * The name that is displayed when the player cycles through the track styles.
      */
     public final String name;
 
-    TrackStyle(int id, String name) {
-        this.id = id;
+    TrackStyle(String name) {
         this.name = name;
     }
 

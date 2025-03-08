@@ -274,8 +274,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case PITCHING -> pitching;
             case BANKING -> banking;
             case RELATIVE_ORIENTATION -> relative_orientation;
-            case TRACK_STYLE -> nextStyle.id;
-            case TRACK_TYPE -> nextType.textureU;
+            case TRACK_STYLE -> nextStyle.ordinal();
+            case TRACK_TYPE -> nextType.ordinal();
             case POWER -> (int)(power * 10);
         };
     }
