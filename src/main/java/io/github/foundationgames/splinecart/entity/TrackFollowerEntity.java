@@ -381,7 +381,7 @@ public class TrackFollowerEntity extends Entity {
 
             var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
             gradeVec.mul(1, 0, 1);
-            double power = startE.getPower();
+            double power = startE.computePower();
 
             this.trackVelocity += gravity;
             this.trackVelocity = startE.getNextType().motion.calculate(this.trackVelocity, gradeVec.length(), power);

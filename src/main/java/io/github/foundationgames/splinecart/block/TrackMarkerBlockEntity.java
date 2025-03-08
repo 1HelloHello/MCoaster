@@ -155,6 +155,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public int getPower() {
+        return power;
+    }
+
+    public int computePower() {
         TrackMarkerBlockEntity marker = this;
         int counter = 0;
         do {
