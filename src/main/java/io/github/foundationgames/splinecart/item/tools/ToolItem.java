@@ -3,7 +3,9 @@ package io.github.foundationgames.splinecart.item.tools;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.item.ActionItem;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -15,8 +17,8 @@ public abstract class ToolItem extends ActionItem {
 
     public final ToolType type;
 
-    public ToolItem(ToolType type, Settings settings) {
-        super(settings);
+    public ToolItem(ToolType type, String identifier, RegistryKey<Item> registryKey) {
+        super(identifier, registryKey);
         this.type = type;
     }
 

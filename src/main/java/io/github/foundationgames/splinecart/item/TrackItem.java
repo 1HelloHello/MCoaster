@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -24,9 +25,8 @@ public class TrackItem extends ActionItem {
 
     public final TrackType track;
 
-    public TrackItem(TrackType track, Settings settings) {
-        super(settings);
-
+    public TrackItem(TrackType track, String identifier, RegistryKey<Item> registryKey) {
+        super(identifier, registryKey);
         this.track = track;
     }
 

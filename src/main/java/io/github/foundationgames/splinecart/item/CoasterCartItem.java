@@ -7,7 +7,9 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -19,8 +21,8 @@ public class CoasterCartItem extends ActionItem {
 
     public static final double INITIAL_VELOCITY = 0.01;
 
-    public CoasterCartItem(Settings settings) {
-        super(settings);
+    public CoasterCartItem(String identifier, RegistryKey<Item> registryKey) {
+        super(identifier, registryKey);
     }
 
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {

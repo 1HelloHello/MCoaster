@@ -1,6 +1,8 @@
 package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -8,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
  */
 public class OrientationToolItem extends ToolItem {
 
-    public OrientationToolItem(ToolType type, Settings settings) {
-        super(type, settings);
+    public OrientationToolItem(ToolType type, String identifier, RegistryKey<Item> registryKey) {
+        super(type, identifier, registryKey);
     }
 
     @Override

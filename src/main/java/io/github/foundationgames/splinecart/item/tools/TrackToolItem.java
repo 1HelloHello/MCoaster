@@ -1,14 +1,17 @@
 package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 
 /**
  * Handles the functionality for the two track tools (track type and track style)
  */
 public class TrackToolItem extends ToolItem {
-    public TrackToolItem(ToolType type, Settings settings) {
-        super(type, settings);
+
+    public TrackToolItem(ToolType type, String identifier, RegistryKey<Item> registryKey) {
+        super(type, identifier, registryKey);
     }
 
     @Override

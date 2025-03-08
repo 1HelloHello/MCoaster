@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -13,10 +14,10 @@ import net.minecraft.world.World;
 /**
  * Item that has a specific right and left click function different from Vanilla.
  */
-public abstract class ActionItem extends Item {
+public abstract class ActionItem extends RegistrableItem {
 
-    public ActionItem(Settings settings) {
-        super(settings);
+    public ActionItem(String identifier, RegistryKey<Item> registryKey) {
+        super(identifier, registryKey);
     }
 
     @Override

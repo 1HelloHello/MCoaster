@@ -35,68 +35,52 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class Splinecart implements ModInitializer {
+
+	public static final String MOD_NAME = "splinecart";
+
     public static final Logger LOGGER = LoggerFactory.getLogger("splinecart");
 
-	public static final TrackMarkerBlock TRACK_TIES = SUtil.register(Registries.BLOCK, id("track_ties"),
+	public static final TrackMarkerBlock TRACK_TIES = SUtil.register(Registries.BLOCK, "track_ties",
 			(i, k) -> new TrackMarkerBlock(AbstractBlock.Settings.copy(Blocks.RAIL).registryKey(k)));
-	public static final BlockEntityType<TrackMarkerBlockEntity> TRACK_TIES_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, id("track_ties"),
+	public static final BlockEntityType<TrackMarkerBlockEntity> TRACK_TIES_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, "track_ties",
 			FabricBlockEntityTypeBuilder.create(TrackMarkerBlockEntity::new, TRACK_TIES).build());
 
-	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, id("track"),
-			(i, k) -> new TrackItem(TrackType.DEFAULT, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.track.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
+	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, "track",
+			(i, k) -> new TrackItem(TrackType.DEFAULT, "track", k));
 
-	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, id("heading_tool"),
-			(i, k) -> new OrientationToolItem(ToolType.HEADING, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.heading_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final ToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, id("pitching_tool"),
-			(i, k) -> new OrientationToolItem(ToolType.PITCHING, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.pitching_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final ToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, id("banking_tool"),
-			(i, k) -> new OrientationToolItem(ToolType.BANKING, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.banking_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, id("relative_orientation_tool"),
-			(i, k) -> new OrientationToolItem(ToolType.RELATIVE_ORIENTATION, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.relative_orientation_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final ToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, id("track_style_tool"),
-			(i, k) -> new TrackToolItem(ToolType.TRACK_STYLE, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.track_style_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, id("track_type_tool"),
-			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.track_type_tool.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
+	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, "heading_tool",
+			(i, k) -> new OrientationToolItem(ToolType.HEADING, "heading_tool", k));
+	public static final ToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, "pitching_tool",
+			(i, k) -> new OrientationToolItem(ToolType.PITCHING, "pitching_tool", k));
+	public static final ToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, "banking_tool",
+			(i, k) -> new OrientationToolItem(ToolType.BANKING, "banking_tool", k));
+	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, "relative_orientation_tool",
+			(i, k) -> new OrientationToolItem(ToolType.RELATIVE_ORIENTATION, "relative_orientation_tool", k));
+	public static final ToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, "track_style_tool",
+			(i, k) -> new TrackToolItem(ToolType.TRACK_STYLE, "track_style_tool", k));
+	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
+			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, "track_type_tool", k));
 
+	public static final PowerToolItem POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "power_tool",
+			(i, k) -> new PowerToolItem("power_tool", k));
 
-	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, id("coaster_cart"),
-			(i, k) -> new CoasterCartItem(new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.coaster_cart.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
+	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, "coaster_cart",
+			(i, k) -> new CoasterCartItem("coaster_cart", k));
 
-	public static final PowerToolItem POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, id("power_tool"),
-			(i, k) -> new PowerToolItem(new Item.Settings().component(DataComponentTypes.LORE,
-					lore(Text.translatable("item.splinecart.coaster_cart.desc").formatted(Formatting.GRAY))
-			).registryKey(k)));
-
-	public static final ComponentType<OriginComponent> ORIGIN_POS = Registry.register(Registries.DATA_COMPONENT_TYPE, id("origin"),
+	public static final ComponentType<OriginComponent> ORIGIN_POS = Registry.register(Registries.DATA_COMPONENT_TYPE, "origin",
 			ComponentType.<OriginComponent>builder().codec(OriginComponent.CODEC).build());
 
-	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = SUtil.register(Registries.ENTITY_TYPE, id("track_follower"),
+	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = SUtil.register(Registries.ENTITY_TYPE, "track_follower",
 			(i, k) -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
 
-	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
+	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(Splinecart.MOD_NAME, "carts"));
 
 	@Override
 	public void onInitialize() {
-		var tieItem = SUtil.register(Registries.ITEM, id("track_ties"),
+		var tieItem = SUtil.register(Registries.ITEM, "track_ties",
 				(i, k) -> new BlockItem(TRACK_TIES, new Item.Settings()
 						.component(DataComponentTypes.LORE,
-								lore(Text.translatable("item.splinecart.track_ties.desc").formatted(Formatting.GRAY))
+								new LoreComponent(List.of(Text.translatable("item.splinecart.track_ties.desc").formatted(Formatting.GRAY)))
 						).useBlockPrefixedTranslationKey().registryKey(k)));
 
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(entries -> {
@@ -113,11 +97,4 @@ public class Splinecart implements ModInitializer {
 		});
 	}
 
-	public static LoreComponent lore(Text lore) {
-		return new LoreComponent(List.of(lore));
-	}
-
-	public static Identifier id(String path) {
-		return Identifier.of("splinecart", path);
-	}
 }
