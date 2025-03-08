@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class TrackItem extends Item {
+public class TrackItem extends ActionItem {
 
     public final TrackType track;
 
@@ -31,43 +31,28 @@ public class TrackItem extends Item {
     }
 
     @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        if (!world.isClient) {
-            leftClick(miner.getStackInHand(Hand.MAIN_HAND), pos);
+    public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
+        if(!rightClick) {
+            stackInHand.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
+            return true;
         }
-        return false;
-    }
-
-    @Override
-    public ActionResult useOnBlock(ItemUsageContext context) { // TODO make better track placement handling
-        if (context.getPlayer() != null && !context.getPlayer().canModifyBlocks()) {
-            return ActionResult.PASS;
-        }
-        return rightClick(context.getWorld(), context.getBlockPos(), context.getStack());
-    }
-
-    private void leftClick(ItemStack stack, BlockPos pos) {
-        stack.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
-    }
-
-    private ActionResult rightClick(World world, BlockPos pos, ItemStack stack) {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
-            return ActionResult.PASS;
+            return false;
         }
         if (world.isClient()) {
-            return ActionResult.SUCCESS;
+            return true;
         }
-        var origin = stack.get(Splinecart.ORIGIN_POS);
+        var origin = stackInHand.get(Splinecart.ORIGIN_POS);
         if(origin == null) {
-            return ActionResult.PASS;
+            return false;
         }
         var oPos = origin.pos();
         if (!pos.equals(oPos) && world.getBlockEntity(oPos) instanceof TrackMarkerBlockEntity oTies) {
             oTies.setNext(pos, this.track);
             world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
         }
-        stack.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
-        return ActionResult.PASS;
+        stackInHand.set(Splinecart.ORIGIN_POS, new OriginComponent(pos));
+        return false;
     }
 
     @Override
@@ -79,4 +64,5 @@ public class TrackItem extends Item {
             origin.appendTooltip(context, tooltip::add, type);
         }
     }
+
 }

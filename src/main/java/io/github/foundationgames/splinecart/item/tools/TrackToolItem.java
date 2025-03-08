@@ -1,15 +1,18 @@
-package io.github.foundationgames.splinecart.item;
+package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Handles the functionality for the two track tools (track type and track style)
+ */
 public class TrackToolItem extends ToolItem {
     public TrackToolItem(ToolType type, Settings settings) {
         super(type, settings);
     }
 
     @Override
-    public int click(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
+    public int use(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
         int oldValue = marker.getValueForTool(type);
         int newValue = oldValue + (rightClick ? 1 : -1);
         if(newValue >= type.settings) {

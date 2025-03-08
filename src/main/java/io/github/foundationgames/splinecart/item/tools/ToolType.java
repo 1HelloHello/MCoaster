@@ -1,4 +1,4 @@
-package io.github.foundationgames.splinecart.item;
+package io.github.foundationgames.splinecart.item.tools;
 
 import com.mojang.brigadier.Message;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;

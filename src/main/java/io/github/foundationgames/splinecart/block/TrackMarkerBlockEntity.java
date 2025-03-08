@@ -6,7 +6,7 @@ import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
-import io.github.foundationgames.splinecart.item.ToolType;
+import io.github.foundationgames.splinecart.item.tools.ToolType;
 import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
