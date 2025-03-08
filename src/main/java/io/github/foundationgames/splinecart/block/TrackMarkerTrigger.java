@@ -20,9 +20,7 @@ public class TrackMarkerTrigger {
     }
 
     public boolean execute(World world) {
-        System.out.println("trigger execute"); // TODO
         if(world.getBlockEntity(location) instanceof TrackMarkerBlockEntity trackMarker) {
-            System.out.println("track marker block found");
             trackMarker.setPower(power);
             trackMarker.markDirty();
             trackMarker.sync();

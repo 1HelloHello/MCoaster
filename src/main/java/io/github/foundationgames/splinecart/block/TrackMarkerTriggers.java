@@ -31,7 +31,6 @@ public class TrackMarkerTriggers {
     }
 
     public void execute(World world) {
-        System.out.println("triggers execute"); // TODO
         triggers.forEach((t) -> t.execute(world));
     }
 
