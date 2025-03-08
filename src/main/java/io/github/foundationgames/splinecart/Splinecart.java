@@ -73,7 +73,7 @@ public class Splinecart implements ModInitializer {
 	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = SUtil.register(Registries.ENTITY_TYPE, "track_follower",
 			(i, k) -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
 
-	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(Splinecart.MOD_NAME, "carts"));
+	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
 
 	@Override
 	public void onInitialize() {
@@ -95,6 +95,10 @@ public class Splinecart implements ModInitializer {
 			entries.add(COASTER_CART_ITEM.getDefaultStack());
 			entries.add(POWER_TOOL_ITEM.getDefaultStack());
 		});
+	}
+
+	public static Identifier id(String id) {
+		return Identifier.of(MOD_NAME, id);
 	}
 
 }
