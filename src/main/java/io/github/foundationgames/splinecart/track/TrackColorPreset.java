@@ -10,7 +10,7 @@ public enum TrackColorPreset {
     WHITE(0xffffff, DyeColor.WHITE),
     LIGHT_GRAY(0xc6c6c6, DyeColor.LIGHT_GRAY),
     GREY(0x636362, DyeColor.GRAY),
-    BLACK(0, DyeColor.BLACK),
+    BLACK(0x202020, DyeColor.BLACK),
     BROWN(0x7f5b00, DyeColor.BROWN),
     RED(0xff0000, DyeColor.RED),
     ORANGE(0xfca905, DyeColor.ORANGE),
