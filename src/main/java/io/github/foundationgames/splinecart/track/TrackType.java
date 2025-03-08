@@ -9,13 +9,13 @@ import org.joml.Vector3f;
 public enum TrackType {
     DEFAULT(MotionModifier.FRICTION, null, "Default"),
     CHAIN_DRIVE((m, g, p) -> p >= 0
-                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
+                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
                     : MotionModifier.FRICTION.calculate(m, g, p),
-            (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // 0.05 original
+            (p, t, col, v) -> v[0] = t * ((float) p / 10 / 15 * 0.05f), // 0.05 original
             "Chain Drive"
     ),
     MAGNETIC((m, g, p) -> {
-                double speed = (p / 15.0) * TrackFollowerEntity.MAGNETIC_SPEED_FACTOR;
+                double speed = p * TrackFollowerEntity.MAGNETIC_SPEED_FACTOR;
                 m = (MotionModifier.FRICTION.calculate(m, g, p));
                 return m + ((speed - m) * TrackFollowerEntity.MAGNETIC_ACCEL * (1.0 - g));
             },

@@ -41,7 +41,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private Pose pose;
 
-    private double power = Double.POSITIVE_INFINITY;
+    private int power = Integer.MAX_VALUE;
     public TrackMarkerTriggers triggers = TrackMarkerTriggers.EMPTY;
 
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
@@ -154,11 +154,11 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return this.nextColor;
     }
 
-    public double getPower() {
+    public int getPower() {
         TrackMarkerBlockEntity marker = this;
         int counter = 0;
         do {
-            if(marker.power != Double.POSITIVE_INFINITY) {
+            if(marker.power != Integer.MAX_VALUE) {
                 return marker.power;
             }
             marker = marker.getPrevMarker();
@@ -167,7 +167,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return 0;
     }
 
-    public void setPower(double power) {
+    public void setPower(int power) {
         this.power = power;
     }
 
@@ -218,7 +218,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextStyle = TrackStyle.read(nbt.getInt("track_style"));
         nextColor = new TrackColor(nbt.getInt("track_color"));
 
-        power = nbt.getDouble("power");
+        power = nbt.getInt("power");
         triggers = new TrackMarkerTriggers((NbtList) nbt.get("triggers"));
 
         lastVelocity = nbt.getDouble("last_velocity");
@@ -240,7 +240,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nbt.putInt("track_style", this.nextStyle.ordinal());
         nbt.putInt("track_color", this.nextColor.hex());
 
-        nbt.putDouble("power", this.power);
+        nbt.putInt("power", this.power);
         nbt.put("triggers", triggers.getNbt());
 
         nbt.putDouble("last_velocity", this.lastVelocity);
@@ -276,7 +276,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case RELATIVE_ORIENTATION -> relative_orientation;
             case TRACK_STYLE -> nextStyle.ordinal();
             case TRACK_TYPE -> nextType.ordinal();
-            case POWER -> (int)(power * 10);
+            case POWER -> power;
         };
     }
 
@@ -291,7 +291,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case RELATIVE_ORIENTATION -> relative_orientation = value;
             case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
             case TRACK_TYPE -> nextType = TrackType.values()[value];
-            case POWER -> power = (double) value / 10;
+            case POWER -> power = value;
         }
     }
 

@@ -23,13 +23,11 @@ import org.joml.Matrix3dc;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
-import java.util.ArrayList;
-
 public class TrackFollowerEntity extends Entity {
 
     public static final double FRICTION = 0.002; // in b/t that are removed for every b/t of speed every second
-    public static final double MAGNETIC_SPEED_MAX_KMH = 108;
-    public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_MAX_KMH / 68.75; //1.6 = 108 kmh
+    public static final double MAGNETIC_SPEED_INCREMENT_KMH = .1;
+    public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_INCREMENT_KMH / 68.75; //1.6 = 108 kmh
     public static final double MAGNETIC_ACCEL = 0.07; //0.07
 
     private static final double GRAVITY_MPS2 = 9.81;

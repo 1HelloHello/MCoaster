@@ -4,20 +4,17 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class TrackMarkerTrigger {
 
     private final BlockPos location;
-    private final double power;
+    private final int power;
 
     public TrackMarkerTrigger(NbtCompound compound) {
         location = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
-        power = compound.getDouble("power");
+        power = compound.getInt("power");
     }
 
-    public TrackMarkerTrigger(BlockPos location, double power) {
+    public TrackMarkerTrigger(BlockPos location, int power) {
         this.location = location;
         this.power = power;
     }
@@ -39,7 +36,7 @@ public class TrackMarkerTrigger {
         compound.putInt("x", location.getX());
         compound.putInt("y", location.getY());
         compound.putInt("z", location.getZ());
-        compound.putDouble("power", power);
+        compound.putInt("power", power);
         return compound;
     }
 
