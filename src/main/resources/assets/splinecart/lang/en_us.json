@@ -38,7 +38,7 @@
   "item.splinecart.relative_orientation_tool.msg": "Relative Orientation: ",
   "item.splinecart.track_style_tool.msg": "Track Style: ",
   "item.splinecart.track_type_tool.msg": "Track Type: ",
-  "item.splinecart.power_tool.msg": "Track Power: ",
+  "item.splinecart.track_power_tool.msg": "Track Power: ",
 
   "item.splinecart.coaster_cart.error_no_marker": "Coaster Cart items can only be used on Track Markers",
   "item.splinecart.coaster_cart": "Coaster Cart",
