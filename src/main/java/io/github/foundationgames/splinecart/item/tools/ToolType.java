@@ -41,7 +41,7 @@ public enum ToolType {
         return text;
     }, 5),
     POWER(value -> {
-        MutableText text = Text.translatable("item.splinecart.track_power_tool.msg").append(Text.of(value + ""));
+        MutableText text = Text.translatable("item.splinecart.track_power_tool.msg").append(Text.of((double) value / 10 + ""));
         text.withColor(Colors.GREEN);
         return text;
     });

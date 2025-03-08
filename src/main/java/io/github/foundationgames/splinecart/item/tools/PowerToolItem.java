@@ -13,6 +13,17 @@ public class PowerToolItem extends ToolItem {
 
     @Override
     public int use(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
-        return 0;
+        double oldValue = marker.getPower();
+        if(oldValue == Double.POSITIVE_INFINITY) {
+            oldValue = 0;
+        }
+        double newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? .1 : 1);
+        do {
+            marker.setPower(newValue);
+            marker.markDirty();
+            marker.sync();
+            marker = marker.getNextMarker();
+        } while(isSneaking && marker != null && marker.getValueForTool(type) == oldValue);
+        return (int) (newValue * 10);
     }
 }

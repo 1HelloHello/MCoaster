@@ -19,7 +19,7 @@ public enum TrackType {
                 m = (MotionModifier.FRICTION.calculate(m, g, p));
                 return m + ((speed - m) * TrackFollowerEntity.MAGNETIC_ACCEL * (1.0 - g));
             },
-            (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 ? 15 : (int)p]),
+            (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 || p < 0 ? 15 : (int)p]),
             "Magnetic"
     ),
     TIRE_DRIVE((m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
