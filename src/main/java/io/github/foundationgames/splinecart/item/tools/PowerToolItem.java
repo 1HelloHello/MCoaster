@@ -16,9 +16,9 @@ public class PowerToolItem extends ToolItem {
         int oldValue = marker.getPower();
         int newValue;
         if(oldValue == Integer.MAX_VALUE) {
-            newValue = rightClick ? 0 : (isSneaking ? -1 : -10);
+            newValue = rightClick ? 0 : (isSneaking ? -10 : -100);
         }else {
-            newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? 1 : 10);
+            newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? 10 : 100);
             if((oldValue < 0 && newValue >= 0) || (oldValue >= 0 && newValue < 0)) {
                 newValue = Integer.MAX_VALUE;
             }
