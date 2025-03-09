@@ -46,7 +46,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
 
-    private int heading = 0;
+    private int heading = Integer.MAX_VALUE;
     private int pitching = 0;
     private int banking = 0;
     private int relative_orientation = 0;
@@ -57,6 +57,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public void updatePose(BlockPos blockPos) {
+        updateHeadingFromBlock();
         Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
 
         Matrix3d basis = new Matrix3d();
@@ -253,10 +254,27 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putDouble("last_velocity", this.lastVelocity);
 
+        updateHeadingFromBlock();
         nbt.putInt("heading", this.heading);
         nbt.putInt("pitching", this.pitching);
         nbt.putInt("banking", this.banking);
         nbt.putInt("relative_orientation", this.relative_orientation);
+    }
+
+    private void updateHeadingFromBlock() {
+        if(heading == Integer.MAX_VALUE
+                && world != null
+                && world.getBlockState(getPos()).getBlock() instanceof TrackMarkerBlock block
+                && block.placeDirection != null) {
+            heading = switch(block.placeDirection) {
+                case NORTH -> 180;
+                case SOUTH -> 0;
+                case WEST -> 270;
+                case EAST -> 90;
+                default -> throw new IllegalStateException("Unexpected value: " + block.placeDirection);
+            };
+            markDirty();
+        }
     }
 
     @Nullable
