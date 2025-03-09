@@ -23,7 +23,7 @@ public enum TrackType {
             (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 || p < 0 ? 15 : (int)p]),
             "Magnetic"
     ),
-    TIRE_DRIVE((m, g, p) -> p * 1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
+    TIRE_DRIVE((m, g, p) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Tire Drive"
     ) ,
