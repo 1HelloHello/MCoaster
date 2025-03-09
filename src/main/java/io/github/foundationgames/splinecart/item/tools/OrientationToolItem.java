@@ -19,7 +19,7 @@ public class OrientationToolItem extends ToolItem {
         int clickResolution = isSneaking ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
 
         int value = marker.getValueForTool(type);
-        int newVal = (value  + (((rightClick ? -clickResolution : clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
+        int newVal = (value  + (((rightClick ? clickResolution : -clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
         marker.setValueForTool(type, newVal);
         marker.updatePose(pos);
         marker.sync();

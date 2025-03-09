@@ -13,16 +13,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
-    public Direction placeDirection = null;
+    public Float placeDirection = null;
 
     public static final MapCodec<TrackMarkerBlock> CODEC = createCodec(TrackMarkerBlock::new);
 
@@ -34,7 +32,8 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        placeDirection = ctx.getHorizontalPlayerFacing();
+        if(ctx.getPlayer() != null)
+            placeDirection = ctx.getPlayer().getYaw();
         return this.getDefaultState();
     }
 

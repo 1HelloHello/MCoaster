@@ -62,10 +62,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         Matrix3d basis = new Matrix3d();
 
-        basis.rotateY(heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateX(pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateY(relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateZ(banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateY(-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateX(-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateY(-relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        basis.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
 
         this.pose = new Pose(pos, basis);
     }
@@ -266,13 +266,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
                 && world != null
                 && world.getBlockState(getPos()).getBlock() instanceof TrackMarkerBlock block
                 && block.placeDirection != null) {
-            heading = switch(block.placeDirection) {
-                case NORTH -> 180;
-                case SOUTH -> 0;
-                case WEST -> 270;
-                case EAST -> 90;
-                default -> throw new IllegalStateException("Unexpected value: " + block.placeDirection);
-            };
+            heading = ((int) (block.placeDirection + ORIENTATION_RESOLUTION) + 22) / 45 * 45 % ORIENTATION_RESOLUTION;
             markDirty();
         }
     }
