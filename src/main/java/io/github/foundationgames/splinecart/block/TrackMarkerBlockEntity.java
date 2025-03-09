@@ -265,10 +265,24 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         if(heading == Integer.MAX_VALUE
                 && world != null
                 && world.getBlockState(getPos()).getBlock() instanceof TrackMarkerBlock block
-                && block.placeDirection != null) {
-            heading = ((int) (block.placeDirection + ORIENTATION_RESOLUTION) + 22) / 45 * 45 % ORIENTATION_RESOLUTION;
+                && block.itemPlacementContext != null) {
+            if(block.itemPlacementContext.getPlayer() == null)
+                return;
+            heading = (block.itemPlacementContext.getPlayer().isSneaking()
+                    ? round((int) block.itemPlacementContext.getPlayerYaw(), 5) % ORIENTATION_RESOLUTION
+                    : round((int) block.itemPlacementContext.getPlayerYaw(), 45) % ORIENTATION_RESOLUTION);
             markDirty();
         }
+    }
+
+    /**
+     * Rounds the value to the nearest multiple of increment.
+     * @param value
+     * @param increment
+     * @return
+     */
+    private static int round(int value, int increment) {
+        return ((value + ORIENTATION_RESOLUTION) + increment / 2) / increment * increment;
     }
 
     @Nullable

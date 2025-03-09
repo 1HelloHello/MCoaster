@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
-    public Float placeDirection = null;
+    public ItemPlacementContext itemPlacementContext = null;
 
     public static final MapCodec<TrackMarkerBlock> CODEC = createCodec(TrackMarkerBlock::new);
 
@@ -31,9 +31,8 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        if(ctx.getPlayer() != null)
-            placeDirection = ctx.getPlayer().getYaw();
+    public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+        this.itemPlacementContext = itemPlacementContext;
         return this.getDefaultState();
     }
 
