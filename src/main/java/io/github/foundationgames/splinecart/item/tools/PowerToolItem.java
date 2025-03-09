@@ -7,6 +7,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class PowerToolItem extends ToolItem {
 
+    private static final int LOW_INCREMENT = 5;
+    private static final int HIGH_INCREMENT = 100;
+
     public PowerToolItem(String identifier, RegistryKey<Item> registryKey) {
         super(ToolType.POWER, identifier, registryKey);
     }
@@ -16,9 +19,9 @@ public class PowerToolItem extends ToolItem {
         int oldValue = marker.getPower();
         int newValue;
         if(oldValue == Integer.MAX_VALUE) {
-            newValue = rightClick ? 0 : (isSneaking ? -10 : -100);
+            newValue = rightClick ? 0 : (isSneaking ? -LOW_INCREMENT : -HIGH_INCREMENT);
         }else {
-            newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? 10 : 100);
+            newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? LOW_INCREMENT : HIGH_INCREMENT);
             if((oldValue < 0 && newValue >= 0) || (oldValue >= 0 && newValue < 0)) {
                 newValue = Integer.MAX_VALUE;
             }
