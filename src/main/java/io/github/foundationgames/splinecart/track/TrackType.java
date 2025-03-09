@@ -15,9 +15,10 @@ public enum TrackType {
             "Chain Drive"
     ),
     MAGNETIC((m, g, p) -> {
-                double speed = p * TrackFollowerEntity.MAGNETIC_SPEED_FACTOR;
-                m = (MotionModifier.FRICTION.calculate(m, g, p));
-                return m + ((speed - m) * TrackFollowerEntity.MAGNETIC_ACCEL * (1.0 - g));
+                double targetSpeed = p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
+                return Math.abs(targetSpeed - m) < 0.01
+                    ? targetSpeed
+                    : m + (targetSpeed < m ? -1 : 1) * TrackFollowerEntity.GRAVITY;
             },
             (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 || p < 0 ? 15 : (int)p]),
             "Magnetic"

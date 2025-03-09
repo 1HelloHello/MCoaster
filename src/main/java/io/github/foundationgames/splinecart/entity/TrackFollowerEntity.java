@@ -30,8 +30,8 @@ public class TrackFollowerEntity extends Entity {
     public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_INCREMENT_KMH / 68.75; //1.6 = 108 kmh
     public static final double MAGNETIC_ACCEL = 0.07; //0.07
 
-    private static final double GRAVITY_MPS2 = 9.81;
-    private static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)
+    public static final double GRAVITY_MPS2 = 9.81;
+    public static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)
 
     private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
 
