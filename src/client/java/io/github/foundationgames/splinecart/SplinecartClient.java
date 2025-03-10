@@ -17,14 +17,14 @@ import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import java.io.IOException;
 
 public class SplinecartClient implements ClientModInitializer {
-	public static final Config CONFIG = new Config("splinecart_client",
+	public static final Config CONFIG = new Config("mcoaster_client",
 			() -> FabricLoader.getInstance().getConfigDir()
-					.resolve("splinecart").resolve("splinecart_client.properties"));
+					.resolve("mcoaster").resolve("mcoaster_client.properties"));
 
 	public static final ConfigOption.BooleanOption CFG_ROTATE_CAMERA = CONFIG.optBool("rotate_camera", true);
 	public static final ConfigOption.IntOption CFG_TRACK_RESOLUTION = CONFIG.optInt("track_resolution", 3, 1, 16);
 	public static final ConfigOption.IntOption CFG_TRACK_RENDER_DISTANCE = CONFIG.optInt("track_render_distance", 8, 4, 32);
-	public static final ConfigOption.BooleanOption CFG_SHOW_DEBUG = CONFIG.optBool("show_debug", false);
+	public static final ConfigOption.BooleanOption CFG_SHOW_DEBUG = CONFIG.optBool("show_debug", true);
 	public static final ConfigOption.BooleanOption CFG_SUSPENDED_VIEW = CONFIG.optBool("suspended_view", false);
 
 	@Override
@@ -42,7 +42,7 @@ public class SplinecartClient implements ClientModInitializer {
 
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
 				dispatcher.register(
-					LiteralArgumentBuilder.<FabricClientCommandSource>literal("splinecart")
+					LiteralArgumentBuilder.<FabricClientCommandSource>literal("mcoaster")
 							.then(CONFIG.command(LiteralArgumentBuilder.literal("config"),
 									FabricClientCommandSource::sendFeedback))
 		));
