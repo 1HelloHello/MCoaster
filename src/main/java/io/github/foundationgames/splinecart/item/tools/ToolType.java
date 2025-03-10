@@ -67,10 +67,10 @@ public enum ToolType {
         if(val == 0) {
             return "0";
         }
-        if(val < TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 2) {
-            return "-" + val + "°";
+        if(val <= TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 2) {
+            return val + "°";
         }
-        return (TrackMarkerBlockEntity.ORIENTATION_RESOLUTION - val) + "°";
+        return "-" + (TrackMarkerBlockEntity.ORIENTATION_RESOLUTION - val) + "°";
     }
 
     private static String valToQuarterDirection(int val) {
