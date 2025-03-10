@@ -86,13 +86,13 @@ public class Splinecart implements ModInitializer {
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(entries -> {
 			entries.add(tieItem.getDefaultStack());
 			entries.add(TRACK.getDefaultStack());
+			entries.add(COASTER_CART_ITEM.getDefaultStack());
+			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
 			entries.add(HEADING_TOOL.getDefaultStack());
 			entries.add(PITCHING_TOOL.getDefaultStack());
 			entries.add(BANKING_TOOL.getDefaultStack());
 			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
-			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
-			entries.add(COASTER_CART_ITEM.getDefaultStack());
 			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
 		});
 	}
