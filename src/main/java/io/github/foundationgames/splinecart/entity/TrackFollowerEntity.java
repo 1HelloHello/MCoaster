@@ -26,9 +26,7 @@ import org.joml.Vector3d;
 public class TrackFollowerEntity extends Entity {
 
     public static final double FRICTION = 0.002; // in b/t that are removed for every b/t of speed every second
-    public static final double MAGNETIC_SPEED_INCREMENT_KMH = .1;
-    public static final double MAGNETIC_SPEED_FACTOR = MAGNETIC_SPEED_INCREMENT_KMH / 68.75; //1.6 = 108 kmh
-    public static final double MAGNETIC_ACCEL = 0.07; //0.07
+    public static final double MAGNETIC_ACCEL_G = 1;
 
     public static final double GRAVITY_MPS2 = 9.81;
     public static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)

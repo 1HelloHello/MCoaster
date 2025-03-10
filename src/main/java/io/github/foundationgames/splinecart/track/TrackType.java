@@ -18,9 +18,12 @@ public enum TrackType {
                 double targetSpeed = p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
                 return Math.abs(targetSpeed - m) < 0.01
                     ? targetSpeed
-                    : m + (targetSpeed < m ? -1 : 1) * TrackFollowerEntity.GRAVITY;
+                    : m + (targetSpeed < m ? -1 : 1) * TrackFollowerEntity.GRAVITY * TrackFollowerEntity.MAGNETIC_ACCEL_G;
             },
-            (p, t, col, v) ->  col.set(SUtil.REDSTONE_COLOR_LUT[p > 15 || p < 0 ? 15 : (int)p]),
+            (p, t, col, v) ->  {
+                int absSpeed = Math.abs(p / 10);
+                col.set(SUtil.REDSTONE_COLOR_LUT[Math.min(absSpeed, 15)]);
+            },
             "Magnetic"
     ),
     TIRE_DRIVE((m, g, p) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
