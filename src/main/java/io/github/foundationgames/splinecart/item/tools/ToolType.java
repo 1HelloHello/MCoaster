@@ -39,7 +39,7 @@ public enum ToolType {
         MutableText text = Text.translatable("item.splinecart.track_type_tool.msg").append(Text.of(TrackType.values()[value].name + " (" + (value + 1) + ")"));
         text.withColor(Colors.GREEN);
         return text;
-    }, 5),
+    }, 3),
     POWER(value -> {
         MutableText text = Text.translatable("item.splinecart.track_power_tool.msg").append(Text.of(value == Integer.MAX_VALUE ? "Unset" : (double) value / 10 + ""));
         text.withColor(Colors.GREEN);
