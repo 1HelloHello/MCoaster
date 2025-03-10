@@ -37,4 +37,13 @@ public enum TrackColorPreset {
         return new TrackColor(hex);
     }
 
+    public static TrackColorPreset valueOf(DyeColor color) {
+        for(TrackColorPreset trackColor : TrackColorPreset.values()) {
+            if(color == trackColor.item) {
+                return trackColor;
+            }
+        }
+        return WHITE;
+    }
+
 }
