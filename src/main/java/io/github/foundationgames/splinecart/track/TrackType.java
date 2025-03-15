@@ -11,7 +11,7 @@ public enum TrackType {
     CHAIN_DRIVE((m, g, p) -> p >= 0
                     ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
                     : MotionModifier.FRICTION.calculate(m, g, p),
-            (p, t, col, v) -> v[0] = t * 0.0055f * ((float)p / 10),
+            (p, t, col, v) -> v[0] = t * 0.0005f * p,
             "Chain Drive"
     ),
     MAGNETIC((m, g, p) -> {
