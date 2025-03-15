@@ -124,7 +124,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Pose start) {
         matrices.push();
-        matrices.translate(0.51, 0.51, 0.51); // 0 -> .5 TODO
+        matrices.translate(0.51, 0.511, 0.512); // 0 -> .5 TODO
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
         renderDebug(start, matrices.peek(), buffer);
 
