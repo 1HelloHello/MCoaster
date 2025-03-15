@@ -30,11 +30,12 @@ public class DyeItemMixin {
 
     private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
         TrackColor oldColor = trackMarker.getNextColor();
+        TrackMarkerBlockEntity thisMarker = trackMarker;
         do {
             trackMarker.setNextColor(newColor);
             trackMarker.markDirty();
             trackMarker = trackMarker.getNextMarker();
-        }while (shiftClicked && trackMarker != null && oldColor.equals(trackMarker.getNextColor()));
+        }while (shiftClicked && trackMarker != null && trackMarker != thisMarker && oldColor.equals(trackMarker.getNextColor()));
     }
 
 }
