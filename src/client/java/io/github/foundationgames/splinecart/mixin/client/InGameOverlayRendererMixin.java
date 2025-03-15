@@ -19,15 +19,7 @@ public class InGameOverlayRendererMixin {
         var vehicle = player.getVehicle();
         while (vehicle != null) {
             if (vehicle instanceof TrackFollowerEntity) {
-                var world = player.getWorld();
-                var pos = BlockPos.ofFloored(player.getEyePos());
-                var state = world.getBlockState(pos);
-
-                if (state.getRenderType() != BlockRenderType.INVISIBLE && state.shouldBlockVision(world, pos)) {
-                    info.setReturnValue(state);
-                } else {
-                    info.setReturnValue(null);
-                }
+                info.setReturnValue(null);
                 return;
             }
 
