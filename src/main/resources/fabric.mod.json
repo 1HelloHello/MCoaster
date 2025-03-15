@@ -1,15 +1,15 @@
 {
 	"schemaVersion": 1,
-	"id": "splinecart",
+	"id": "mcoaster",
 	"version": "${version}",
-	"name": "Splinecart",
-	"description": "Minecart tracks that curve",
+	"name": "MCoaster",
+	"description": "Adds smooth Roller Coasters to Minecraft. Fork of Splinecart",
 	"authors": [
-		"FoundationGames"
+		"HelloHello"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/mcoaster",
+		"sources": "https://github.com/1HelloHello/MCoaster-1.21.3"
 	},
 	"license": "MIT",
 	"icon": "assets/splinecart/icon.png",
