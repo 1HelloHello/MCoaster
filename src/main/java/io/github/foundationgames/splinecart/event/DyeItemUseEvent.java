@@ -1,31 +1,30 @@
-package io.github.foundationgames.splinecart.mixin;
+package io.github.foundationgames.splinecart.event;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackColorPreset;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Item.class)
-public class DyeItemMixin {
+public class DyeItemUseEvent implements UseBlockCallback {
 
-    @Inject(method = "useOnBlock", at = @At("HEAD"))
-    protected void useOnBlock(ItemUsageContext context, CallbackInfoReturnable info) {
-        if(!(context.getStack().getItem() instanceof DyeItem dyeItem)) {
-            return;
+
+    @Override
+    public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        if(!(player.getStackInHand(hand).getItem() instanceof DyeItem dyeItem)) {
+            return ActionResult.PASS;
         }
-        World world = context.getPlayer().getWorld();
-        if(!(world.getBlockEntity(context.getBlockPos()) instanceof TrackMarkerBlockEntity marker)) {
-            return;
+        if(!(world.getBlockEntity(hitResult.getBlockPos()) instanceof TrackMarkerBlockEntity marker)) {
+            return ActionResult.PASS;
         }
         TrackColor trackColor = TrackColorPreset.valueOf(dyeItem.getColor()).get();
-        onColorTrack(marker, trackColor, context.getPlayer().isSneaking());
+        onColorTrack(marker, trackColor, player.isSneaking());
+        return ActionResult.SUCCESS;
     }
 
     private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
@@ -37,5 +36,4 @@ public class DyeItemMixin {
             trackMarker = trackMarker.getNextMarker();
         }while (shiftClicked && trackMarker != null && trackMarker != thisMarker && oldColor.equals(trackMarker.getNextColor()));
     }
-
 }

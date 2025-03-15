@@ -3,7 +3,6 @@
   "package": "io.github.foundationgames.splinecart.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "DyeItemMixin",
     "EntityMixin"
   ],
   "injectors": {

@@ -4,11 +4,14 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlock;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.component.OriginComponent;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
+import io.github.foundationgames.splinecart.event.DyeItemUseEvent;
 import io.github.foundationgames.splinecart.item.*;
 import io.github.foundationgames.splinecart.item.tools.*;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
@@ -95,6 +98,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
 			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
 		});
+		UseBlockCallback.EVENT.register(new DyeItemUseEvent());
 	}
 
 	public static Identifier id(String id) {
