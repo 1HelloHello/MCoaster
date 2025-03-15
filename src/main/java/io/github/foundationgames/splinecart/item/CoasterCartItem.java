@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class CoasterCartItem extends ActionItem {
 
-    public static final double INITIAL_VELOCITY = 0.01;
+    public static final double INITIAL_VELOCITY = 0.0135; // 1 km/h in blocks / tick
 
     public CoasterCartItem(String identifier, RegistryKey<Item> registryKey) {
         super(identifier, registryKey);
