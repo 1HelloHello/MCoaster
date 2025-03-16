@@ -24,26 +24,19 @@ public abstract class ToolItem extends ActionItem {
 
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
-            sendErrorNoMarker(player);
             return false;
         }
 
         int newVal = use(pos, marker, rightClick, player.isSneaking());
 
-        sendMessage(player, Text.of(type.currentStateMsg.get(newVal)));
+        player.sendMessage(Text.of(type.currentStateMsg.get(newVal)), true);
         return true;
     }
 
+    public void sendCurrentStateMessage(PlayerEntity player, TrackMarkerBlockEntity marker) {
+        player.sendMessage(Text.of(type.currentStateMsg.get(marker.getValueForTool(type))), true);
+    }
+
     public abstract int use(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking);
-
-    private void sendErrorNoMarker(PlayerEntity player) {
-        MutableText text = Text.translatable("item.splinecart.tools.error_no_marker");
-        text.withColor(Colors.WHITE);
-        sendMessage(player, text);
-    }
-
-    private static void sendMessage(PlayerEntity player, Text message) {
-        ((ServerPlayerEntity)player).sendMessageToClient(message, true);
-    }
 
 }

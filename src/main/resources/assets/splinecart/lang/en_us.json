@@ -30,7 +30,6 @@
   "item.splinecart.track_power_tool.desc": "Changes the Power (i. e. speed of chainlift) of the Track following this Track Marker.",
   "item.splinecart.track_power_tool.desc1": "Right / Left click to lower / higher value. Shift click to apply to ALL following Track Pieces.",
 
-  "item.splinecart.tools.error_no_marker": "Track Tool items can only be used on Track Markers.",
   "item.splinecart.heading_tool.msg": "Heading: ",
   "item.splinecart.pitching_tool.msg": "Pitching: ",
   "item.splinecart.banking_tool.msg": "Banking: ",

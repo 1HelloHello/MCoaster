@@ -47,11 +47,7 @@ public class CoasterCartItem extends ActionItem {
     private void sendErrorNoMarker(PlayerEntity player) {
         MutableText text = Text.translatable("item.splinecart.coaster_cart.error_no_marker");
         text.withColor(Colors.WHITE);
-        sendMessage(player, text);
-    }
-
-    private static void sendMessage(PlayerEntity player, Text message) {
-        ((ServerPlayerEntity)player).sendMessageToClient(message, true);
+        player.sendMessage(text, true);
     }
 
 }

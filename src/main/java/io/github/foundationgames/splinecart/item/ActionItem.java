@@ -32,14 +32,15 @@ public abstract class ActionItem extends RegistrableItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         PlayerEntity playerEntity = context.getPlayer();
         World world = context.getWorld();
-        if (!world.isClient && playerEntity != null) {
-            BlockPos blockPos = context.getBlockPos();
-            if (!this.click(playerEntity, world, blockPos, true, context.getStack())) {
-                return ActionResult.FAIL;
-            }
+        if(playerEntity == null) {
+            return ActionResult.PASS;
         }
-
-        return ActionResult.SUCCESS;
+        BlockPos blockPos = context.getBlockPos();
+        if (this.click(playerEntity, world, blockPos, true, context.getStack())) {
+            return ActionResult.SUCCESS;
+        }else {
+            return ActionResult.PASS;
+        }
     }
 
     /**
