@@ -14,6 +14,7 @@
   "item.splinecart.track_type_tool": "Track Type Tool",
   "item.splinecart.track_power_tool": "Power Tool",
   "item.splinecart.track_strength_tool": "Setting Tool",
+  "item.splinecart.trigger_tool": "Trigger Tool",
 
   "item.splinecart.heading_tool.desc": "Changes the heading (horizontal orientation) of the Track Marker.",
   "item.splinecart.heading_tool.desc1": "Right / Left click to lower / higher value. Shift click for more precise control.",
@@ -32,6 +33,8 @@
   "item.splinecart.track_power_tool.desc1": "Right / Left click to lower / higher value. Shift click to apply to ALL following Track Pieces.",
   "item.splinecart.track_strength_tool.desc": "To Be Continued...",
   "item.splinecart.track_strength_tool.desc1": "",
+  "item.splinecart.trigger_tool.desc": "To Be Continued...",
+  "item.splinecart.trigger_tool.desc1": "",
 
   "item.splinecart.heading_tool.msg": "Heading: ",
   "item.splinecart.pitching_tool.msg": "Pitching: ",

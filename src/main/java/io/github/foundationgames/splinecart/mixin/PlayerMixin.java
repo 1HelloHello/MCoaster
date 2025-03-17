@@ -10,6 +10,7 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
 
     private BlockPos trackSelectedMarker = null;
     private BlockPos lastTrackSelectedMarker = null;
+    private BlockPos selectedTrigger = null;
 
     @Override
     public BlockPos getTrackSelectedMarker() {
@@ -29,6 +30,16 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     @Override
     public void setLastTrackSelectedMarker(BlockPos lastTrackSelectedMarker) {
         this.lastTrackSelectedMarker = lastTrackSelectedMarker;
+    }
+
+    @Override
+    public BlockPos getSelectedTrigger() {
+        return selectedTrigger;
+    }
+
+    @Override
+    public void setSelectedTrigger(BlockPos selectedTrigger) {
+        this.selectedTrigger = selectedTrigger;
     }
 
 }

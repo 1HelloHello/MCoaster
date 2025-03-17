@@ -10,4 +10,7 @@ public interface PlayerMixinInterface {
     BlockPos getLastTrackSelectedMarker();
     void setLastTrackSelectedMarker(BlockPos blockPos);
 
+    BlockPos getSelectedTrigger();
+    void setSelectedTrigger(BlockPos blockPos);
+
 }
