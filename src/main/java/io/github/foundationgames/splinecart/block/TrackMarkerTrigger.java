@@ -8,20 +8,24 @@ public class TrackMarkerTrigger {
 
     private final BlockPos location;
     private final int power;
+    private final int strength;
 
     public TrackMarkerTrigger(NbtCompound compound) {
         location = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
         power = compound.getInt("power");
+        strength = compound.getInt("strength");
     }
 
-    public TrackMarkerTrigger(BlockPos location, int power) {
+    public TrackMarkerTrigger(BlockPos location, int power, int strength) {
         this.location = location;
         this.power = power;
+        this.strength = strength;
     }
 
     public boolean execute(World world) {
         if(world.getBlockEntity(location) instanceof TrackMarkerBlockEntity trackMarker) {
             trackMarker.setPower(power);
+            trackMarker.setStrength(strength);
             trackMarker.markDirty();
             trackMarker.sync();
             return true;
