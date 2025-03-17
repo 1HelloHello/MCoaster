@@ -14,11 +14,8 @@ import net.minecraft.world.World;
 
 public class TrackItem extends ActionItem {
 
-    public final TrackType track;
-
-    public TrackItem(TrackType track, String identifier, RegistryKey<Item> registryKey) {
+    public TrackItem(String identifier, RegistryKey<Item> registryKey) {
         super(identifier, registryKey);
-        this.track = track;
     }
 
     @Override
@@ -39,7 +36,7 @@ public class TrackItem extends ActionItem {
             return false;
         }
         if (!pos.equals(otherPos) && world.getBlockEntity(otherPos) instanceof TrackMarkerBlockEntity otherMarker) {
-            otherMarker.setNext(pos, this.track);
+            otherMarker.setNext(pos);
             world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
         }
         playerInterface.setTrackSelectedMarker(pos);

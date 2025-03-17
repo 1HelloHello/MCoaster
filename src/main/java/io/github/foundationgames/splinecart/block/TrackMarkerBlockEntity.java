@@ -91,9 +91,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     /**
      * Gets called when this Track Marker gets connected to another Track Marker.
      * @param pos The location of the Track Marker, this is connected with (the next one)
-     * @param type The Track Type this is connected with.
      */
-    public void setNext(@Nullable BlockPos pos, @Nullable TrackType type) {
+    public void setNext(@Nullable BlockPos pos) {
         if (pos == null) { // not sure how that would happen
             var oldNextE = getNextMarker();
             this.nextTrackMarkerPos = null;
@@ -104,9 +103,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             }
         } else {
             nextTrackMarkerPos = pos;
-            if (type != null) {
-                this.nextType = type;
-            }
             TrackMarkerBlockEntity prevMarker = getPrevMarker();
             if(prevMarker != null) {
                 nextColor = prevMarker.getNextColor();

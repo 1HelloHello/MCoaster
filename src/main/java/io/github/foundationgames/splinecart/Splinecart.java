@@ -46,7 +46,7 @@ public class Splinecart implements ModInitializer {
 			FabricBlockEntityTypeBuilder.create(TrackMarkerBlockEntity::new, TRACK_TIES).build());
 
 	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, "track",
-			(i, k) -> new TrackItem(TrackType.DEFAULT, "track", k));
+			(i, k) -> new TrackItem("track", k));
 
 	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, "heading_tool",
 			(i, k) -> new OrientationToolItem(ToolType.HEADING, "heading_tool", k));
