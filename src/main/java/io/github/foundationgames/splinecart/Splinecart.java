@@ -67,7 +67,9 @@ public class Splinecart implements ModInitializer {
 	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
 			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, "track_type_tool", k));
 	public static final PowerToolItem TRACK_POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_power_tool",
-			(i, k) -> new PowerToolItem("track_power_tool", k));
+			(i, k) -> new PowerToolItem(ToolType.POWER, "track_power_tool", k));
+	public static final PowerToolItem TRACK_STRENGTH_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_strength_tool",
+			(i, k) -> new PowerToolItem(ToolType.STRENGTH, "track_strength_tool", k));
 
 	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, "coaster_cart",
 			(i, k) -> new CoasterCartItem("coaster_cart", k));
@@ -99,6 +101,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
 			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
+			entries.add(TRACK_STRENGTH_TOOL_ITEM.getDefaultStack());
 		});
 		UseBlockCallback.EVENT.register(new DyeItemUseEvent());
 	}

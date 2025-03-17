@@ -26,7 +26,6 @@ import org.joml.Vector3d;
 public class TrackFollowerEntity extends Entity {
 
     public static final double FRICTION = 0.002; // in b/t that are removed for every b/t of speed every second
-    public static final double MAGNETIC_ACCEL_G = 1;
 
     public static final double GRAVITY_MPS2 = 9.81;
     public static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)
@@ -380,9 +379,10 @@ public class TrackFollowerEntity extends Entity {
             var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
             gradeVec.mul(1, 0, 1);
             double power = startE.computePower();
+            double strength = startE.computeStrength();
 
             this.trackVelocity += gravity;
-            this.trackVelocity = startE.getNextType().motion.calculate(this.trackVelocity, gradeVec.length(), power);
+            this.trackVelocity = startE.getNextType().motion.calculate(this.trackVelocity, gradeVec.length(), power, strength);
         }
     }
 

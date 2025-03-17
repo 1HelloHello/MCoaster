@@ -8,17 +8,17 @@ import org.joml.Vector3f;
 
 public enum TrackType {
     DEFAULT(MotionModifier.FRICTION, null, "Default"),
-    CHAIN_DRIVE((m, g, p) -> p >= 0
-                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
-                    : MotionModifier.FRICTION.calculate(m, g, p),
-            (p, t, col, v) -> v[0] = t * 0.0005f * p,
+    CHAIN_DRIVE((m, g, p, s) -> s > 0
+                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p, s), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
+                    : MotionModifier.FRICTION.calculate(m, g, p, s),
+            (p, t, col, v) -> v[0] = t * 0.0004f * p,
             "Chain Drive"
     ),
-    MAGNETIC((m, g, p) -> {
+    MAGNETIC((m, g, p, s) -> {
                 double targetSpeed = p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
                 return Math.abs(targetSpeed - m) < 0.01
                     ? targetSpeed
-                    : m + (targetSpeed < m ? -1 : 1) * TrackFollowerEntity.GRAVITY * TrackFollowerEntity.MAGNETIC_ACCEL_G;
+                    : m + (targetSpeed < m ? -1 : 1) * (1.0 / (20 * 20)) * s / 10;
             },
             (p, t, col, v) ->  {
                 int absSpeed = Math.abs(p / 10);
@@ -26,11 +26,11 @@ public enum TrackType {
             },
             "Magnetic"
     ),
-    TIRE_DRIVE((m, g, p) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
+    TIRE_DRIVE((m, g, p, s) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Tire Drive"
     ) ,
-    HOLDING_BREAKS((m, g, p) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p) : 0,
+    HOLDING_BREAKS((m, g, p, s) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p, s) : 0,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Holding Breaks"
     ) ;
@@ -58,9 +58,9 @@ public enum TrackType {
 
     @FunctionalInterface
     public interface MotionModifier {
-        MotionModifier FRICTION = (m, g, p) -> m - (m * TrackFollowerEntity.FRICTION);
+        MotionModifier FRICTION = (m, g, p, s) -> m - (m * TrackFollowerEntity.FRICTION);
 
-        double calculate(double motion, double grade, double power);
+        double calculate(double motion, double grade, double power, double strength);
     }
 
     @FunctionalInterface

@@ -42,6 +42,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private Pose pose;
 
     private int power = Integer.MAX_VALUE;
+    private int strength = Integer.MAX_VALUE;
     public TrackMarkerTriggers triggers = TrackMarkerTriggers.EMPTY;
 
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
@@ -163,6 +164,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return power;
     }
 
+    public void setPower(int power) {
+        this.power = power;
+    }
+
     public int computePower() {
         TrackMarkerBlockEntity marker = this;
         int counter = 0;
@@ -172,12 +177,29 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             }
             marker = marker.getPrevMarker();
             counter++;
-        }while(marker != null && marker != this && counter < 100); 
+        }while(marker != null && marker != this && counter < 100);
         return 0;
     }
 
-    public void setPower(int power) {
-        this.power = power;
+    public int getStrength() {
+        return strength;
+    }
+
+    public void setStrength(int strength) {
+        this.strength = strength;
+    }
+
+    public int computeStrength() {
+        TrackMarkerBlockEntity marker = this;
+        int counter = 0;
+        do {
+            if(marker.strength != Integer.MAX_VALUE) {
+                return marker.strength;
+            }
+            marker = marker.getPrevMarker();
+            counter++;
+        }while(marker != null && marker != this && counter < 100);
+        return 10;
     }
 
     public double getLastVelocity() {
@@ -228,6 +250,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextColor = new TrackColor(nbt.getInt("track_color"));
 
         power = nbt.getInt("power");
+        strength = nbt.getInt("strength");
         triggers = new TrackMarkerTriggers((NbtList) nbt.get("triggers"));
 
         lastVelocity = nbt.getDouble("last_velocity");
@@ -250,6 +273,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nbt.putInt("track_color", this.nextColor.hex());
 
         nbt.putInt("power", this.power);
+        nbt.putInt("strength", this.strength);
         nbt.put("triggers", triggers.getNbt());
 
         nbt.putDouble("last_velocity", this.lastVelocity);
@@ -311,6 +335,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case TRACK_STYLE -> nextStyle.ordinal();
             case TRACK_TYPE -> nextType.ordinal();
             case POWER -> power;
+            case STRENGTH -> strength;
         };
     }
 
@@ -326,6 +351,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
             case TRACK_TYPE -> nextType = TrackType.values()[value];
             case POWER -> power = value;
+            case STRENGTH -> strength = value;
         }
     }
 

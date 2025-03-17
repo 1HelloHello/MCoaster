@@ -42,7 +42,12 @@ public enum ToolType {
     }, 3),
     POWER(value -> {
         MutableText text = Text.translatable("item.splinecart.track_power_tool.msg").append(Text.of(value == Integer.MAX_VALUE ? "Unset" : (double) value / 10 + ""));
-        text.withColor(Colors.GREEN);
+        text.withColor(Colors.LIGHT_RED);
+        return text;
+    }),
+    STRENGTH(value -> {
+        MutableText text = Text.translatable("item.splinecart.track_strength_tool.msg").append(Text.of(value == Integer.MAX_VALUE ? "Unset" : (double) value / 10 + ""));
+        text.withColor(Colors.BLUE);
         return text;
     });
 
