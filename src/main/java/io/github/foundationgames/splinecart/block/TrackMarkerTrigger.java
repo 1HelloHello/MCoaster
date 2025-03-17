@@ -39,6 +39,7 @@ public class TrackMarkerTrigger {
         compound.putInt("y", location.getY());
         compound.putInt("z", location.getZ());
         compound.putInt("power", power);
+        compound.putInt("strength", strength);
         return compound;
     }
 
