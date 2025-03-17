@@ -86,11 +86,11 @@ public class TrackFollowerEntity extends Entity {
         if (markerDirection.dot(velocityDirection) >= 0) { // Heading in positive direction (in the direction of the arrows)
             trackVelocity = velocity.length();
             startMarkerPos = markerPos;
-            endMarkerPos = marker.nextMarkerPos();
+            endMarkerPos = marker.getNextTrackMarkerPos();
             progress = 0;
         }else {
             trackVelocity = -velocity.length();
-            startMarkerPos = marker.prevMarkerPos();
+            startMarkerPos = marker.getPrevTrackMarkerPos();
             endMarkerPos = markerPos;
             progress = 1;
         }
@@ -116,7 +116,7 @@ public class TrackFollowerEntity extends Entity {
         BlockPos startMarkerPos, endMarkerPos;
 
         startMarkerPos = markerPos;
-        endMarkerPos = marker.nextMarkerPos();
+        endMarkerPos = marker.getNextTrackMarkerPos();
 
         var startMarker = TrackMarkerBlockEntity.of(world, startMarkerPos);
         if(startMarker == null) {

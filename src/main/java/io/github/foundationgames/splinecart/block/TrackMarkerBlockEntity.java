@@ -93,33 +93,44 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      * @param pos The location of the Track Marker, this is connected with (the next one)
      */
     public void setNext(@Nullable BlockPos pos) {
-        if (pos == null) { // not sure how that would happen
-            var oldNextE = getNextMarker();
-            this.nextTrackMarkerPos = null;
-            if (oldNextE != null) {
-                oldNextE.prevTrackMarkerPos = null;
-                oldNextE.sync();
-                oldNextE.markDirty();
+        removeNextMarker();
+        nextTrackMarkerPos = pos;
+        TrackMarkerBlockEntity prevMarker = getPrevMarker();
+        if(prevMarker != null) {
+            nextColor = prevMarker.getNextColor();
+            nextStyle = prevMarker.getNextStyle();
+            nextType = prevMarker.getNextType();
+        }
+        TrackMarkerBlockEntity nextMarker = getNextMarker();
+        if (nextMarker != null) {
+            TrackMarkerBlockEntity nextPrevMarker = nextMarker.getPrevMarker();
+            nextMarker.removePrevMarker();
+            if(nextPrevMarker != null) {
+                nextPrevMarker.sync();
+                nextPrevMarker.markDirty();
             }
-        } else {
-            nextTrackMarkerPos = pos;
-            TrackMarkerBlockEntity prevMarker = getPrevMarker();
-            if(prevMarker != null) {
-                nextColor = prevMarker.getNextColor();
-                nextStyle = prevMarker.getNextStyle();
-                nextType = prevMarker.getNextType();
-            }
-            var nextE = getNextMarker();
-            if (nextE != null) {
-                nextE.prevTrackMarkerPos = getPos();
+            nextMarker.prevTrackMarkerPos = getPos();
 
-                nextE.sync();
-                nextE.markDirty();
-            }
+            nextMarker.sync();
+            nextMarker.markDirty();
         }
 
         sync();
         markDirty();
+    }
+
+    public void removePrevMarker() {
+        if(getPrevMarker() != null) {
+            getPrevMarker().setNextTrackMarkerPos(null);
+        }
+        prevTrackMarkerPos = null;
+    }
+
+    public void removeNextMarker() {
+        if(getNextMarker() != null) {
+            getNextMarker().setPrevTrackMarkerPos(null);
+        }
+        nextTrackMarkerPos = null;
     }
 
     public @Nullable TrackMarkerBlockEntity getNextMarker() {
@@ -132,12 +143,20 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return prevTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(prevTrackMarkerPos);
     }
 
-    public @Nullable BlockPos nextMarkerPos() {
+    public @Nullable BlockPos getNextTrackMarkerPos() {
         return nextTrackMarkerPos;
     }
 
-    public @Nullable BlockPos prevMarkerPos() {
+    public void setNextTrackMarkerPos(@Nullable BlockPos nextTrackMarkerPos) {
+        this.nextTrackMarkerPos = nextTrackMarkerPos;
+    }
+
+    public @Nullable BlockPos getPrevTrackMarkerPos() {
         return prevTrackMarkerPos;
+    }
+
+    public void setPrevTrackMarkerPos(@Nullable BlockPos prevTrackMarkerPos) {
+        this.prevTrackMarkerPos = prevTrackMarkerPos;
     }
 
     public boolean hasTrackConnected() {
@@ -219,17 +238,17 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      * Gets called when the Track Marker Block gets broken.
      */
     public void onDestroy() {
-        var prevE = getPrevMarker();
-        if (prevE != null) {
-            prevE.nextTrackMarkerPos = null;
-            prevE.sync();
-            prevE.markDirty();
+        var prevMarker = getPrevMarker();
+        if (prevMarker != null) {
+            prevMarker.nextTrackMarkerPos = null;
+            prevMarker.sync();
+            prevMarker.markDirty();
         }
-        var nextE = getNextMarker();
-        if (nextE != null) {
-            nextE.prevTrackMarkerPos = null;
-            nextE.sync();
-            nextE.markDirty();
+        var nextMarker = getNextMarker();
+        if (nextMarker != null) {
+            nextMarker.prevTrackMarkerPos = null;
+            nextMarker.sync();
+            nextMarker.markDirty();
         }
     }
 
@@ -261,8 +280,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
-        SUtil.putBlockPos(nbt, prevMarkerPos(), "prev");
-        SUtil.putBlockPos(nbt, nextMarkerPos(), "next");
+        SUtil.putBlockPos(nbt, getPrevTrackMarkerPos(), "prev");
+        SUtil.putBlockPos(nbt, getNextTrackMarkerPos(), "next");
 
         nbt.putInt("track_type", this.nextType.ordinal());
         nbt.putInt("track_style", this.nextStyle.ordinal());
