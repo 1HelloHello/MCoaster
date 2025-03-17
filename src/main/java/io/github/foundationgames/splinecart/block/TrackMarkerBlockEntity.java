@@ -199,7 +199,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             marker = marker.getPrevMarker();
             counter++;
         }while(marker != null && marker != this && counter < 100);
-        return 10;
+        return 100;
     }
 
     public double getLastVelocity() {
