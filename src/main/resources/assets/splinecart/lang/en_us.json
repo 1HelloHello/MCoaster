@@ -47,9 +47,6 @@
   "item.splinecart.coaster_cart.desc": "Right click to place on Track Marker. It retains the last velocity",
   "item.splinecart.coaster_cart.desc1": "Left click to automatically enter Cart.",
 
-  "item.splinecart.track.origin": "First Track Marker selected",
-  "item.splinecart.track.clear_hint": "Right click on another one to connect it to.",
-
   "entity.splinecart.track_follower": "Track Follower",
 
   "splinecart.config.query_value": "Option '%s' is currently '%s'.",
