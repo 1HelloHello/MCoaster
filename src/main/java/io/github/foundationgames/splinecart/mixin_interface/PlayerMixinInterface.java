@@ -7,4 +7,7 @@ public interface PlayerMixinInterface {
     BlockPos getTrackSelectedMarker();
     void setTrackSelectedMarker(BlockPos blockPos);
 
+    BlockPos getLastTrackSelectedMarker();
+    void setLastTrackSelectedMarker(BlockPos blockPos);
+
 }

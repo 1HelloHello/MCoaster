@@ -1,7 +1,6 @@
 package io.github.foundationgames.splinecart.item;
 
 import io.github.foundationgames.splinecart.mixin_interface.PlayerMixinInterface;
-import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -19,28 +18,49 @@ public class TrackItem extends ActionItem {
     }
 
     @Override
-    public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
+    public boolean click(PlayerEntity playerEntity, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
         if (world.isClient()) {
             return true;
         }
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
             return false;
         }
-        PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+        PlayerMixinInterface player = (PlayerMixinInterface) playerEntity;
         if(!rightClick) {
-            playerInterface.setTrackSelectedMarker(pos);
+            return selectNewMarker(player, pos, world);
+        }
+        return connectToMarker(player, world, pos);
+    }
+
+    private boolean selectNewMarker(PlayerMixinInterface player, BlockPos pos, World world) {
+        if(pos.equals(player.getTrackSelectedMarker())) {
             return true;
         }
-        BlockPos otherPos = playerInterface.getTrackSelectedMarker();
-        if(otherPos == null) {
-            return false;
+        if(checkMarkerPos(player.getTrackSelectedMarker(), world)) {
+            player.setLastTrackSelectedMarker(player.getTrackSelectedMarker());
         }
-        if (!pos.equals(otherPos) && world.getBlockEntity(otherPos) instanceof TrackMarkerBlockEntity otherMarker) {
-            otherMarker.setNext(pos);
-            world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
+        player.setTrackSelectedMarker(pos);
+        return true;
+    }
+
+    private boolean connectToMarker(PlayerMixinInterface player, World world, BlockPos pos) {
+        BlockPos otherPos = player.getTrackSelectedMarker();
+        if(!checkMarkerPos(otherPos, world) && !pos.equals(otherPos)) {
+            BlockPos lastSelectedMarker = player.getLastTrackSelectedMarker();
+            if(!checkMarkerPos(lastSelectedMarker, world) && !pos.equals(lastSelectedMarker)) {
+                return false;
+            }
+            otherPos = player.getLastTrackSelectedMarker();
         }
-        playerInterface.setTrackSelectedMarker(pos);
+        TrackMarkerBlockEntity otherMarker = (TrackMarkerBlockEntity) world.getBlockEntity(otherPos);
+        otherMarker.setNext(pos);
+        world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
+        selectNewMarker(player, pos, world);
         return false;
+    }
+
+    private boolean checkMarkerPos(BlockPos pos, World world) {
+        return pos != null  && world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity;
     }
 
 }

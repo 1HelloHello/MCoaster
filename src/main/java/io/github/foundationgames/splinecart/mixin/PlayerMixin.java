@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class PlayerMixin implements PlayerMixinInterface {
 
     private BlockPos trackSelectedMarker = null;
+    private BlockPos lastTrackSelectedMarker = null;
 
     @Override
     public BlockPos getTrackSelectedMarker() {
@@ -19,4 +20,15 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     public void setTrackSelectedMarker(BlockPos trackSelectedMarker) {
         this.trackSelectedMarker = trackSelectedMarker;
     }
+
+    @Override
+    public BlockPos getLastTrackSelectedMarker() {
+        return lastTrackSelectedMarker;
+    }
+
+    @Override
+    public void setLastTrackSelectedMarker(BlockPos lastTrackSelectedMarker) {
+        this.lastTrackSelectedMarker = lastTrackSelectedMarker;
+    }
+
 }
