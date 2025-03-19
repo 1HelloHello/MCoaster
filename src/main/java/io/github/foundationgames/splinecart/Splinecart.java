@@ -6,7 +6,6 @@ import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.event.DyeItemUseEvent;
 import io.github.foundationgames.splinecart.item.*;
 import io.github.foundationgames.splinecart.item.tools.*;
-import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;

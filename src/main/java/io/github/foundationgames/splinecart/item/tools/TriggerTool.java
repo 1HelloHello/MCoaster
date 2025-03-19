@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,7 +31,16 @@ public class TriggerTool extends ActionItem {
         if(player.getSelectedTrigger() == null || !(world.getBlockEntity(player.getSelectedTrigger()) instanceof TrackMarkerBlockEntity savedMarker)) {
             return false;
         }
-        marker.triggers.triggers.add(new TrackMarkerTrigger(player.getSelectedTrigger(), savedMarker.getPower(), savedMarker.getStrength()));
+        BlockPos selectedTrigger = player.getSelectedTrigger();
+        marker.triggers.triggers.add(new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength()));
+        playerEntity.sendMessage(Text.of(
+                String.format("[Trigger] added new trigger to (%d, %d, %d) with power %s and setting %s",
+                        selectedTrigger.getX(),
+                        selectedTrigger.getY(),
+                        selectedTrigger.getZ(),
+                        savedMarker.getPower() == Integer.MAX_VALUE ? "unset" : savedMarker.getPower(),
+                        savedMarker.getStrength() == Integer.MAX_VALUE ? "unset" : savedMarker.getStrength())),
+                false);
         return true;
     }
 
