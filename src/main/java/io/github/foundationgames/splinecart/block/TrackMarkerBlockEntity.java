@@ -43,7 +43,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
-    public TrackMarkerTriggers triggers = TrackMarkerTriggers.EMPTY;
+    public TrackMarkerTriggers triggers = new TrackMarkerTriggers();
 
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
 

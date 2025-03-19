@@ -7,12 +7,14 @@ import java.util.ArrayList;
 
 public class TrackMarkerTriggers {
 
-    public static final TrackMarkerTriggers EMPTY = new TrackMarkerTriggers(new ArrayList<>());
-
     public final ArrayList<TrackMarkerTrigger> triggers;
 
     public TrackMarkerTriggers(ArrayList<TrackMarkerTrigger> triggers) {
         this.triggers = triggers;
+    }
+
+    public TrackMarkerTriggers() {
+        triggers = new ArrayList<>();
     }
 
     public TrackMarkerTriggers(NbtList list) {

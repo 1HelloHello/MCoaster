@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.block.TrackMarkerTrigger;
+import io.github.foundationgames.splinecart.block.TrackMarkerTriggers;
 import io.github.foundationgames.splinecart.item.ActionItem;
 import io.github.foundationgames.splinecart.mixin_interface.PlayerMixinInterface;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,12 +21,27 @@ public class TriggerTool extends ActionItem {
 
     @Override
     public boolean click(PlayerEntity playerEntity, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
+        if(world.isClient()) {
+            return false;
+        }
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
             return false;
         }
         PlayerMixinInterface player = (PlayerMixinInterface) playerEntity;
         if(!rightClick) {
             player.setSelectedTrigger(pos);
+            playerEntity.sendMessage(Text.of(
+                    String.format("[Trigger] Selected block (%d, %d, %d)",
+                            pos.getX(),
+                            pos.getY(),
+                            pos.getZ())),
+                    false);
+            return true;
+        }
+        if(playerEntity.isSneaking()) {
+            marker.triggers = new TrackMarkerTriggers();
+            playerEntity.sendMessage(Text.of("[Trigger] Removed all triggers."),
+                    false);
             return true;
         }
         if(player.getSelectedTrigger() == null || !(world.getBlockEntity(player.getSelectedTrigger()) instanceof TrackMarkerBlockEntity savedMarker)) {
@@ -34,7 +50,7 @@ public class TriggerTool extends ActionItem {
         BlockPos selectedTrigger = player.getSelectedTrigger();
         marker.triggers.triggers.add(new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength()));
         playerEntity.sendMessage(Text.of(
-                String.format("[Trigger] added new trigger to (%d, %d, %d) with power %s and setting %s",
+                String.format("[Trigger] Added new trigger to (%d, %d, %d) with power %s and setting %s",
                         selectedTrigger.getX(),
                         selectedTrigger.getY(),
                         selectedTrigger.getZ(),
