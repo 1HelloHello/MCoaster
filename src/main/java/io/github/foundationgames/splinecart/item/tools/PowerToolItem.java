@@ -1,34 +1,80 @@
 package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
+import net.minecraft.world.World;
 
 public class PowerToolItem extends ToolItem {
 
+    /**
+     * The lower increment used when shift clicking
+     */
     private static final int LOW_INCREMENT = 5;
+
+    /**
+     * The higher increment used when normal clicking
+     */
     private static final int HIGH_INCREMENT = 100;
 
-    public PowerToolItem(ToolType type, String identifier, RegistryKey<Item> registryKey) {
-        super(type, identifier, registryKey);
+    public final Type type;
+
+    public PowerToolItem(Type type, String identifier, RegistryKey<Item> registryKey) {
+        super(identifier, registryKey);
+        this.type = type;
     }
 
     @Override
-    public int use(BlockPos pos, TrackMarkerBlockEntity marker, boolean rightClick, boolean isSneaking) {
-        int oldValue = marker.getValueForTool(type);
+    public boolean use(TrackMarkerBlockEntity marker, PlayerEntity player, World world, boolean rightClick) {
+        int oldValue = getValueForTool(marker);
         int newValue;
         if(oldValue == Integer.MAX_VALUE) {
-            newValue = rightClick ? 0 : (isSneaking ? -LOW_INCREMENT : -HIGH_INCREMENT);
+            newValue = rightClick ? 0 : (player.isSneaking() ? -LOW_INCREMENT : -HIGH_INCREMENT);
         }else {
-            newValue = oldValue + (rightClick ? 1 : -1) * (isSneaking ? LOW_INCREMENT : HIGH_INCREMENT);
+            newValue = oldValue + (rightClick ? 1 : -1) * (player.isSneaking() ? LOW_INCREMENT : HIGH_INCREMENT);
             if((oldValue < 0 && newValue >= 0) || (oldValue >= 0 && newValue < 0)) {
                 newValue = Integer.MAX_VALUE;
             }
         }
-        marker.setValueForTool(type, newValue);
+        setValueForTool(marker, newValue);
         marker.markDirty();
         marker.sync();
-        return newValue;
+        return true;
+    }
+
+    private int getValueForTool(TrackMarkerBlockEntity marker) {
+        return switch (type) {
+            case POWER -> marker.getPower();
+            case STRENGTH -> marker.getStrength();
+        };
+    }
+
+    private void setValueForTool(TrackMarkerBlockEntity marker, int value) {
+        switch(type) {
+            case POWER -> marker.setPower(value);
+            case STRENGTH -> marker.setStrength(value);
+        }
+    }
+
+    @Override
+    protected String writeCurrentState(TrackMarkerBlockEntity marker) {
+        return getValueForTool(marker) == Integer.MAX_VALUE ? "Unset" : getValueForTool(marker) + "";
+    }
+
+    @Override
+    protected int getTextColor() {
+        return switch(type) {
+            case POWER -> Colors.LIGHT_RED;
+            case STRENGTH -> Colors.BLUE;
+        };
+    }
+
+    public enum Type {
+        POWER,
+        STRENGTH
+        ;
     }
 }

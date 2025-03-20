@@ -29,7 +29,7 @@ public abstract class PlayerMixin {
             }
             vehicle = vehicle.getVehicle();
         }
-        // return if the player doesn't have a tool item in they're hand
+        // return if the player doesn't have a tool item in their hand
         if(!(player.getInventory().getMainHandStack().getItem() instanceof ToolItem item)) {
             clear(player);
             return;

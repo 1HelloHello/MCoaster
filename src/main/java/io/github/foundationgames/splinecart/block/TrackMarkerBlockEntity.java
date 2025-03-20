@@ -6,7 +6,6 @@ import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
-import io.github.foundationgames.splinecart.item.tools.ToolType;
 import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
@@ -32,9 +31,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public float clientTime = 0;
 
-    private TrackType nextType = TrackType.DEFAULT;
-    private TrackStyle nextStyle = TrackStyle.DEFAULT;
-    private TrackColor nextColor = TrackColorPreset.WHITE.get();
+    public TrackType nextType = TrackType.DEFAULT;
+    public TrackStyle nextStyle = TrackStyle.DEFAULT;
+    public TrackColor nextColor = TrackColorPreset.WHITE.get();
 
     private @Nullable BlockPos nextTrackMarkerPos = null;
     private @Nullable BlockPos prevTrackMarkerPos = null;
@@ -47,17 +46,18 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
 
-    private int heading = Integer.MAX_VALUE;
-    private int pitching = 0;
-    private int banking = 0;
-    private int relative_orientation = 0;
+    public int heading = Integer.MAX_VALUE;
+    public int pitching = 0;
+    public int banking = 0;
+    public int relative_orientation = 0;
 
     public TrackMarkerBlockEntity(BlockPos pos, BlockState state) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
-        updatePose(pos);
+        updatePose();
     }
 
-    public void updatePose(BlockPos blockPos) {
+    public void updatePose() {
+        BlockPos blockPos = getPos();
         updateHeadingFromBlock();
         Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
 
@@ -77,7 +77,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
 
-        updatePose(this.getPos());
+        updatePose();
     }
 
     public static @Nullable TrackMarkerBlockEntity of(World world, @Nullable BlockPos pos) {
@@ -97,9 +97,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nextTrackMarkerPos = pos;
         TrackMarkerBlockEntity prevMarker = getPrevMarker();
         if(prevMarker != null) {
-            nextColor = prevMarker.getNextColor();
-            nextStyle = prevMarker.getNextStyle();
-            nextType = prevMarker.getNextType();
+            nextColor = prevMarker.nextColor;
+            nextStyle = prevMarker.nextStyle;
+            nextType = prevMarker.nextType;
         }
         TrackMarkerBlockEntity nextMarker = getNextMarker();
         if (nextMarker != null) {
@@ -163,18 +163,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return prevTrackMarkerPos != null || nextTrackMarkerPos != null;
     }
 
-    public TrackType getNextType() {
-        return this.nextType;
-    }
-
-    public TrackStyle getNextStyle() {
-        return this.nextStyle;
-    }
-
-    public TrackColor getNextColor() {
-        return this.nextColor;
-    }
-
     public int getPower() {
         return power;
     }
@@ -225,12 +213,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.lastVelocity = lastVelocity;
     }
 
-    public void setNextColor(TrackColor color) {
-        nextColor = color;
-    }
-
     public Pose pose() {
-        updatePose(super.getPos());
+        updatePose();
         return this.pose;
     }
 
@@ -339,35 +323,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public void sync() {
         Objects.requireNonNull(getWorld()).updateListeners(getPos(), getCachedState(), getCachedState(), 3);
-    }
-
-    public int getValueForTool(ToolType toolType) {
-        return switch(toolType) {
-            case HEADING -> heading;
-            case PITCHING -> pitching;
-            case BANKING -> banking;
-            case RELATIVE_ORIENTATION -> relative_orientation;
-            case TRACK_STYLE -> nextStyle.ordinal();
-            case TRACK_TYPE -> nextType.ordinal();
-            case POWER -> power;
-            case STRENGTH -> strength;
-        };
-    }
-
-    /**
-     * Need to update after setting the values
-     */
-    public void setValueForTool(ToolType toolType, int value) {
-        switch (toolType) {
-            case HEADING -> heading = value;
-            case PITCHING -> pitching = value;
-            case BANKING -> banking = value;
-            case RELATIVE_ORIENTATION -> relative_orientation = value;
-            case TRACK_STYLE -> nextStyle = TrackStyle.values()[value];
-            case TRACK_TYPE -> nextType = TrackType.values()[value];
-            case POWER -> power = value;
-            case STRENGTH -> strength = value;
-        }
     }
 
 }

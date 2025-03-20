@@ -6,13 +6,13 @@ package io.github.foundationgames.splinecart.track;
 public enum TrackStyle {
 
     DEFAULT("Default"),
-    ONE_CONNECTION("Single Beam"),
-    TWO_CONNECTIONS("Double Beam"),
-    BIG_SPLINE("Single Beam Triangle"),
-    SMALL_SPLINE("Double Beam Triangle"),
-    ARROW("Spine"),
-    TEST_ONE("Box"),
-    TEST_TWO("Arrow"),
+    SINGLE_BEAM("Single Beam"),
+    DOUBLE_BEAM("Double Beam"),
+    SINGLE_BEAM_TRIANGLE("Single Beam Triangle"),
+    DOUBLE_BEAM_TRIANGLE("Double Beam Triangle"),
+    SPINE("Spine"),
+    BOX("Box"),
+    ARROW("Arrow"),
     ;
 
     /**

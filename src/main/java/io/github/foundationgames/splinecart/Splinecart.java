@@ -47,23 +47,24 @@ public class Splinecart implements ModInitializer {
 	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, "track",
 			(i, k) -> new TrackItem("track", k));
 
-	public static final ToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, "heading_tool",
-			(i, k) -> new OrientationToolItem(ToolType.HEADING, "heading_tool", k));
-	public static final ToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, "pitching_tool",
-			(i, k) -> new OrientationToolItem(ToolType.PITCHING, "pitching_tool", k));
-	public static final ToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, "banking_tool",
-			(i, k) -> new OrientationToolItem(ToolType.BANKING, "banking_tool", k));
-	public static final ToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, "relative_orientation_tool",
-			(i, k) -> new OrientationToolItem(ToolType.RELATIVE_ORIENTATION, "relative_orientation_tool", k));
+	public static final OrientationToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, "heading_tool",
+			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.HEADING, "heading_tool", k));
+	public static final OrientationToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, "pitching_tool",
+			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.PITCHING, "pitching_tool", k));
+	public static final OrientationToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, "banking_tool",
+			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.BANKING, "banking_tool", k));
+	public static final OrientationToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, "relative_orientation_tool",
+			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.RELATIVE_ORIENTATION, "relative_orientation_tool", k));
 
-	public static final ToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, "track_style_tool",
-			(i, k) -> new TrackToolItem(ToolType.TRACK_STYLE, "track_style_tool", k));
-	public static final ToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
-			(i, k) -> new TrackToolItem(ToolType.TRACK_TYPE, "track_type_tool", k));
+	public static final TrackToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, "track_style_tool",
+			(i, k) -> new TrackToolItem(TrackToolItem.Type.STYLE, "track_style_tool", k));
+	public static final TrackToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
+			(i, k) -> new TrackToolItem(TrackToolItem.Type.TYPE, "track_type_tool", k));
+
 	public static final PowerToolItem TRACK_POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_power_tool",
-			(i, k) -> new PowerToolItem(ToolType.POWER, "track_power_tool", k));
+			(i, k) -> new PowerToolItem(PowerToolItem.Type.POWER, "track_power_tool", k));
 	public static final PowerToolItem TRACK_STRENGTH_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_strength_tool",
-			(i, k) -> new PowerToolItem(ToolType.STRENGTH, "track_strength_tool", k));
+			(i, k) -> new PowerToolItem(PowerToolItem.Type.STRENGTH, "track_strength_tool", k));
 	public static final TriggerTool TRIGGER_TOOL = SUtil.register(Registries.ITEM, "trigger_tool",
 			(i, k) -> new TriggerTool("trigger_tool", k));
 
@@ -95,7 +96,7 @@ public class Splinecart implements ModInitializer {
 			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
 			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
 			entries.add(TRACK_STRENGTH_TOOL_ITEM.getDefaultStack());
-//			entries.add(TRIGGER_TOOL.getDefaultStack());
+			entries.add(TRIGGER_TOOL.getDefaultStack());
 		});
 		UseBlockCallback.EVENT.register(new DyeItemUseEvent());
 	}

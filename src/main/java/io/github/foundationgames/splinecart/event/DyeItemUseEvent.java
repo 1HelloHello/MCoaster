@@ -28,12 +28,12 @@ public class DyeItemUseEvent implements UseBlockCallback {
     }
 
     private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
-        TrackColor oldColor = trackMarker.getNextColor();
+        TrackColor oldColor = trackMarker.nextColor;
         TrackMarkerBlockEntity thisMarker = trackMarker;
         do {
-            trackMarker.setNextColor(newColor);
+            trackMarker.nextColor = newColor;
             trackMarker.markDirty();
             trackMarker = trackMarker.getNextMarker();
-        }while (shiftClicked && trackMarker != null && trackMarker != thisMarker && oldColor.equals(trackMarker.getNextColor()));
+        }while (shiftClicked && trackMarker != null && trackMarker != thisMarker && oldColor.equals(trackMarker.nextColor));
     }
 }

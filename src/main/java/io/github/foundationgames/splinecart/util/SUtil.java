@@ -1,16 +1,9 @@
 package io.github.foundationgames.splinecart.util;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.item.tools.ToolType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +13,6 @@ import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.List;
 import java.util.function.BiFunction;
 
 public enum SUtil {;

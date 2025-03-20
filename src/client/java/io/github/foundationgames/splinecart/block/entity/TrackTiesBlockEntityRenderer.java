@@ -56,7 +56,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
         matrices.translate(-pos.getX(), -pos.getY(), -pos.getZ());
 
-        TrackStyle trackStyle = marker.getNextStyle();
+        TrackStyle trackStyle = marker.nextStyle;
         float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
@@ -70,10 +70,10 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             double t0 = (double)i / segments;
             double t1 = (double)(i + 1) / segments;
 
-            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.getNextColor().getVec3f(), t0, t1, totalDist, origin, basis, grad, overlay);
+            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor.getVec3f(), t0, t1, totalDist, origin, basis, grad, overlay);
         }
 
-        var trackType = marker.getNextType();
+        TrackType trackType = marker.nextType;
         if (trackType.overlay != null) { // renders the overlay (chain track moving, powered magnetic track
             u0 = trackType.ordinal() * TrackType.INVERSE_CANVAS_SIZE;
             u1 = u0 + TrackType.INVERSE_CANVAS_SIZE;

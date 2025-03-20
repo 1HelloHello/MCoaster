@@ -40,7 +40,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
             if (!newState.isOf(state.getBlock())) {
                 if (!world.isClient()) tie.onDestroy();
             } else {
-                tie.updatePose(pos);
+                tie.updatePose();
             }
         }
 

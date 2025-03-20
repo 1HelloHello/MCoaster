@@ -13,9 +13,12 @@ import java.util.List;
 
 public abstract class RegistrableItem extends Item {
 
+    public final String identifier;
+
     public RegistrableItem(String identifier, RegistryKey<Item> registryKey) {
         super(new Item.Settings().component(DataComponentTypes.LORE,
                 new LoreComponent(loadDescription("item." + Splinecart.MOD_NAME + "." + identifier))).registryKey(registryKey));
+        this.identifier = identifier;
     }
 
     /**
