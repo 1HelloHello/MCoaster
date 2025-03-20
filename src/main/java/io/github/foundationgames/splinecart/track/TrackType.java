@@ -8,9 +8,15 @@ import org.joml.Vector3f;
 
 public enum TrackType {
     DEFAULT(MotionModifier.FRICTION, null, "Default"),
-    CHAIN_DRIVE((m, g, p, s) -> s > 0
-                    ? Math.max(MotionModifier.FRICTION.calculate(m, g, p, s), p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH)
-                    : MotionModifier.FRICTION.calculate(m, g, p, s),
+    CHAIN_DRIVE((m, g, p, s) -> {
+        double chainliftSpeed = p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
+        double frictionSpeed = MotionModifier.FRICTION.calculate(m, g, p, s);
+        return s == 0
+                ? frictionSpeed
+                : chainliftSpeed >= 0
+                ? Math.max(frictionSpeed, chainliftSpeed)
+                : Math.min(frictionSpeed, chainliftSpeed);
+    },
             (p, t, col, v) -> v[0] = t * 0.0004f * p,
             "Chain Drive"
     ),
