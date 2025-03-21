@@ -33,8 +33,8 @@
   "item.splinecart.track_power_tool.desc1": "Right / Left click to lower / higher value. Shift click for more precise control.",
   "item.splinecart.track_strength_tool.desc": "Changes the setting (i. e. acceleration of a magnetic track) of the Track following this Track Marker.",
   "item.splinecart.track_strength_tool.desc1": "Right / Left click to lower / higher value. Shift click for more precise control.",
-  "item.splinecart.trigger_tool.desc": "To Be Continued...",
-  "item.splinecart.trigger_tool.desc1": "",
+  "item.splinecart.trigger_tool.desc": "Lets you add triggers to Track Markers that activate when being driven over.",
+  "item.splinecart.trigger_tool.desc1": "Left click to select marker that will be changed, Right click to add trigger to marker and Shift right click to clear.",
 
   "item.splinecart.heading_tool.msg": "Heading: ",
   "item.splinecart.pitching_tool.msg": "Pitching: ",
