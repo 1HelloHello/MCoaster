@@ -39,6 +39,8 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         var pose = marker.pose();
         var pos = marker.getPos();
 
+        if(!(marker.getWorld().getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) // checks if the Track Marker actually still exists
+            return;
         marker.clientTime += tickDelta;
         if (!marker.hasTrackConnected() || MinecraftClient.isHudEnabled() && (SplinecartClient.CFG_SHOW_DEBUG.get() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
             renderDebugPre(matrices, vertexConsumers, pose);
