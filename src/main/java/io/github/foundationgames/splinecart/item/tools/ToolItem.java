@@ -26,15 +26,11 @@ public abstract class ToolItem extends ActionItem {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker)) {
             return false;
         }
-        boolean ret = use(marker, player, world, rightClick);
-        if(world.isClient()) {
-            sendCurrentStateMessage(player, marker); // this will send the new value instantly to the player instead of having to wait for the next tick for it to get updated.
-        }
-        return ret;
+        return use(marker, player, world, rightClick);
     }
 
     /**
-     * Sends a message to the players toolbar about the property (i.e. banking) of the trackMarker.
+     * Sends a message to the players actionbar about the property (i.e. banking) of the trackMarker.
      * @param player the player to send the message to
      * @param marker the trackMarker
      */

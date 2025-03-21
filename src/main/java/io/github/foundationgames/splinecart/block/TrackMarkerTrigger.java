@@ -1,5 +1,7 @@
 package io.github.foundationgames.splinecart.block;
 
+import io.github.foundationgames.splinecart.item.tools.PowerToolItem;
+import io.github.foundationgames.splinecart.item.tools.TriggerTool;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -41,6 +43,16 @@ public class TrackMarkerTrigger {
         compound.putInt("power", power);
         compound.putInt("strength", strength);
         return compound;
+    }
+
+    public String getDisplayString() {
+        return String.format("(%d, %d, %d) power: %s setting: %s",
+                location.getX(),
+                location.getY(),
+                location.getZ(),
+                power == Integer.MAX_VALUE ? "unset" : PowerToolItem.toFixedPointRepresentation(power),
+                strength == Integer.MAX_VALUE ? "unset" : PowerToolItem.toFixedPointRepresentation(strength)
+        );
     }
 
     public BlockPos getLocation() {

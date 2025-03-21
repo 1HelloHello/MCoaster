@@ -24,7 +24,14 @@ public class TriggerTool extends ToolItem {
 
     @Override
     protected Text getCurrentStateMessage(TrackMarkerBlockEntity marker) {
-        return Text.of("Trigger Tool TODO");
+        if(marker.triggers.triggers.isEmpty()) {
+            return Text.of("No triggers saved");
+        }
+        StringBuilder msg = new StringBuilder();
+        for(TrackMarkerTrigger trigger : marker.triggers.triggers) {
+            msg.append(trigger.getDisplayString()).append("; ");
+        }
+        return Text.of(msg.toString());
     }
 
     @Override
@@ -54,19 +61,16 @@ public class TriggerTool extends ToolItem {
 
     private boolean removeAllTriggers(PlayerEntity playerEntity, TrackMarkerBlockEntity marker) {
         marker.triggers = new TrackMarkerTriggers();
-        sendChatMessage(playerEntity, "Removed all triggers.");
+        if(playerEntity.getWorld().isClient())
+            sendChatMessage(playerEntity, "Removed all triggers.");
         return true;
     }
 
     private boolean addTrigger(PlayerMixinInterface player, PlayerEntity playerEntity, TrackMarkerBlockEntity marker, TrackMarkerBlockEntity savedMarker) {
         BlockPos selectedTrigger = player.getSelectedTrigger();
-        marker.triggers.triggers.add(new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength()));
-        sendChatMessage(playerEntity, String.format("Added new trigger to (%d, %d, %d) with power %s and setting %s",
-                selectedTrigger.getX(),
-                selectedTrigger.getY(),
-                selectedTrigger.getZ(),
-                savedMarker.getPower() == Integer.MAX_VALUE ? "unset" : savedMarker.getPower(),
-                savedMarker.getStrength() == Integer.MAX_VALUE ? "unset" : savedMarker.getStrength()));
+        TrackMarkerTrigger trigger = new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength());
+        marker.triggers.triggers.add(trigger);
+        sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString());
         return true;
     }
 
@@ -76,7 +80,7 @@ public class TriggerTool extends ToolItem {
 
     @Override
     protected String writeCurrentState(TrackMarkerBlockEntity marker) {
-        return "TODO";
+        return "";
     }
 
 }

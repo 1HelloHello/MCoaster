@@ -61,7 +61,7 @@ public class PowerToolItem extends ToolItem {
 
     @Override
     protected String writeCurrentState(TrackMarkerBlockEntity marker) {
-        return getValueForTool(marker) == Integer.MAX_VALUE ? "Unset" : getValueForTool(marker) + "";
+        return getValueForTool(marker) == Integer.MAX_VALUE ? "Unset" : toFixedPointRepresentation(getValueForTool(marker));
     }
 
     @Override
@@ -76,5 +76,14 @@ public class PowerToolItem extends ToolItem {
         POWER,
         STRENGTH
         ;
+    }
+
+    /**
+     *
+     * @param val
+     * @return the val as a fixed point representation where
+     */
+    public static String toFixedPointRepresentation(int val) {
+        return val / 10 + "." + Math.abs(val % 10);
     }
 }
