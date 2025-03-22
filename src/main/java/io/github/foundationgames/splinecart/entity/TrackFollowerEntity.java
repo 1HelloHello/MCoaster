@@ -333,7 +333,7 @@ public class TrackFollowerEntity extends Entity {
                 endE = nextE;
             } else if (this.splinePieceProgress < 0) {
                 this.splinePieceProgress += 1;
-                startE.setLastVelocity(super.getVelocity().length());
+                startE.setLastVelocity(-super.getVelocity().length());
                 startE.markDirty();
                 startE.triggers.execute(getWorld());
 
