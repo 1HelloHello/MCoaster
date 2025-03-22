@@ -24,6 +24,7 @@ public class CoasterCartItem extends ActionItem {
         super(identifier, registryKey);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
             sendErrorNoMarker(player);
@@ -32,8 +33,11 @@ public class CoasterCartItem extends ActionItem {
         TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.getLastVelocity());
         if (follower != null) {
             world.spawnEntity(follower);
+
             MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,
-                    (EntityType<MinecartEntity>) EntityType.get("minecraft:minecart").get(), SpawnReason.COMMAND, stack, player);
+                    (EntityType<MinecartEntity>) EntityType.get("minecraft:minecart").orElseThrow(), SpawnReason.COMMAND, stack, player);
+            if(minecart == null)
+                return false;
             world.spawnEntity(minecart);
             minecart.startRiding(follower, true);
             if(!rightClick) {
