@@ -27,7 +27,6 @@ public class CoasterCartItem extends ActionItem {
     @SuppressWarnings("unchecked")
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
-            sendErrorNoMarker(player);
             return false;
         }
         TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.getLastVelocity());
@@ -45,12 +44,6 @@ public class CoasterCartItem extends ActionItem {
             }
         }
         return true;
-    }
-
-    private void sendErrorNoMarker(PlayerEntity player) {
-        MutableText text = Text.translatable("item.splinecart.coaster_cart.error_no_marker");
-        text.withColor(Colors.WHITE);
-        player.sendMessage(text, true);
     }
 
 }

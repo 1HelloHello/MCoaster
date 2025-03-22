@@ -45,7 +45,6 @@
   "item.splinecart.track_power_tool.msg": "Track Power: ",
   "item.splinecart.track_strength_tool.msg": "Track Setting: ",
 
-  "item.splinecart.coaster_cart.error_no_marker": "Coaster Cart items can only be used on Track Markers",
   "item.splinecart.coaster_cart": "Coaster Cart",
   "item.splinecart.coaster_cart.desc": "Right click to place on Track Marker. It retains the last velocity",
   "item.splinecart.coaster_cart.desc1": "Left click to automatically enter Cart.",
