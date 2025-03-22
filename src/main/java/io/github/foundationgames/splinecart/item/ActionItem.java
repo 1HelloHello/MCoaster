@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public abstract class ActionItem extends RegistrableItem {
 
     public ActionItem(String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+        super(identifier, registryKey, 1);
     }
 
     @Override

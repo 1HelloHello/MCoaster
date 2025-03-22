@@ -15,9 +15,10 @@ public abstract class RegistrableItem extends Item {
 
     public final String identifier;
 
-    public RegistrableItem(String identifier, RegistryKey<Item> registryKey) {
+    public RegistrableItem(String identifier, RegistryKey<Item> registryKey, int maxStackSize) {
         super(new Item.Settings().component(DataComponentTypes.LORE,
-                new LoreComponent(loadDescription("item." + Splinecart.MOD_NAME + "." + identifier))).registryKey(registryKey));
+                new LoreComponent(loadDescription("item." + Splinecart.MOD_NAME + "." + identifier))).registryKey(registryKey)
+                .component(DataComponentTypes.MAX_STACK_SIZE, maxStackSize));
         this.identifier = identifier;
     }
 
