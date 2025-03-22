@@ -8,8 +8,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
 
 public class TriggerTool extends ToolItem {
 
@@ -28,8 +31,12 @@ public class TriggerTool extends ToolItem {
             return Text.of("No triggers saved");
         }
         StringBuilder msg = new StringBuilder();
-        for(TrackMarkerTrigger trigger : marker.triggers.triggers) {
-            msg.append(trigger.getDisplayString()).append("; ");
+        ArrayList<TrackMarkerTrigger> triggers = marker.triggers.triggers;
+        for(int i = 0; i < triggers.size(); i++) {
+            if(i != 0) {
+                msg.append("      ");
+            }
+            msg.append(triggers.get(i).getDisplayString("(%d, %d, %d) p: %s s: %s"));
         }
         return Text.of(msg.toString());
     }
@@ -70,7 +77,7 @@ public class TriggerTool extends ToolItem {
         BlockPos selectedTrigger = player.getSelectedTrigger();
         TrackMarkerTrigger trigger = new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength());
         marker.triggers.triggers.add(trigger);
-        sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString());
+        sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString("(%d, %d, %d) power: %s setting: %s"));
         return true;
     }
 

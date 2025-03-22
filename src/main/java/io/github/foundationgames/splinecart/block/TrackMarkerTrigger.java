@@ -45,8 +45,8 @@ public class TrackMarkerTrigger {
         return compound;
     }
 
-    public String getDisplayString() {
-        return String.format("(%d, %d, %d) power: %s setting: %s",
+    public String getDisplayString(String format) {
+        return String.format(format,
                 location.getX(),
                 location.getY(),
                 location.getZ(),
