@@ -59,7 +59,6 @@ public class TrackFollowerEntity extends Entity {
     private Vector3d secondLastVelocity = new Vector3d();
     private Vector3d peakVelocity = new Vector3d();
 
-
     private boolean firstPositionUpdate = true;
     private boolean firstOriUpdate = true;
 
@@ -194,17 +193,19 @@ public class TrackFollowerEntity extends Entity {
 
     protected void updateSpeedInfo(PlayerEntity player) {
         Vector3d currentVelocity = serverVelocity;
-
         if(currentVelocity.length() > lastVelocity.length() && lastVelocity.length() < secondLastVelocity.length()) {
             peakVelocity = new Vector3d(lastVelocity);
         }else if(currentVelocity.length() < lastVelocity.length() && lastVelocity.length() > secondLastVelocity.length()) {
             peakVelocity = new Vector3d(lastVelocity);
         }
+        secondLastVelocity = new Vector3d(lastVelocity);
+        lastVelocity = new Vector3d(currentVelocity);
+    }
 
-        Vector3d acceleration = new Vector3d(currentVelocity).sub(secondLastVelocity).mul((double) 1 / 2).add(0, GRAVITY, 0).mul(clientOrientation.get(new Matrix3d()));
-
-        player.sendMessage(Text.of(
-                doubleToString(currentVelocity.length()* METERS_PER_TICK_TO_KMH)
+    public Text getSpeedInfo() {
+        Vector3d acceleration = new Vector3d(lastVelocity).sub(secondLastVelocity).mul((double) 1 / 2).add(0, GRAVITY, 0).mul(clientOrientation.get(new Matrix3d()));
+        return Text.of(
+                doubleToString(lastVelocity.length()* METERS_PER_TICK_TO_KMH)
                         + " km/h peak: "
                         + doubleToString(peakVelocity.length() * METERS_PER_TICK_TO_KMH)
                         + " km/h --- acc: "
@@ -213,10 +214,7 @@ public class TrackFollowerEntity extends Entity {
                         + signedDoubleToString(acceleration.x / GRAVITY)
                         + " Gh "
                         + signedDoubleToString(acceleration.z / GRAVITY)
-                        + " Gl ")
-                , true);
-        secondLastVelocity = new Vector3d(lastVelocity);
-        lastVelocity = new Vector3d(currentVelocity);
+                        + " Gl ");
     }
 
     private static String signedDoubleToString(double value) {

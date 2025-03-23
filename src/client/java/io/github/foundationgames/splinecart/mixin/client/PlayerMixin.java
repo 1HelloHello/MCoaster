@@ -1,11 +1,12 @@
 package io.github.foundationgames.splinecart.mixin.client;
 
+import io.github.foundationgames.splinecart.SplinecartClient;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.item.tools.ToolItem;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -15,16 +16,22 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerPlayerEntity.class)
+@Mixin(ClientPlayerEntity.class)
 public abstract class PlayerMixin {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo info) {
         // return if the player is sitting in a coaster cart
-        ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
+        ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
         Entity vehicle = player.getVehicle();
         while (vehicle != null) {
-            if (vehicle instanceof TrackFollowerEntity) {
+            if (vehicle instanceof TrackFollowerEntity trackFollower) {
+                // send velocity display msg
+                if(SplinecartClient.CFG_SHOW_SPEED_INFO.get()) {
+                    player.sendMessage(trackFollower.getSpeedInfo(), true);
+                }else {
+                    clear(player);
+                }
                 return;
             }
             vehicle = vehicle.getVehicle();
