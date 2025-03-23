@@ -30,7 +30,8 @@ public abstract class PlayerMixin {
                 if(SplinecartClient.CFG_SHOW_SPEED_INFO.get()) {
                     player.sendMessage(trackFollower.getSpeedInfo(
                             SplinecartClient.CFG_SHOW_SPEED_INFO_PEAK.get(),
-                            SplinecartClient.CFG_SHOW_SPEED_INFO_FORCE.get()),
+                            SplinecartClient.CFG_SHOW_SPEED_INFO_FORCE.get(),
+                            SplinecartClient.CFG_SHOW_IMPERIAL.get()),
                             true);
                 }else {
                     clear(player);

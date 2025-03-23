@@ -33,6 +33,7 @@ public class TrackFollowerEntity extends Entity {
     private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
 
     public static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
+    public static final double KMH_TO_MPH = 0.6213712;
 
     private @Nullable BlockPos startTie;
     private @Nullable BlockPos endTie;
@@ -204,23 +205,23 @@ public class TrackFollowerEntity extends Entity {
         lastVelocity = new Vector3d(currentVelocity);
     }
 
-    public Text getSpeedInfo(boolean showPeakSpeed, boolean showForce) {
+    public Text getSpeedInfo(boolean showPeakSpeed, boolean showForce, boolean imperial) {
         Vector3d acceleration = new Vector3d(lastVelocity)
                 .sub(thirdLastVelocity)
                 .mul(1.0 / 2)
                 .add(0, GRAVITY, 0);
-        String msg = doubleToString(serverVelocity.length()* METERS_PER_TICK_TO_KMH) + " km/h";
+        String msg = formatSpeed(lastVelocity.length(), imperial);
         if(showPeakSpeed) {
-            msg += " peak: " + doubleToString(peakVelocity.length() * METERS_PER_TICK_TO_KMH) + " km/h";
+            msg += " peak: " + formatSpeed(peakVelocity.length(), imperial);
         }
         if(showForce) {
-            msg += " force: " + signedDoubleToString(acceleration.length() / GRAVITY) + " G";
+            msg += " force: " + doubleToString(acceleration.length() / GRAVITY) + " G";
         }
         return Text.of(msg);
     }
 
-    private static String signedDoubleToString(double value) {
-        return (value < -0.00000000001 ? "-" : "+") + doubleToString(Math.abs(value));
+    private static String formatSpeed(double metersPerTick, boolean imperial) {
+        return doubleToString(metersPerTick * METERS_PER_TICK_TO_KMH * (imperial ? KMH_TO_MPH : 1)) + (imperial ? " mp/h" : " km/h");
     }
 
     private static String doubleToString(double value) {

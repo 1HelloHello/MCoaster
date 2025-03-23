@@ -29,6 +29,7 @@ public class SplinecartClient implements ClientModInitializer {
 	public static final ConfigOption.BooleanOption CFG_SHOW_SPEED_INFO = CONFIG.optBool("show_speed_info", true);
 	public static final ConfigOption.BooleanOption CFG_SHOW_SPEED_INFO_PEAK = CONFIG.optBool("show_speed_info_peak", false);
 	public static final ConfigOption.BooleanOption CFG_SHOW_SPEED_INFO_FORCE = CONFIG.optBool("show_speed_info_force", false);
+	public static final ConfigOption.BooleanOption CFG_SHOW_IMPERIAL = CONFIG.optBool("show_imperial", false);
 
 	@Override
 	public void onInitializeClient() {
