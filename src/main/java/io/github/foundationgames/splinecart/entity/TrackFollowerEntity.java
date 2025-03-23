@@ -221,7 +221,7 @@ public class TrackFollowerEntity extends Entity {
     }
 
     private static String formatSpeed(double metersPerTick, boolean imperial) {
-        return doubleToString(metersPerTick * METERS_PER_TICK_TO_KMH * (imperial ? KMH_TO_MPH : 1)) + (imperial ? " mp/h" : " km/h");
+        return doubleToString(metersPerTick * METERS_PER_TICK_TO_KMH * (imperial ? KMH_TO_MPH : 1)) + (imperial ? " mph" : " km/h");
     }
 
     private static String doubleToString(double value) {
