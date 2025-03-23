@@ -57,6 +57,7 @@ public class TrackFollowerEntity extends Entity {
     // for velocity display
     private Vector3d lastVelocity = new Vector3d();
     private Vector3d secondLastVelocity = new Vector3d();
+    private Vector3d thirdLastVelocity = new Vector3d();
     private Vector3d peakVelocity = new Vector3d();
 
     private boolean firstPositionUpdate = true;
@@ -198,27 +199,28 @@ public class TrackFollowerEntity extends Entity {
         }else if(currentVelocity.length() < lastVelocity.length() && lastVelocity.length() > secondLastVelocity.length()) {
             peakVelocity = new Vector3d(lastVelocity);
         }
+        thirdLastVelocity = new Vector3d(secondLastVelocity);
         secondLastVelocity = new Vector3d(lastVelocity);
         lastVelocity = new Vector3d(currentVelocity);
     }
 
-    public Text getSpeedInfo() {
-        Vector3d acceleration = new Vector3d(lastVelocity).sub(secondLastVelocity).mul((double) 1 / 2).add(0, GRAVITY, 0).mul(clientOrientation.get(new Matrix3d()));
-        return Text.of(
-                doubleToString(lastVelocity.length()* METERS_PER_TICK_TO_KMH)
-                        + " km/h peak: "
-                        + doubleToString(peakVelocity.length() * METERS_PER_TICK_TO_KMH)
-                        + " km/h --- acc: "
-                        + signedDoubleToString(acceleration.y / GRAVITY)
-                        + " Gv "
-                        + signedDoubleToString(acceleration.x / GRAVITY)
-                        + " Gh "
-                        + signedDoubleToString(acceleration.z / GRAVITY)
-                        + " Gl ");
+    public Text getSpeedInfo(boolean showPeakSpeed, boolean showForce) {
+        Vector3d acceleration = new Vector3d(lastVelocity)
+                .sub(thirdLastVelocity)
+                .mul(1.0 / 2)
+                .add(0, GRAVITY, 0);
+        String msg = doubleToString(serverVelocity.length()* METERS_PER_TICK_TO_KMH) + " km/h";
+        if(showPeakSpeed) {
+            msg += " peak: " + doubleToString(peakVelocity.length() * METERS_PER_TICK_TO_KMH) + " km/h";
+        }
+        if(showForce) {
+            msg += " force: " + signedDoubleToString(acceleration.length() / GRAVITY) + " G";
+        }
+        return Text.of(msg);
     }
 
     private static String signedDoubleToString(double value) {
-        return (value < 0 ? "-" : "+") + doubleToString(Math.abs(value));
+        return (value < -0.00000000001 ? "-" : "+") + doubleToString(Math.abs(value));
     }
 
     private static String doubleToString(double value) {

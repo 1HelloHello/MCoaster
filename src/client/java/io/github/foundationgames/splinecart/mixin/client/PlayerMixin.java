@@ -28,7 +28,10 @@ public abstract class PlayerMixin {
             if (vehicle instanceof TrackFollowerEntity trackFollower) {
                 // send velocity display msg
                 if(SplinecartClient.CFG_SHOW_SPEED_INFO.get()) {
-                    player.sendMessage(trackFollower.getSpeedInfo(), true);
+                    player.sendMessage(trackFollower.getSpeedInfo(
+                            SplinecartClient.CFG_SHOW_SPEED_INFO_PEAK.get(),
+                            SplinecartClient.CFG_SHOW_SPEED_INFO_FORCE.get()),
+                            true);
                 }else {
                     clear(player);
                 }
