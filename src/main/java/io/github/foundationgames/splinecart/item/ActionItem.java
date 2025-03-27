@@ -22,9 +22,7 @@ public abstract class ActionItem extends RegistrableItem {
 
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        if (!world.isClient) {
-            this.click(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
-        }
+        this.click(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
         return false;
     }
 

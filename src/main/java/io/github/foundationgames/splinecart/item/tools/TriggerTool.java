@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -68,8 +67,8 @@ public class TriggerTool extends ToolItem {
 
     private boolean removeAllTriggers(PlayerEntity playerEntity, TrackMarkerBlockEntity marker) {
         marker.triggers = new TrackMarkerTriggers();
-        if(playerEntity.getWorld().isClient())
-            sendChatMessage(playerEntity, "Removed all triggers.");
+        marker.markDirty();
+        sendChatMessage(playerEntity, "Removed all triggers.");
         return true;
     }
 
@@ -77,12 +76,14 @@ public class TriggerTool extends ToolItem {
         BlockPos selectedTrigger = player.getSelectedTrigger();
         TrackMarkerTrigger trigger = new TrackMarkerTrigger(selectedTrigger, savedMarker.getPower(), savedMarker.getStrength());
         marker.triggers.triggers.add(trigger);
+        marker.markDirty();
         sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString("(%d, %d, %d) power: %s setting: %s"));
         return true;
     }
 
     private static void sendChatMessage(PlayerEntity player, String text) {
-        player.sendMessage(Text.of(SUFFIX + text), false);
+        if(player.getWorld().isClient)
+            player.sendMessage(Text.of(SUFFIX + text), false);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class Splinecart implements ModInitializer {
 
 	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
 
-	public static final GameRules.Key<GameRules.BooleanRule> triggerOutput =
+	public static final GameRules.Key<GameRules.BooleanRule> TRIGGER_OUTPUT =
 			GameRuleRegistry.register("triggerOutput", GameRules.Category.CHAT, GameRuleFactory.createBooleanRule(true));
 
 	@Override
