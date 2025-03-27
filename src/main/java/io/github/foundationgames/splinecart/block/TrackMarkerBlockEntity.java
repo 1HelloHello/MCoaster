@@ -159,8 +159,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.prevTrackMarkerPos = prevTrackMarkerPos;
     }
 
-    public boolean hasTrackConnected() {
-        return prevTrackMarkerPos != null || nextTrackMarkerPos != null;
+    public boolean hasNoTrackConnected() {
+        return prevTrackMarkerPos == null && nextTrackMarkerPos == null;
     }
 
     public int getPower() {
