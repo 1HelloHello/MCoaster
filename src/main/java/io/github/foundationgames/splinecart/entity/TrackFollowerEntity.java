@@ -109,25 +109,24 @@ public class TrackFollowerEntity extends Entity {
         return follower;
     }
 
-    public static @Nullable TrackFollowerEntity create(World world, BlockPos markerPos, double trackVelocity) { // TODO refactor
-        var marker = TrackMarkerBlockEntity.of(world, markerPos);
-        if(marker == null) {
-            return null;
-        }
-        BlockPos startMarkerPos, endMarkerPos;
-
-        startMarkerPos = markerPos;
-        endMarkerPos = marker.getNextTrackMarkerPos();
-
-        var startMarker = TrackMarkerBlockEntity.of(world, startMarkerPos);
+    public static @Nullable TrackFollowerEntity create(World world, BlockPos startMarkerPos, double trackVelocity) {
+        TrackMarkerBlockEntity startMarker = TrackMarkerBlockEntity.of(world, startMarkerPos);
         if(startMarker == null) {
             return null;
         }
-        var follower = new TrackFollowerEntity(world);
+        BlockPos endMarkerPos = startMarker.getNextTrackMarkerPos();
+        TrackFollowerEntity follower = new TrackFollowerEntity(world);
+        TrackMarkerBlockEntity endMarker = TrackMarkerBlockEntity.of(world, endMarkerPos);
+        follower.setPosition(SUtil.toCenteredVec3d(startMarkerPos));
+        if(endMarker == null) { // there is no marker coming after this one, so the segment needs to be set to the previous one
+            follower.splinePieceProgress = .999999;
+            endMarkerPos = startMarkerPos;
+            startMarkerPos = startMarker.getPrevTrackMarkerPos();
+        }else {
+            follower.splinePieceProgress = 0;
+        }
         follower.trackVelocity = trackVelocity;
-        follower.splinePieceProgress = 0;
         follower.setStretch(startMarkerPos, endMarkerPos);
-        follower.setPosition(SUtil.toCenteredVec3d(markerPos));
         follower.getDataTracker().set(ORIENTATION, startMarker.pose().basis().getNormalizedRotation(new Quaternionf()));
         return follower;
     }

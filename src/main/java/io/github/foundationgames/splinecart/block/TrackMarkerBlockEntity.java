@@ -205,8 +205,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         return 100;
     }
 
-    public double getLastVelocity() {
-        return lastVelocity;
+    public double computeLastVelocity() {
+        return (lastVelocity > 0 && nextTrackMarkerPos != null) || (lastVelocity < 0 && prevTrackMarkerPos != null) ? lastVelocity : 0;
     }
 
     public void setLastVelocity(double lastVelocity) {
