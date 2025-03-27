@@ -9,6 +9,8 @@ import io.github.foundationgames.splinecart.item.tools.*;
 import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
@@ -28,6 +30,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +78,9 @@ public class Splinecart implements ModInitializer {
 			(i, k) -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
 
 	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
+
+	public static final GameRules.Key<GameRules.BooleanRule> triggerOutput =
+			GameRuleRegistry.register("triggerOutput", GameRules.Category.CHAT, GameRuleFactory.createBooleanRule(true));
 
 	@Override
 	public void onInitialize() {

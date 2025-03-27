@@ -62,5 +62,8 @@
   "splinecart.config.mcoaster_client.show_speed_info.desc": "If set to false, hides the speed info display when riding a coaster cart.",
   "splinecart.config.mcoaster_client.show_speed_info_peak.desc": "If set to true, shows the peak speed (highest and lowest) that the cart had reached on a hill or vally.",
   "splinecart.config.mcoaster_client.show_speed_info_force.desc": "If set to true, shows the force in G that the cart experiences.",
-  "splinecart.config.mcoaster_client.show_imperial.desc": "If set to true, shows all the speed values the actionbar in imperial (doesn't change values entered with a Power Tool)."
+  "splinecart.config.mcoaster_client.show_imperial.desc": "If set to true, shows all the speed values the actionbar in imperial (doesn't change values entered with a Power Tool).",
+
+  "gamerule.triggerOutput": "Triggers should output to chat"
+
 }
