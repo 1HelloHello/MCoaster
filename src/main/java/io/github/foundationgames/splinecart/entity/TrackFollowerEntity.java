@@ -324,7 +324,7 @@ public class TrackFollowerEntity extends Entity {
 
         this.splinePieceProgress += this.trackVelocity * this.motionScale;
         if (this.splinePieceProgress > 1) {
-            this.splinePieceProgress -= 1;
+            this.splinePieceProgress = 0;
             endE.setLastVelocity(super.getVelocity().length());
             endE.markDirty();
             endE.triggers.execute(getWorld());
@@ -342,7 +342,7 @@ public class TrackFollowerEntity extends Entity {
             startE = endE;
             endE = nextE;
         } else if (this.splinePieceProgress < 0) {
-            this.splinePieceProgress += 1;
+            this.splinePieceProgress = 1;
             startE.setLastVelocity(-super.getVelocity().length());
             startE.markDirty();
             startE.triggers.execute(getWorld());
