@@ -11,7 +11,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Blocks;
@@ -20,20 +20,21 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Splinecart implements ModInitializer {
@@ -82,29 +83,44 @@ public class Splinecart implements ModInitializer {
 	public static final GameRules.Key<GameRules.BooleanRule> TRIGGER_OUTPUT =
 			GameRuleRegistry.register("triggerOutput", GameRules.Category.CHAT, GameRuleFactory.createBooleanRule(true));
 
+	public static final BlockItem TIE_ITEM = SUtil.register(Registries.ITEM, "track_ties",
+			(i, k) -> new BlockItem(TRACK_TIES, new Item.Settings()
+					.component(DataComponentTypes.LORE,
+							new LoreComponent(List.of(Text.translatable("item.splinecart.track_ties.desc").formatted(Formatting.GRAY)))
+					).useBlockPrefixedTranslationKey().registryKey(k)));
+
 	@Override
 	public void onInitialize() {
-		var tieItem = SUtil.register(Registries.ITEM, "track_ties",
-				(i, k) -> new BlockItem(TRACK_TIES, new Item.Settings()
-						.component(DataComponentTypes.LORE,
-								new LoreComponent(List.of(Text.translatable("item.splinecart.track_ties.desc").formatted(Formatting.GRAY)))
-						).useBlockPrefixedTranslationKey().registryKey(k)));
-
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(entries -> {
-			entries.add(tieItem.getDefaultStack());
-			entries.add(TRACK.getDefaultStack());
-			entries.add(COASTER_CART_ITEM.getDefaultStack());
-			entries.add(TRACK_TYPE_TOOL.getDefaultStack());
-			entries.add(HEADING_TOOL.getDefaultStack());
-			entries.add(PITCHING_TOOL.getDefaultStack());
-			entries.add(BANKING_TOOL.getDefaultStack());
-			entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
-			entries.add(TRACK_STYLE_TOOL.getDefaultStack());
-			entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
-			entries.add(TRACK_STRENGTH_TOOL_ITEM.getDefaultStack());
-			entries.add(TRIGGER_TOOL.getDefaultStack());
-		});
 		UseBlockCallback.EVENT.register(new DyeItemUseEvent());
+
+		// add dye items to tab
+		ArrayList<ItemStack> dyeItems = new ArrayList<>();
+		Arrays.stream(DyeColor.values()).sequential().forEach(color -> {
+			dyeItems.add(DyeItem.byColor(color).getDefaultStack());
+		});
+
+		ItemGroup MCOASTER_GROUP = FabricItemGroup.builder()
+				.displayName(Text.translatable("itemGroup.mcoaster"))
+				.entries((ctx, entries) -> {
+					entries.add(TIE_ITEM.getDefaultStack());
+					entries.add(TRACK.getDefaultStack());
+					entries.add(COASTER_CART_ITEM.getDefaultStack());
+					entries.add(TRACK_TYPE_TOOL.getDefaultStack());
+					entries.add(HEADING_TOOL.getDefaultStack());
+					entries.add(PITCHING_TOOL.getDefaultStack());
+					entries.add(BANKING_TOOL.getDefaultStack());
+					entries.add(RELATIVE_ORIENTATION_TOOL.getDefaultStack());
+					entries.add(TRACK_STYLE_TOOL.getDefaultStack());
+					entries.add(TRACK_POWER_TOOL_ITEM.getDefaultStack());
+					entries.add(TRACK_STRENGTH_TOOL_ITEM.getDefaultStack());
+					entries.add(TRIGGER_TOOL.getDefaultStack());
+					entries.addAll(dyeItems);
+				})
+				.icon(TRACK::getDefaultStack)
+				.build();
+
+		Registry.register(Registries.ITEM_GROUP, id("mcoaster"), MCOASTER_GROUP);
+
 	}
 
 	public static Identifier id(String id) {

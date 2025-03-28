@@ -64,6 +64,8 @@
   "splinecart.config.mcoaster_client.show_speed_info_force.desc": "If set to true, shows the force in G that the cart experiences.",
   "splinecart.config.mcoaster_client.show_imperial.desc": "If set to true, shows all the speed values the actionbar in imperial (doesn't change values entered with a Power Tool).",
 
-  "gamerule.triggerOutput": "Triggers should output to chat"
+  "gamerule.triggerOutput": "Triggers should output to chat",
+
+  "itemGroup.mcoaster": "MCoaster"
 
 }
