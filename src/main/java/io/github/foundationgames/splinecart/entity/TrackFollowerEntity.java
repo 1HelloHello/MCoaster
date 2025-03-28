@@ -312,91 +312,90 @@ public class TrackFollowerEntity extends Entity {
 
         if (!hadPassenger) {
             hadPassenger = true;
-        } else {
-            var world = this.getWorld();
-            TrackMarkerBlockEntity startE = TrackMarkerBlockEntity.of(world, this.startTie);
-            TrackMarkerBlockEntity endE = TrackMarkerBlockEntity.of(world, this.endTie);
-            if (startE == null || endE == null) {
-                this.destroy();
+            return;
+        }
+        var world = this.getWorld();
+        TrackMarkerBlockEntity startE = TrackMarkerBlockEntity.of(world, this.startTie);
+        TrackMarkerBlockEntity endE = TrackMarkerBlockEntity.of(world, this.endTie);
+        if (startE == null || endE == null) {
+            this.destroy();
+            return;
+        }
+
+        this.splinePieceProgress += this.trackVelocity * this.motionScale;
+        if (this.splinePieceProgress > 1) {
+            this.splinePieceProgress -= 1;
+            endE.setLastVelocity(super.getVelocity().length());
+            endE.markDirty();
+            endE.triggers.execute(getWorld());
+
+            var nextE = endE.getNextMarker();
+            if (nextE == null) {
+                ticksSinceRemoved--;
+                if(ticksSinceRemoved <= 0) {
+                    this.flyOffTrack(passenger);
+                }
+                splinePieceProgress = 1;
                 return;
             }
+            this.setStretch(this.endTie, nextE.getPos());
+            startE = endE;
+            endE = nextE;
+        } else if (this.splinePieceProgress < 0) {
+            this.splinePieceProgress += 1;
+            startE.setLastVelocity(-super.getVelocity().length());
+            startE.markDirty();
+            startE.triggers.execute(getWorld());
 
-            this.splinePieceProgress += this.trackVelocity * this.motionScale;
-            if (this.splinePieceProgress > 1) {
-                this.splinePieceProgress -= 1;
-                endE.setLastVelocity(super.getVelocity().length());
-                endE.markDirty();
-                endE.triggers.execute(getWorld());
-
-                var nextE = endE.getNextMarker();
-                if (nextE == null) {
-                    ticksSinceRemoved--;
-                    if(ticksSinceRemoved <= 0) {
-                        this.flyOffTrack(passenger);
-                    }
-                    splinePieceProgress = 1;
-                    return;
+            var prevE = startE.getPrevMarker();
+            if (prevE == null) {
+                ticksSinceRemoved--;
+                if(ticksSinceRemoved <= 0) {
+                    this.flyOffTrack(passenger);
                 }
-                this.setStretch(this.endTie, nextE.getPos());
-                startE = endE;
-                endE = nextE;
-            } else if (this.splinePieceProgress < 0) {
-                this.splinePieceProgress += 1;
-                startE.setLastVelocity(-super.getVelocity().length());
-                startE.markDirty();
-                startE.triggers.execute(getWorld());
-
-                var prevE = startE.getPrevMarker();
-                if (prevE == null) {
-                    ticksSinceRemoved--;
-                    if(ticksSinceRemoved <= 0) {
-                        this.flyOffTrack(passenger);
-                    }
-                    splinePieceProgress = 0;
-                    return;
-                }
-                this.setStretch(prevE.getPos(), this.startTie);
-                endE = startE;
-                startE = prevE;
+                splinePieceProgress = 0;
+                return;
             }
-
-            var pos = new Vector3d();
-            var grad = new Vector3d(); // Change in position per change in spline progress
-            startE.pose().interpolate(endE.pose(), this.splinePieceProgress, pos, this.basis, grad);
-
-            this.setPosition(pos.x(), pos.y(), pos.z());
-            this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
-
-            double gradLen = grad.length();
-            if (gradLen != 0) {
-                this.motionScale = 1 / grad.length();
-            }
-
-            var ngrad = new Vector3d(grad).normalize();
-            var gravity = -ngrad.y() * GRAVITY;
-
-            double dt = this.trackVelocity * this.motionScale; // Change in spline progress per tick
-            grad.mul(dt); // Change in position per tick (velocity)
-            this.setVelocity(grad.x(), grad.y(), grad.z());
-
-            var passengerVel = passenger.getVelocity();
-            var push = new Vector3d(passengerVel.getX(), 0.0, passengerVel.getZ());
-            if (push.lengthSquared() > 0.0001) {
-                var forward = new Vector3d(0, 0, 1).mul(this.basis);
-
-                double linearPush = forward.dot(push) * 2.0;
-                this.trackVelocity += linearPush;
-                passenger.setVelocity(Vec3d.ZERO);
-            }
-
-            var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
-            gradeVec.mul(1, 0, 1);
-            double power = startE.computePower();
-            double strength = startE.computeStrength();
-
-            this.trackVelocity += gravity;
-            this.trackVelocity = startE.nextType.motion.calculate(this.trackVelocity, gradeVec.length(), power, strength);
+            this.setStretch(prevE.getPos(), this.startTie);
+            endE = startE;
+            startE = prevE;
         }
+
+        var pos = new Vector3d();
+        var grad = new Vector3d(); // Change in position per change in spline progress
+        startE.pose().interpolate(endE.pose(), this.splinePieceProgress, pos, this.basis, grad);
+
+        this.setPosition(pos.x(), pos.y(), pos.z());
+        this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
+
+        if (grad.length() != 0) {
+            this.motionScale = 1 / grad.length();
+        }
+
+        var ngrad = new Vector3d(grad).normalize();
+        var gravity = -ngrad.y() * GRAVITY;
+
+        double dt = this.trackVelocity * this.motionScale; // Change in spline progress per tick
+        grad.mul(dt); // Change in position per tick (velocity)
+        this.setVelocity(grad.x(), grad.y(), grad.z());
+
+        var passengerVel = passenger.getVelocity();
+        var push = new Vector3d(passengerVel.getX(), 0.0, passengerVel.getZ());
+        if (push.lengthSquared() > 0.0001) {
+            var forward = new Vector3d(0, 0, 1).mul(this.basis);
+
+            double linearPush = forward.dot(push) * 2.0;
+            this.trackVelocity += linearPush;
+            passenger.setVelocity(Vec3d.ZERO);
+        }
+
+        var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
+        gradeVec.mul(1, 0, 1);
+        double power = startE.computePower();
+        double strength = startE.computeStrength();
+
+        this.trackVelocity += gravity;
+        this.trackVelocity = startE.nextType.motion.calculate(this.trackVelocity, gradeVec.length(), power, strength);
     }
 
     @Override
