@@ -348,7 +348,11 @@ public class TrackFollowerEntity extends Entity {
 
                 var prevE = startE.getPrevMarker();
                 if (prevE == null) {
-                    this.flyOffTrack(passenger);
+                    ticksSinceRemoved--;
+                    if(ticksSinceRemoved <= 0) {
+                        this.flyOffTrack(passenger);
+                    }
+                    splinePieceProgress = 0;
                     return;
                 }
                 this.setStretch(prevE.getPos(), this.startTie);
