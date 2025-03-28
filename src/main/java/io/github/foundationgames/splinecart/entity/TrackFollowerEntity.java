@@ -66,6 +66,11 @@ public class TrackFollowerEntity extends Entity {
 
     private Vec3d clientMotion = Vec3d.ZERO;
 
+    /**
+     * The amount of ticks, the follower waits before it deletes itself at the end of track
+     */
+    private int ticksSinceRemoved = 6;
+
     public TrackFollowerEntity(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -119,7 +124,7 @@ public class TrackFollowerEntity extends Entity {
         TrackMarkerBlockEntity endMarker = TrackMarkerBlockEntity.of(world, endMarkerPos);
         follower.setPosition(SUtil.toCenteredVec3d(startMarkerPos));
         if(endMarker == null) { // there is no marker coming after this one, so the segment needs to be set to the previous one
-            follower.splinePieceProgress = .999999;
+            follower.splinePieceProgress = 1;
             endMarkerPos = startMarkerPos;
             startMarkerPos = startMarker.getPrevTrackMarkerPos();
         }else {
@@ -174,8 +179,8 @@ public class TrackFollowerEntity extends Entity {
         updatePlayerFacing(passenger);
         if(passenger == null)
             return;
-        if(passenger instanceof PlayerEntity player) {
-            updateSpeedInfo(player);
+        if(passenger instanceof PlayerEntity) {
+            updateSpeedInfo();
         }
     }
 
@@ -192,7 +197,7 @@ public class TrackFollowerEntity extends Entity {
         }
     }
 
-    protected void updateSpeedInfo(PlayerEntity player) {
+    protected void updateSpeedInfo() {
         Vector3d currentVelocity = serverVelocity;
         if(currentVelocity.length() > lastVelocity.length() && lastVelocity.length() < secondLastVelocity.length()) {
             peakVelocity = new Vector3d(lastVelocity);
@@ -311,7 +316,7 @@ public class TrackFollowerEntity extends Entity {
             var world = this.getWorld();
             TrackMarkerBlockEntity startE = TrackMarkerBlockEntity.of(world, this.startTie);
             TrackMarkerBlockEntity endE = TrackMarkerBlockEntity.of(world, this.endTie);
-            if (startE == null || endE == null) { // Backup; shouldn't normally execute
+            if (startE == null || endE == null) {
                 this.destroy();
                 return;
             }
@@ -325,7 +330,11 @@ public class TrackFollowerEntity extends Entity {
 
                 var nextE = endE.getNextMarker();
                 if (nextE == null) {
-                    this.flyOffTrack(passenger);
+                    ticksSinceRemoved--;
+                    if(ticksSinceRemoved <= 0) {
+                        this.flyOffTrack(passenger);
+                    }
+                    splinePieceProgress = 1;
                     return;
                 }
                 this.setStretch(this.endTie, nextE.getPos());
