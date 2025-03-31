@@ -23,6 +23,8 @@ import org.joml.Matrix3dc;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
+import java.util.LinkedList;
+
 public class TrackFollowerEntity extends Entity {
 
     public static final double FRICTION = 0.002; // in b/t that are removed for every b/t of speed every second
@@ -53,10 +55,8 @@ public class TrackFollowerEntity extends Entity {
     private boolean hadPassenger = false;
     private boolean hadPlayerPassenger = false;
 
-    // for velocity display TODO refactor (array list; compute peakVelocity when needed)
-    private Vector3d lastVelocity = new Vector3d();
-    private Vector3d secondLastVelocity = new Vector3d();
-    private Vector3d thirdLastVelocity = new Vector3d();
+    // for velocity display
+    private final LinkedList<Vector3d> lastVelocities = new LinkedList<>();
     private Vector3d peakVelocity = new Vector3d();
 
     private boolean firstPositionUpdate = true;
@@ -201,27 +201,28 @@ public class TrackFollowerEntity extends Entity {
     }
 
     protected void updateSpeedInfo() {
-        Vector3d currentVelocity = serverVelocity;
-        if(currentVelocity.length() > lastVelocity.length() && lastVelocity.length() < secondLastVelocity.length()) {
-            peakVelocity = new Vector3d(lastVelocity);
-        }else if(currentVelocity.length() < lastVelocity.length() && lastVelocity.length() > secondLastVelocity.length()) {
-            peakVelocity = new Vector3d(lastVelocity);
+        lastVelocities.addFirst(new Vector3d(serverVelocity));
+        if(lastVelocities.size() <= 3) {
+            return;
         }
-        thirdLastVelocity = new Vector3d(secondLastVelocity);
-        secondLastVelocity = new Vector3d(lastVelocity);
-        lastVelocity = new Vector3d(currentVelocity);
+        lastVelocities.removeLast();
+        if(lastVelocities.getFirst().length() > lastVelocities.get(1).length() && lastVelocities.get(1).length() < lastVelocities.get(2).length()) {
+            peakVelocity = new Vector3d(lastVelocities.get(1));
+        }else if(lastVelocities.getFirst().length() < lastVelocities.get(1).length() && lastVelocities.get(1).length() > lastVelocities.get(2).length()) {
+            peakVelocity = new Vector3d(lastVelocities.get(1));
+        }
     }
 
     public Text getSpeedInfo(boolean showPeakSpeed, boolean showForce, boolean imperial) {
-        Vector3d acceleration = new Vector3d(lastVelocity)
-                .sub(thirdLastVelocity)
-                .mul(1.0 / 2)
-                .add(0, GRAVITY, 0);
-        String msg = formatSpeed(lastVelocity.length(), imperial);
+        String msg = formatSpeed(lastVelocities.getFirst().length(), imperial);
         if(showPeakSpeed) {
             msg += " peak: " + formatSpeed(peakVelocity.length(), imperial);
         }
-        if(showForce) {
+        if(showForce && lastVelocities.size() >= 3) {
+            Vector3d acceleration = new Vector3d(lastVelocities.getFirst())
+                    .sub(lastVelocities.get(2))
+                    .mul(1.0 / 2)
+                    .add(0, GRAVITY, 0);
             msg += " force: " + doubleToString(acceleration.length() / GRAVITY) + " G";
         }
         return Text.of(msg);
