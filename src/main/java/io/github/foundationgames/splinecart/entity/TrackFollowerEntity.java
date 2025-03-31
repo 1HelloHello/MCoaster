@@ -130,7 +130,7 @@ public class TrackFollowerEntity extends Entity {
         }else {
             follower.splinePieceProgress = 0;
         }
-        if(trackVelocity > 0) {
+        if(trackVelocity >= 0) {
             startMarker.triggers.execute(world);
         }
         follower.trackVelocity = trackVelocity;
