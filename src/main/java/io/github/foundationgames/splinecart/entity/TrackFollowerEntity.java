@@ -30,8 +30,6 @@ public class TrackFollowerEntity extends Entity {
     public static final double GRAVITY_MPS2 = 9.81;
     public static final double GRAVITY = GRAVITY_MPS2 / (20*20); // in blocks/tick² (0.04)
 
-    private static final boolean DESTROY_MINECART_END_OF_TRACK = true;
-
     public static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
     public static final double KMH_TO_MPH = 0.6213712;
 
@@ -55,7 +53,7 @@ public class TrackFollowerEntity extends Entity {
     private boolean hadPassenger = false;
     private boolean hadPlayerPassenger = false;
 
-    // for velocity display
+    // for velocity display TODO refactor (array list; compute peakVelocity when needed)
     private Vector3d lastVelocity = new Vector3d();
     private Vector3d secondLastVelocity = new Vector3d();
     private Vector3d thirdLastVelocity = new Vector3d();
@@ -69,7 +67,8 @@ public class TrackFollowerEntity extends Entity {
     /**
      * The amount of ticks, the follower waits before it deletes itself at the end of track
      */
-    private int ticksSinceRemoved = 6;
+    private int ticksSinceRemoved = DEFAULT_TICKS_SINCE_REMOVED;
+    private static final int DEFAULT_TICKS_SINCE_REMOVED = 6;
 
     public TrackFollowerEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -124,11 +123,15 @@ public class TrackFollowerEntity extends Entity {
         TrackMarkerBlockEntity endMarker = TrackMarkerBlockEntity.of(world, endMarkerPos);
         follower.setPosition(SUtil.toCenteredVec3d(startMarkerPos));
         if(endMarker == null) { // there is no marker coming after this one, so the segment needs to be set to the previous one
+            startMarker.triggers.execute(world);
             follower.splinePieceProgress = 1;
             endMarkerPos = startMarkerPos;
             startMarkerPos = startMarker.getPrevTrackMarkerPos();
         }else {
             follower.splinePieceProgress = 0;
+        }
+        if(trackVelocity > 0) {
+            startMarker.triggers.execute(world);
         }
         follower.trackVelocity = trackVelocity;
         follower.setStretch(startMarkerPos, endMarkerPos);
@@ -264,16 +267,11 @@ public class TrackFollowerEntity extends Entity {
     }
 
     private void flyOffTrack(Entity firstPassenger) {
-        if(DESTROY_MINECART_END_OF_TRACK) {
+        ticksSinceRemoved--;
+        if(ticksSinceRemoved <= 0) {
             firstPassenger.remove(RemovalReason.KILLED);
             this.destroy();
-            return;
         }
-        firstPassenger.stopRiding();
-
-        var newVel = new Vector3d(0, 0, this.trackVelocity).mul(this.basis);
-        firstPassenger.setVelocity(newVel.x(), newVel.y(), newVel.z());
-        this.destroy();
     }
 
     protected  void updateClient() {
@@ -325,16 +323,11 @@ public class TrackFollowerEntity extends Entity {
         this.splinePieceProgress += this.trackVelocity * this.motionScale;
         if (this.splinePieceProgress > 1) {
             this.splinePieceProgress = 0;
-            endE.setLastVelocity(super.getVelocity().length());
-            endE.markDirty();
-            endE.triggers.execute(getWorld());
+            markerTransition(endE);
 
             var nextE = endE.getNextMarker();
             if (nextE == null) {
-                ticksSinceRemoved--;
-                if(ticksSinceRemoved <= 0) {
-                    this.flyOffTrack(passenger);
-                }
+                this.flyOffTrack(passenger);
                 splinePieceProgress = 1;
                 return;
             }
@@ -343,16 +336,11 @@ public class TrackFollowerEntity extends Entity {
             endE = nextE;
         } else if (this.splinePieceProgress < 0) {
             this.splinePieceProgress = 1;
-            startE.setLastVelocity(-super.getVelocity().length());
-            startE.markDirty();
-            startE.triggers.execute(getWorld());
+            markerTransition(startE);
 
             var prevE = startE.getPrevMarker();
             if (prevE == null) {
-                ticksSinceRemoved--;
-                if(ticksSinceRemoved <= 0) {
-                    this.flyOffTrack(passenger);
-                }
+                this.flyOffTrack(passenger);
                 splinePieceProgress = 0;
                 return;
             }
@@ -396,6 +384,19 @@ public class TrackFollowerEntity extends Entity {
 
         this.trackVelocity += gravity;
         this.trackVelocity = startE.nextType.motion.calculate(this.trackVelocity, gradeVec.length(), power, strength);
+    }
+
+    /**
+     * Gets called when this TrackFollower transitions from one track element to the next.
+     * Only handles generic tasks that don't depend on driving direction
+     * @param marker
+     */
+    private void markerTransition(TrackMarkerBlockEntity marker) {
+        marker.setLastVelocity(super.getVelocity().length());
+        marker.markDirty();
+        if(ticksSinceRemoved == DEFAULT_TICKS_SINCE_REMOVED) {
+            marker.triggers.execute(marker.getWorld());
+        }
     }
 
     @Override

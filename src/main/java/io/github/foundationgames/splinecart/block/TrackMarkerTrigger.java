@@ -20,6 +20,12 @@ public class TrackMarkerTrigger {
         strength = compound.getInt("strength");
     }
 
+    public TrackMarkerTrigger(TrackMarkerBlockEntity marker) {
+        this.location = marker.getPos();
+        this.power = marker.getPower();
+        this.strength = marker.getStrength();
+    }
+
     public TrackMarkerTrigger(BlockPos location, int power, int strength) {
         this.location = location;
         this.power = power;
@@ -44,15 +50,15 @@ public class TrackMarkerTrigger {
     }
 
     private void sendError(World world) {
-        broadcastMessage(world, Text.of("[TRIGGER ERROR] No marker at location " + location.toShortString()));
+        broadcastMessage(world, Text.of("[TRIGGER] No marker at location " + location.toShortString()));
     }
 
     private void sendWarning(World world) {
-        broadcastMessage(world, Text.of("[TRIGGER WARNING] Nothing changed at " + location.toShortString()));
+        broadcastMessage(world, Text.of("[TRIGGER] Nothing changed at " + getDisplayString("(%d, %d, %d) p: %s s: %s")));
     }
 
     private void sendStatus(World world) {
-        broadcastMessage(world, Text.of("[TRIGGER STATUS] Successfully updated " + location.toShortString()));
+        broadcastMessage(world, Text.of("[TRIGGER] Successfully updated " + getDisplayString("(%d, %d, %d) p: %s s: %s")));
     }
 
     /**
@@ -90,7 +96,13 @@ public class TrackMarkerTrigger {
         return location;
     }
 
-    public double getPower() {
-        return power;
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof TrackMarkerTrigger other) {
+            return this.location.equals(other.location)
+                    && this.strength == other.strength
+                    && this.power == other.power;
+        }
+        return false;
     }
 }

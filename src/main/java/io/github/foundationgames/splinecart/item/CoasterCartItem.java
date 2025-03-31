@@ -27,7 +27,7 @@ public class CoasterCartItem extends ActionItem {
             return false;
         }
         if(trackMarker.hasNoTrackConnected()) {
-            return true;
+            return false;
         }
         TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.computeLastVelocity());
         if (follower != null) {
