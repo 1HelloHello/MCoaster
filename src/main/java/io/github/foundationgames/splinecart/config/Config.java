@@ -63,6 +63,10 @@ public class Config extends ArrayList<ConfigOption<?>> {
         return this.opt(new ConfigOption.IntOption(key, value, new int[] {min, max}, this));
     }
 
+    public ConfigOption.DoubleOption optDouble(String key, double value, double min, double max) {
+        return this.opt(new ConfigOption.DoubleOption(key, value, new double[] {min, max}, this));
+    }
+
     public void load() throws IOException {
         var path = this.path.get();
 
