@@ -82,6 +82,8 @@ public class Splinecart implements ModInitializer {
 
 	public static final GameRules.Key<GameRules.BooleanRule> TRIGGER_OUTPUT =
 			GameRuleRegistry.register("triggerOutput", GameRules.Category.CHAT, GameRuleFactory.createBooleanRule(true));
+	public static final GameRules.Key<GameRules.IntRule> COASTER_FRICTION =
+			GameRuleRegistry.register("coasterFriction", GameRules.Category.CHAT, GameRuleFactory.createIntRule(20));
 
 	public static final BlockItem TIE_ITEM = SUtil.register(Registries.ITEM, "track_ties",
 			(i, k) -> new BlockItem(TRACK_TIES, new Item.Settings()

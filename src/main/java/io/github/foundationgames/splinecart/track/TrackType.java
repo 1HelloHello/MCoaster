@@ -8,9 +8,9 @@ import org.joml.Vector3f;
 
 public enum TrackType {
     DEFAULT(MotionModifier.FRICTION, null, "Default"),
-    CHAIN_DRIVE((m, g, p, s) -> {
+    CHAIN_DRIVE((m, g, p, s, f) -> {
         double chainliftSpeed = p * .1 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
-        double frictionSpeed = MotionModifier.FRICTION.calculate(m, g, p, s);
+        double frictionSpeed = MotionModifier.FRICTION.calculate(m, g, p, s, f);
         return s == 0
                 ? frictionSpeed
                 : chainliftSpeed >= 0
@@ -20,7 +20,7 @@ public enum TrackType {
             (p, t, col, v) -> v[0] = t * 0.0004f * p,
             "Chain Drive"
     ),
-    MAGNETIC((m, g, p, s) -> {
+    MAGNETIC((m, g, p, s, f) -> {
                 double targetSpeed = p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH;
                 return Math.abs(targetSpeed - m) < 0.01
                     ? targetSpeed
@@ -32,11 +32,11 @@ public enum TrackType {
             },
             "Magnetic"
     ),
-    TIRE_DRIVE((m, g, p, s) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
+    TIRE_DRIVE((m, g, p, s, f) -> p / 10 / TrackFollowerEntity.METERS_PER_TICK_TO_KMH,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Tire Drive"
     ) ,
-    HOLDING_BREAKS((m, g, p, s) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p, s) : 0,
+    HOLDING_BREAKS((m, g, p, s, f) -> p > 0 ? MotionModifier.FRICTION.calculate(m, g, p, s, f) : 0,
             (p, t, col, v) -> v[0] = t * ((float) p / 15 * 0.05f), // TODO
             "Holding Breaks"
     ) ;
@@ -64,9 +64,18 @@ public enum TrackType {
 
     @FunctionalInterface
     public interface MotionModifier {
-        MotionModifier FRICTION = (m, g, p, s) -> m - (m * TrackFollowerEntity.FRICTION);
+        MotionModifier FRICTION = (m, g, p, s, f) -> m - (m * f);
 
-        double calculate(double motion, double grade, double power, double strength);
+        /**
+         *
+         * @param motion the current speed of the cart
+         * @param grade unused
+         * @param power the power set to the track
+         * @param strength the strength (setting) set to the track
+         * @param friction the track friction loaded from the gamerule
+         * @return the new speed of the cart
+         */
+        double calculate(double motion, double grade, double power, double strength, double friction);
     }
 
     @FunctionalInterface

@@ -65,6 +65,7 @@
   "splinecart.config.mcoaster_client.show_imperial.desc": "If set to true, shows all the speed values the actionbar in imperial (doesn't change values entered with a Power Tool).",
 
   "gamerule.triggerOutput": "Triggers should output to chat",
+  "gamerule.coasterFriction": "The friction that coaster carts experience",
 
   "itemGroup.mcoaster": "MCoaster"
 
