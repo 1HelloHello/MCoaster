@@ -324,6 +324,7 @@ public class TrackFollowerEntity extends Entity {
         this.splinePieceProgress += this.trackVelocity * this.motionScale;
         if (this.splinePieceProgress > 1) {
             this.splinePieceProgress = 0;
+            endE.setLastVelocity(super.getVelocity().length());
             markerTransition(endE);
 
             var nextE = endE.getNextMarker();
@@ -337,6 +338,7 @@ public class TrackFollowerEntity extends Entity {
             endE = nextE;
         } else if (this.splinePieceProgress < 0) {
             this.splinePieceProgress = 1;
+            startE.setLastVelocity(-super.getVelocity().length());
             markerTransition(startE);
 
             var prevE = startE.getPrevMarker();
@@ -400,7 +402,6 @@ public class TrackFollowerEntity extends Entity {
      * @param marker
      */
     private void markerTransition(TrackMarkerBlockEntity marker) {
-        marker.setLastVelocity(super.getVelocity().length());
         marker.markDirty();
         if(ticksSinceRemoved == DEFAULT_TICKS_SINCE_REMOVED) {
             marker.triggers.execute(marker.getWorld());
