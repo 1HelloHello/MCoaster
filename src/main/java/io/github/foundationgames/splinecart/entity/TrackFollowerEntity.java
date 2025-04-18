@@ -33,12 +33,11 @@ public class TrackFollowerEntity extends Entity {
     public static final double METERS_PER_TICK_TO_KMH = 20 * 3.6;
     public static final double KMH_TO_MPH = 0.6213712;
 
-    private final CoasterTrain train;
-
     private @Nullable BlockPos startTie;
     private @Nullable BlockPos endTie;
     private double splinePieceProgress = 0; // t
     private double motionScale; // t-distance per block
+    private double trackVelocity; // velocity in blocks / tick
 
     private final Vector3d serverPosition = new Vector3d();
     private final Vector3d serverVelocity = new Vector3d();
@@ -69,18 +68,13 @@ public class TrackFollowerEntity extends Entity {
     private int ticksSinceRemoved = DEFAULT_TICKS_SINCE_REMOVED;
     private static final int DEFAULT_TICKS_SINCE_REMOVED = 6;
 
-    public TrackFollowerEntity(EntityType<?> type, World world, CoasterTrain train) {
-        super(type, world);
-        this.train = train;
-    }
 
     public TrackFollowerEntity(EntityType<?> type, World world) {
         super(type, world);
-        this.train = new CoasterTrain();
     }
 
-    public TrackFollowerEntity(World world, CoasterTrain train) {
-        this(Splinecart.TRACK_FOLLOWER, world, train);
+    public TrackFollowerEntity(World world) {
+        this(Splinecart.TRACK_FOLLOWER, world);
     }
 
     public static @Nullable TrackFollowerEntity create(World world, BlockPos startMarkerPos, double trackVelocity) {
@@ -89,7 +83,7 @@ public class TrackFollowerEntity extends Entity {
             return null;
         }
         BlockPos endMarkerPos = startMarker.getNextTrackMarkerPos();
-        TrackFollowerEntity follower = new TrackFollowerEntity(world, new CoasterTrain());
+        TrackFollowerEntity follower = new TrackFollowerEntity(world);
         TrackMarkerBlockEntity endMarker = TrackMarkerBlockEntity.of(world, endMarkerPos);
         follower.setPosition(SUtil.toCenteredVec3d(startMarkerPos));
         if(endMarker == null) { // there is no marker coming after this one, so the segment needs to be set to the previous one
@@ -103,7 +97,7 @@ public class TrackFollowerEntity extends Entity {
         if(trackVelocity >= 0) {
             startMarker.triggers.execute(world);
         }
-        follower.train.trackVelocity = trackVelocity;
+        follower.trackVelocity = trackVelocity;
         follower.setStretch(startMarkerPos, endMarkerPos);
         follower.getDataTracker().set(ORIENTATION, startMarker.pose().basis().getNormalizedRotation(new Quaternionf()));
         return follower;
@@ -291,7 +285,7 @@ public class TrackFollowerEntity extends Entity {
             return;
         }
 
-        this.splinePieceProgress += this.train.trackVelocity * this.motionScale;
+        this.splinePieceProgress += this.trackVelocity * this.motionScale;
         if (this.splinePieceProgress > 1) {
             this.splinePieceProgress = 0;
             endE.setLastVelocity(super.getVelocity().length());
@@ -336,7 +330,7 @@ public class TrackFollowerEntity extends Entity {
         var ngrad = new Vector3d(grad).normalize();
         var gravity = -ngrad.y() * GRAVITY;
 
-        double dt = this.train.trackVelocity * this.motionScale; // Change in spline progress per tick
+        double dt = this.trackVelocity * this.motionScale; // Change in spline progress per tick
         grad.mul(dt); // Change in position per tick (velocity)
         this.setVelocity(grad.x(), grad.y(), grad.z());
 
@@ -346,7 +340,7 @@ public class TrackFollowerEntity extends Entity {
             var forward = new Vector3d(0, 0, 1).mul(this.basis);
 
             double linearPush = forward.dot(push) * 2.0;
-            this.train.trackVelocity += linearPush;
+            this.trackVelocity += linearPush;
             passenger.setVelocity(Vec3d.ZERO);
         }
 
@@ -355,10 +349,10 @@ public class TrackFollowerEntity extends Entity {
         double power = startE.computePower();
         double strength = startE.computeStrength();
 
-        this.train.trackVelocity += gravity;
-        this.train.trackVelocity =
+        this.trackVelocity += gravity;
+        this.trackVelocity =
                 startE.nextType.motion.calculate(
-                        this.train.trackVelocity,
+                        this.trackVelocity,
                         gradeVec.length(),
                         power,
                         strength,
@@ -424,7 +418,7 @@ public class TrackFollowerEntity extends Entity {
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         this.startTie = SUtil.getBlockPos(nbt, "startMarkerPos");
         this.endTie = SUtil.getBlockPos(nbt, "endMarkerPos");
-        this.train.trackVelocity = nbt.getDouble("track_velocity");
+        this.trackVelocity = nbt.getDouble("track_velocity");
         this.motionScale = nbt.getDouble("motion_scale");
         this.splinePieceProgress = nbt.getDouble("spline_piece_progress");
     }
@@ -433,7 +427,7 @@ public class TrackFollowerEntity extends Entity {
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         SUtil.putBlockPos(nbt, this.startTie, "startMarkerPos");
         SUtil.putBlockPos(nbt, this.endTie, "endMarkerPos");
-        nbt.putDouble("track_velocity", this.train.trackVelocity);
+        nbt.putDouble("track_velocity", this.trackVelocity);
         nbt.putDouble("motion_scale", this.motionScale);
         nbt.putDouble("spline_piece_progress", this.splinePieceProgress);
     }
