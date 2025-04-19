@@ -1,9 +1,12 @@
 package io.github.foundationgames.splinecart.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.foundationgames.splinecart.item.ActionItem;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -18,6 +21,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     public static final MapCodec<TrackMarkerBlock> CODEC = createCodec(TrackMarkerBlock::new);
 
     public static final int OUTLINE_SHAPE_MARGIN = 2;
+    protected static final VoxelShape SHAPE;
 
     private boolean redstonePowered = false;
 
@@ -33,8 +37,14 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return createCuboidShape(OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN,
-                16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN);
+        return SHAPE;
+    }
+
+    @Override
+    protected void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+        if(player.getStackInHand(Hand.MAIN_HAND).getItem() instanceof ActionItem item) {
+            item.click(player, world, pos, false, player.getStackInHand(Hand.MAIN_HAND));
+        }
     }
 
     @Override
@@ -84,6 +94,11 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new TrackMarkerBlockEntity(pos, state);
+    }
+
+    static {
+        SHAPE = createCuboidShape(OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN, OUTLINE_SHAPE_MARGIN,
+                16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN,16 - OUTLINE_SHAPE_MARGIN);
     }
 
 }

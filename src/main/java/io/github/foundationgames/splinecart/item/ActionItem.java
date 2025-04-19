@@ -22,7 +22,8 @@ public abstract class ActionItem extends RegistrableItem {
 
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        this.click(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
+        if(miner.isInCreativeMode()) // needs separate event for creative
+            this.click(miner, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
         return false;
     }
 
