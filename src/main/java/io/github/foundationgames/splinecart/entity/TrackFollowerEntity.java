@@ -10,8 +10,11 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -151,6 +154,10 @@ public class TrackFollowerEntity extends Entity {
         }
     }
 
+    /**
+     * Turns the players camera forward when they have just entered the cart.
+     * @param passenger the passenger of the cart or null if empty
+     */
     protected void updatePlayerFacing(Entity passenger) {
         if(passenger == null && hadPlayerPassenger) {
             hadPlayerPassenger = false;
@@ -164,6 +171,9 @@ public class TrackFollowerEntity extends Entity {
         }
     }
 
+    /**
+     * Calculate the last speed and acceleration values every tick.
+     */
     protected void updateSpeedInfo() {
         lastVelocities.addFirst(new Vector3d(serverVelocity));
         if(lastVelocities.size() <= 3) {
