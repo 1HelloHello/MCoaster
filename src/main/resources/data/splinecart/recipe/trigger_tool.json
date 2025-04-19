@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:observer",
+    "B": "minecraft:redstone",
+    "C": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    "CCC",
+    "BAB",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "splinecart:trigger_tool"
+  }
+}
