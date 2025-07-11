@@ -19,9 +19,6 @@ public class TrackItem extends ActionItem {
 
     @Override
     public boolean click(PlayerEntity playerEntity, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
-        if (world.isClient()) {
-            return true;
-        }
         if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
             return false;
         }
@@ -45,9 +42,11 @@ public class TrackItem extends ActionItem {
 
     private boolean connectToMarker(PlayerMixinInterface player, World world, BlockPos pos) {
         BlockPos otherPos = player.getTrackSelectedMarker();
-        if(!checkMarkerPos(otherPos, world) && !pos.equals(otherPos)) {
+        if(pos.equals(otherPos))
+            return false;
+        if(!checkMarkerPos(otherPos, world)) {
             BlockPos lastSelectedMarker = player.getLastTrackSelectedMarker();
-            if(!checkMarkerPos(lastSelectedMarker, world) && !pos.equals(lastSelectedMarker)) {
+            if(!checkMarkerPos(lastSelectedMarker, world) || pos.equals(lastSelectedMarker)) {
                 return false;
             }
             otherPos = player.getLastTrackSelectedMarker();
@@ -56,11 +55,11 @@ public class TrackItem extends ActionItem {
         otherMarker.setNext(pos);
         world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
         selectNewMarker(player, pos, world);
-        return false;
+        return true;
     }
 
     private boolean checkMarkerPos(BlockPos pos, World world) {
-        return pos != null  && world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity;
+        return pos != null && world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity;
     }
 
 }
