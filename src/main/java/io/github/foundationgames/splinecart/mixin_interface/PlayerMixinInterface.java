@@ -13,4 +13,7 @@ public interface PlayerMixinInterface {
     BlockPos getSelectedTrigger();
     void setSelectedTrigger(BlockPos blockPos);
 
+    BlockPos getLastCoasterStart();
+    void setLastCoasterStart(BlockPos blockPos);
+
 }

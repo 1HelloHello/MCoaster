@@ -11,6 +11,7 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     private BlockPos trackSelectedMarker = null;
     private BlockPos lastTrackSelectedMarker = null;
     private BlockPos selectedTrigger = null;
+    private BlockPos lastCoasterStart = new BlockPos(0, Integer.MIN_VALUE, 0);
 
     @Override
     public BlockPos getTrackSelectedMarker() {
@@ -42,4 +43,11 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
         this.selectedTrigger = selectedTrigger;
     }
 
+    public BlockPos getLastCoasterStart() {
+        return lastCoasterStart;
+    }
+
+    public void setLastCoasterStart(BlockPos lastCoasterStart) {
+        this.lastCoasterStart = lastCoasterStart;
+    }
 }

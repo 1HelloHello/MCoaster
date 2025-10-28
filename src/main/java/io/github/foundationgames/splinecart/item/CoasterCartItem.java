@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.item;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
+import io.github.foundationgames.splinecart.mixin_interface.PlayerMixinInterface;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,29 +22,41 @@ public class CoasterCartItem extends ActionItem {
         super(identifier, registryKey);
     }
 
-    @SuppressWarnings("unchecked")
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
+        TrackMarkerBlockEntity trackMarker = null;
+        if(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity t) {
+            trackMarker = t;
+        } else {
+            pos = ((PlayerMixinInterface) player).getLastCoasterStart();
+            if(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity t) {
+                trackMarker = t;
+            }
+        }
+        if(trackMarker == null) {
             return false;
         }
         if(trackMarker.hasNoTrackConnected()) {
             return false;
         }
+        createCart(player, world, pos, rightClick, stack, trackMarker);
+        ((PlayerMixinInterface) player).setLastCoasterStart(pos);
+        return true;
+    }
+
+    private static void createCart(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack, TrackMarkerBlockEntity trackMarker) {
         TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.computeLastVelocity());
         if (follower != null) {
             world.spawnEntity(follower);
 
             MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,
-                    (EntityType<MinecartEntity>) EntityType.get("minecraft:minecart").orElseThrow(), SpawnReason.COMMAND, stack, player);
-            if(minecart == null)
-                return false;
+                    EntityType.MINECART, SpawnReason.COMMAND, stack, player);
             world.spawnEntity(minecart);
+            assert minecart != null;
             minecart.startRiding(follower, true);
             if(!rightClick) {
                 player.startRiding(minecart);
             }
         }
-        return true;
     }
 
 }
