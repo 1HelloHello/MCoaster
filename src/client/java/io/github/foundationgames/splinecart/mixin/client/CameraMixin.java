@@ -1,6 +1,5 @@
 package io.github.foundationgames.splinecart.mixin.client;
 
-import io.github.foundationgames.splinecart.SplinecartClient;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
@@ -16,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static io.github.foundationgames.splinecart.config.Config.CONFIG;
+
 @Mixin(Camera.class)
 public abstract class CameraMixin {
     @Shadow protected abstract void setPos(Vec3d pos);
@@ -29,7 +30,7 @@ public abstract class CameraMixin {
             var tf = vehicle.getVehicle();
             if (tf instanceof TrackFollowerEntity trackFollower) {
                 var world = self.getWorld();
-                var diff = self.getPos().add(0, SplinecartClient.CFG_SUSPENDED_VIEW.get() ? -1 : self.getStandingEyeHeight(), 0).subtract(trackFollower.getPos());
+                var diff = self.getPos().add(0, CONFIG.instance().suspendedView() ? -1 : self.getStandingEyeHeight(), 0).subtract(trackFollower.getPos());
                 var camPos = new Vector3d(diff.getX(), diff.getY(), diff.getZ());
                 if (world.isClient()) {
                     var rot = new Quaternionf();
@@ -38,7 +39,7 @@ public abstract class CameraMixin {
 
                     this.setPos(new Vec3d(camPos.x(), camPos.y(), camPos.z()).add(trackFollower.getLerpedPos(tickDelta)));
 
-                    if (SplinecartClient.CFG_ROTATE_CAMERA.get()) {
+                    if (CONFIG.instance().rotateCamera()) {
                         rot.mul(RotationAxis.POSITIVE_Y.rotationDegrees(90 + vehicle.getYaw(tickDelta)).mul(rotation, rotation), rotation);
                     }
                 }

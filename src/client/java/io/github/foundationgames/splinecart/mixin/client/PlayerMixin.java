@@ -1,6 +1,5 @@
 package io.github.foundationgames.splinecart.mixin.client;
 
-import io.github.foundationgames.splinecart.SplinecartClient;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.item.tools.ToolItem;
@@ -17,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static io.github.foundationgames.splinecart.config.Config.CONFIG;
+
 @Mixin(ClientPlayerEntity.class)
 public abstract class PlayerMixin {
 
@@ -31,11 +32,11 @@ public abstract class PlayerMixin {
         while (vehicle != null) {
             if (vehicle instanceof TrackFollowerEntity trackFollower) {
                 // send velocity display msg
-                if(SplinecartClient.CFG_SHOW_SPEED_INFO.get()) {
+                if(CONFIG.instance().showSpeedInfo()) {
                     player.sendMessage(trackFollower.getSpeedInfo(
-                            SplinecartClient.CFG_SHOW_SPEED_INFO_PEAK.get(),
-                            SplinecartClient.CFG_SHOW_SPEED_INFO_FORCE.get(),
-                            SplinecartClient.CFG_SHOW_IMPERIAL.get()),
+                            CONFIG.instance().showSpeedInfoPeak(),
+                            CONFIG.instance().showSpeedInfoForce(),
+                            CONFIG.instance().showImperial()),
                             true);
                 }else {
                     clear(player);
