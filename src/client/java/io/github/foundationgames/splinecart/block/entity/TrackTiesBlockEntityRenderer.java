@@ -1,18 +1,12 @@
 package io.github.foundationgames.splinecart.block.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.SplinecartClient;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,6 +17,8 @@ import net.minecraft.world.World;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
+
+import static io.github.foundationgames.splinecart.config.Config.CONFIG;
 
 public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMarkerBlockEntity> {
     public static final int WHITE = 0xFFFFFFFF;
@@ -42,7 +38,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         if(!(marker.getWorld().getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) // checks if the Track Marker actually still exists
             return;
         marker.clientTime += tickDelta;
-        if (marker.hasNoTrackConnected() || MinecraftClient.isHudEnabled() && (SplinecartClient.CFG_SHOW_DEBUG.get() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
+        if (marker.hasNoTrackConnected() || MinecraftClient.isHudEnabled() && (CONFIG.instance().showDebug() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
             renderDebugPre(matrices, vertexConsumers, pose);
         }
 
@@ -62,7 +58,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
-        int segments = SplinecartClient.CFG_TRACK_RESOLUTION.get() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
+        int segments = CONFIG.instance().getTrackResolution() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
         var origin = new Vector3d(pose.translation());
         var basis = new Matrix3d(pose.basis());
         var grad = new Vector3d(0, 0, 1).mul(pose.basis());
@@ -120,7 +116,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     @Override
     public int getRenderDistance() {
-        return SplinecartClient.CFG_TRACK_RENDER_DISTANCE.get() * 16;
+        return CONFIG.instance().getTrackRenderDistance() * 16;
     }
 
 
