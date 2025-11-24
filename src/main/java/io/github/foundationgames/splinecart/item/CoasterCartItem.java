@@ -16,8 +16,6 @@ import net.minecraft.world.World;
 
 public class CoasterCartItem extends ActionItem {
 
-    public static final double INITIAL_VELOCITY = 0;
-
     public CoasterCartItem(RegistryKey<Item> registryKey) {
         super(registryKey);
     }
@@ -38,25 +36,25 @@ public class CoasterCartItem extends ActionItem {
         if(trackMarker.hasNoTrackConnected()) {
             return false;
         }
-        createCart(player, world, pos, rightClick, stack, trackMarker);
+        createCart(player, world, rightClick, stack, trackMarker);
         ((PlayerMixinInterface) player).setLastCoasterStart(pos);
         return true;
     }
 
-    private static void createCart(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack, TrackMarkerBlockEntity trackMarker) {
-        TrackFollowerEntity follower = TrackFollowerEntity.create(world, pos, player.isSneaking() ? INITIAL_VELOCITY : trackMarker.computeLastVelocity());
-        if (follower != null) {
-            world.spawnEntity(follower);
+    private static void createCart(PlayerEntity player, World world, boolean rightClick, ItemStack stack, TrackMarkerBlockEntity trackMarker) {
+        TrackFollowerEntity follower = TrackFollowerEntity.create(world, trackMarker, player.isSneaking() ? 0 : trackMarker.computeLastVelocity());
+        world.spawnEntity(follower);
+        BlockPos pos = trackMarker.getPos();
 
-            MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,
-                    EntityType.MINECART, SpawnReason.COMMAND, stack, player);
-            world.spawnEntity(minecart);
-            assert minecart != null;
-            minecart.startRiding(follower, true);
-            if(!rightClick) {
-                player.startRiding(minecart);
-            }
+        MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,
+                EntityType.MINECART, SpawnReason.COMMAND, stack, player);
+        world.spawnEntity(minecart);
+        assert minecart != null;
+        minecart.startRiding(follower, true);
+        if(!rightClick) {
+            player.startRiding(minecart);
         }
+
     }
 
 }

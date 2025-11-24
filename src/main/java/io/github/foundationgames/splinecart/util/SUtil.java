@@ -1,19 +1,8 @@
 package io.github.foundationgames.splinecart.util;
 
-import io.github.foundationgames.splinecart.Splinecart;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-
-import java.util.function.BiFunction;
 
 public enum SUtil {;
     public static final Vector3f[] REDSTONE_COLOR_LUT = Util.make(new Vector3f[16], colors -> {
@@ -27,16 +16,4 @@ public enum SUtil {;
         }
     });
 
-    public static void putBlockPos(NbtCompound nbt, @Nullable BlockPos pos, String key) {
-        if (pos == null) {
-            nbt.putIntArray(key, new int[0]);
-        } else nbt.putIntArray(key, new int[] {pos.getX(), pos.getY(), pos.getZ()});
-    }
-
-    public static BlockPos getBlockPos(NbtCompound nbt, String key) {
-        var arr = nbt.getIntArray(key);
-        if (arr.length < 3) return null;
-
-        return new BlockPos(arr[0], arr[1], arr[2]);
-    }
 }

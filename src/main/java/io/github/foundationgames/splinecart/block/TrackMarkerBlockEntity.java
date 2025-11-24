@@ -1,16 +1,15 @@
 package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
-import io.github.foundationgames.splinecart.item.CoasterCartItem;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.Pose;
-import io.github.foundationgames.splinecart.util.SUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -18,7 +17,6 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
@@ -35,8 +33,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     public TrackStyle nextStyle = TrackStyle.DEFAULT;
     public TrackColor nextColor = TrackColorPreset.WHITE.get();
 
-    private @Nullable BlockPos nextTrackMarkerPos = null;
-    private @Nullable BlockPos prevTrackMarkerPos = null;
+    private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
+    private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
 
     private Pose pose;
 
@@ -44,7 +42,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private int strength = Integer.MAX_VALUE;
     public TrackMarkerTriggers triggers = new TrackMarkerTriggers();
 
-    private double lastVelocity = CoasterCartItem.INITIAL_VELOCITY;
+    private double lastVelocity = 0;
 
     public int heading = Integer.MAX_VALUE;
     public int pitching = 0;
@@ -71,28 +69,11 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.pose = new Pose(pos, basis);
     }
 
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void setCachedState(BlockState state) {
-        super.setCachedState(state);
-
-        updatePose();
-    }
-
-    public static @Nullable TrackMarkerBlockEntity of(World world, @Nullable BlockPos pos) {
-        if (pos != null && world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity e) {
-            return e;
-        }
-
-        return null;
-    }
-
     /**
      * Gets called when this Track Marker gets connected to another Track Marker.
      * @param pos The location of the Track Marker, this is connected with (the next one)
      */
-    public void setNext(@Nullable BlockPos pos) {
+    public void setNext(BlockPos pos) {
         removeNextMarker();
         nextTrackMarkerPos = pos;
         TrackMarkerBlockEntity prevMarker = getPrevMarker();
@@ -106,61 +87,55 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             TrackMarkerBlockEntity nextPrevMarker = nextMarker.getPrevMarker();
             nextMarker.removePrevMarker();
             if(nextPrevMarker != null) {
-                nextPrevMarker.sync();
+                nextPrevMarker.updatePose();
                 nextPrevMarker.markDirty();
             }
             nextMarker.prevTrackMarkerPos = getPos();
 
-            nextMarker.sync();
+            nextMarker.updatePose();
             nextMarker.markDirty();
         }
 
-        sync();
+        updatePose();
         markDirty();
     }
 
     public void removePrevMarker() {
-        if(getPrevMarker() != null) {
-            getPrevMarker().setNextTrackMarkerPos(null);
+        TrackMarkerBlockEntity trackMarkerBlock = getPrevMarker();
+        if(trackMarkerBlock != null) {
+            trackMarkerBlock.nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
         }
-        prevTrackMarkerPos = null;
+        prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     }
 
     public void removeNextMarker() {
-        if(getNextMarker() != null) {
-            getNextMarker().setPrevTrackMarkerPos(null);
+        TrackMarkerBlockEntity trackMarkerBlock = getNextMarker();
+        if(trackMarkerBlock != null) {
+            trackMarkerBlock.prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
         }
-        nextTrackMarkerPos = null;
+        nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     }
 
     public @Nullable TrackMarkerBlockEntity getNextMarker() {
         assert world != null;
-        return nextTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(nextTrackMarkerPos);
+        return world.getBlockEntity(nextTrackMarkerPos) instanceof TrackMarkerBlockEntity t ? t : null;
     }
 
     public @Nullable TrackMarkerBlockEntity getPrevMarker() {
         assert world != null;
-        return prevTrackMarkerPos == null ? null : (TrackMarkerBlockEntity) world.getBlockEntity(prevTrackMarkerPos);
+        return world.getBlockEntity(prevTrackMarkerPos) instanceof TrackMarkerBlockEntity t ? t : null;
     }
 
-    public @Nullable BlockPos getNextTrackMarkerPos() {
+    public BlockPos getNextTrackMarkerPos() {
         return nextTrackMarkerPos;
     }
 
-    public void setNextTrackMarkerPos(@Nullable BlockPos nextTrackMarkerPos) {
-        this.nextTrackMarkerPos = nextTrackMarkerPos;
-    }
-
-    public @Nullable BlockPos getPrevTrackMarkerPos() {
+    public BlockPos getPrevTrackMarkerPos() {
         return prevTrackMarkerPos;
     }
 
-    public void setPrevTrackMarkerPos(@Nullable BlockPos prevTrackMarkerPos) {
-        this.prevTrackMarkerPos = prevTrackMarkerPos;
-    }
-
     public boolean hasNoTrackConnected() {
-        return prevTrackMarkerPos == null && nextTrackMarkerPos == null;
+        return prevTrackMarkerPos == Splinecart.OUT_OF_BOUNDS && nextTrackMarkerPos == Splinecart.OUT_OF_BOUNDS;
     }
 
     public int getPower() {
@@ -192,7 +167,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.strength = strength;
     }
 
-    public int computeStrength() {
+    public int computeStrength() { // TODO: code duplication computePower()
         TrackMarkerBlockEntity marker = this;
         int counter = 0;
         do {
@@ -206,7 +181,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public double computeLastVelocity() {
-        return (lastVelocity > 0 && nextTrackMarkerPos != null) || (lastVelocity < 0 && prevTrackMarkerPos != null) ? lastVelocity : 0;
+        return (lastVelocity > 0 && nextTrackMarkerPos != Splinecart.OUT_OF_BOUNDS)
+                || (lastVelocity < 0 && prevTrackMarkerPos != Splinecart.OUT_OF_BOUNDS) ? lastVelocity : 0;
     }
 
     public void setLastVelocity(double lastVelocity) {
@@ -222,15 +198,15 @@ public class TrackMarkerBlockEntity extends BlockEntity {
      * Gets called when the Track Marker Block gets broken.
      */
     public void onDestroy() {
-        var prevMarker = getPrevMarker();
+        TrackMarkerBlockEntity prevMarker = getPrevMarker();
         if (prevMarker != null) {
-            prevMarker.nextTrackMarkerPos = null;
+            prevMarker.nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
             prevMarker.sync();
             prevMarker.markDirty();
         }
-        var nextMarker = getNextMarker();
+        TrackMarkerBlockEntity nextMarker = getNextMarker();
         if (nextMarker != null) {
-            nextMarker.prevTrackMarkerPos = null;
+            nextMarker.prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
             nextMarker.sync();
             nextMarker.markDirty();
         }
@@ -238,11 +214,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-
-        assert world != null;
-        prevTrackMarkerPos = SUtil.getBlockPos(nbt, "prev");
-        nextTrackMarkerPos = SUtil.getBlockPos(nbt, "next");
+        prevTrackMarkerPos = NbtHelper.toBlockPos(nbt, "prev").orElse(Splinecart.OUT_OF_BOUNDS);
+        nextTrackMarkerPos = NbtHelper.toBlockPos(nbt, "next").orElse(Splinecart.OUT_OF_BOUNDS);
 
         nextType = TrackType.read(nbt.getInt("track_type"));
         nextStyle = TrackStyle.read(nbt.getInt("track_style"));
@@ -262,10 +235,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-
-        SUtil.putBlockPos(nbt, getPrevTrackMarkerPos(), "prev");
-        SUtil.putBlockPos(nbt, getNextTrackMarkerPos(), "next");
+        if(prevTrackMarkerPos != Splinecart.OUT_OF_BOUNDS)
+            nbt.put("prev", NbtHelper.fromBlockPos(prevTrackMarkerPos));
+        if(nextTrackMarkerPos != Splinecart.OUT_OF_BOUNDS)
+            nbt.put("next", NbtHelper.fromBlockPos(nextTrackMarkerPos));
 
         nbt.putInt("track_type", this.nextType.ordinal());
         nbt.putInt("track_style", this.nextStyle.ordinal());
@@ -288,9 +261,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         if(heading == Integer.MAX_VALUE
                 && world != null
                 && world.getBlockState(getPos()).getBlock() instanceof TrackMarkerBlock block
-                && block.itemPlacementContext != null) {
-            if(block.itemPlacementContext.getPlayer() == null)
-                return;
+                && block.itemPlacementContext != null
+                && block.itemPlacementContext.getPlayer() != null) {
             heading = (block.itemPlacementContext.getPlayer().isSneaking()
                     ? round((int) block.itemPlacementContext.getPlayerYaw(), 5) % ORIENTATION_RESOLUTION
                     : round((int) block.itemPlacementContext.getPlayerYaw(), 45) % ORIENTATION_RESOLUTION);

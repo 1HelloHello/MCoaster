@@ -2,7 +2,6 @@ package io.github.foundationgames.splinecart.track;
 
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.util.SUtil;
-import net.fabricmc.fabric.impl.item.ItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 

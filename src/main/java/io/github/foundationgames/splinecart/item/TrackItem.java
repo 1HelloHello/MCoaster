@@ -19,47 +19,46 @@ public class TrackItem extends ActionItem {
 
     @Override
     public boolean click(PlayerEntity playerEntity, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {
-        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) {
+        if(!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity trackMarker)) {
             return false;
         }
         PlayerMixinInterface player = (PlayerMixinInterface) playerEntity;
         if(!rightClick) {
-            return selectNewMarker(player, pos, world);
+            return selectNewMarker(player, world, pos);
         }
-        return connectToMarker(player, world, pos);
+        return rightClick(player, world, trackMarker);
     }
 
-    private boolean selectNewMarker(PlayerMixinInterface player, BlockPos pos, World world) {
-        if(pos.equals(player.getTrackSelectedMarker())) {
-            return true;
+    private boolean selectNewMarker(PlayerMixinInterface player, World world, BlockPos pos) {
+        BlockPos selectedMarker = player.getTrackSelectedMarker();
+        if(pos.equals(selectedMarker)) {
+            return false;
         }
-        if(checkMarkerPos(player.getTrackSelectedMarker(), world)) {
-            player.setLastTrackSelectedMarker(player.getTrackSelectedMarker());
+        if(world.getBlockEntity(selectedMarker) instanceof TrackMarkerBlockEntity) {
+            player.setLastTrackSelectedMarker(selectedMarker);
         }
         player.setTrackSelectedMarker(pos);
         return true;
     }
 
-    private boolean connectToMarker(PlayerMixinInterface player, World world, BlockPos pos) {
-        BlockPos otherPos = player.getTrackSelectedMarker();
-        if(pos.equals(otherPos))
-            return false;
-        if(!checkMarkerPos(otherPos, world)) {
-            BlockPos lastSelectedMarker = player.getLastTrackSelectedMarker();
-            if(!checkMarkerPos(lastSelectedMarker, world) || pos.equals(lastSelectedMarker)) {
-                return false;
-            }
-            otherPos = player.getLastTrackSelectedMarker();
+    private boolean rightClick(PlayerMixinInterface player, World world, TrackMarkerBlockEntity trackMarker) {
+        if (connectToMarker(player, world, trackMarker, player.getTrackSelectedMarker())) {
+            return true;
         }
-        TrackMarkerBlockEntity otherMarker = (TrackMarkerBlockEntity) world.getBlockEntity(otherPos);
-        otherMarker.setNext(pos);
-        world.playSound(null, pos, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
-        selectNewMarker(player, pos, world);
-        return true;
+        return connectToMarker(player, world, trackMarker, player.getLastTrackSelectedMarker());
     }
 
-    private boolean checkMarkerPos(BlockPos pos, World world) {
-        return pos != null && world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity;
+    private boolean connectToMarker(PlayerMixinInterface player, World world, TrackMarkerBlockEntity endMarker, BlockPos start) {
+        BlockPos end = endMarker.getPos();
+        if(end.equals(start))
+            return false;
+        if(world.getBlockEntity(start) instanceof TrackMarkerBlockEntity startMarker) {
+            startMarker.setNext(end);
+            world.playSound(null, end, SoundEvents.ENTITY_IRON_GOLEM_REPAIR, SoundCategory.BLOCKS, 1.5f, 0.7f);
+            selectNewMarker(player, world, end);
+            return true;
+        }
+        return false;
     }
 
 }

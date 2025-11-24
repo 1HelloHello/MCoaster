@@ -25,12 +25,10 @@ public class EntityMixin {
         }
 
         var start = self.getBlockPos();
-        if (world.getBlockEntity(start) instanceof TrackMarkerBlockEntity) { // checks if there is a TrackTiesBlockEntity at this position
-            TrackFollowerEntity follower = TrackFollowerEntity.create(world, start, 0);
-            if (follower != null) {
-                world.spawnEntity(follower);
-                self.startRiding(follower, true);
-            }
+        if (world.getBlockEntity(start) instanceof TrackMarkerBlockEntity trackMarker) { // checks if there is a TrackTiesBlockEntity at this position
+            TrackFollowerEntity follower = TrackFollowerEntity.create(world, trackMarker, 0);
+            world.spawnEntity(follower);
+            self.startRiding(follower, true);
         }
     }
 

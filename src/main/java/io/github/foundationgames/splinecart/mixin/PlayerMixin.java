@@ -1,5 +1,6 @@
 package io.github.foundationgames.splinecart.mixin;
 
+import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.mixin_interface.PlayerMixinInterface;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -8,10 +9,10 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(PlayerEntity.class)
 public abstract class PlayerMixin implements PlayerMixinInterface {
 
-    private BlockPos trackSelectedMarker = null;
-    private BlockPos lastTrackSelectedMarker = null;
-    private BlockPos selectedTrigger = null;
-    private BlockPos lastCoasterStart = new BlockPos(0, Integer.MIN_VALUE, 0);
+    private BlockPos trackSelectedMarker = Splinecart.OUT_OF_BOUNDS;
+    private BlockPos lastTrackSelectedMarker = Splinecart.OUT_OF_BOUNDS;
+    private BlockPos selectedTrigger = Splinecart.OUT_OF_BOUNDS;
+    private BlockPos lastCoasterStart = Splinecart.OUT_OF_BOUNDS;
 
     @Override
     public BlockPos getTrackSelectedMarker() {

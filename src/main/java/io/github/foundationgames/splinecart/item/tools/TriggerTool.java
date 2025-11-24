@@ -44,10 +44,10 @@ public class TriggerTool extends ToolItem {
         if(playerEntity.isSneaking()) {
             return removeAllTriggers(playerEntity, marker);
         }
-        if(player.getSelectedTrigger() == null || !(world.getBlockEntity(player.getSelectedTrigger()) instanceof TrackMarkerBlockEntity savedMarker)) {
-            return false;
+        if (world.getBlockEntity(player.getSelectedTrigger()) instanceof TrackMarkerBlockEntity savedMarker) {
+            return addTrigger(playerEntity, marker, savedMarker);
         }
-        return addTrigger(playerEntity, marker, savedMarker);
+        return false;
     }
 
     private boolean selectTrigger(PlayerMixinInterface player, PlayerEntity playerEntity, BlockPos pos) {
