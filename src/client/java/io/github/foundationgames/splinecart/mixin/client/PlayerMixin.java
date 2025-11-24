@@ -12,12 +12,16 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class PlayerMixin {
+
+    @Unique
+    private boolean cleared = true;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo info) {
@@ -59,6 +63,7 @@ public abstract class PlayerMixin {
             return;
         }
         item.sendCurrentStateMessage(player, trackMarker);
+        cleared = false;
     }
 
     /**
@@ -66,7 +71,9 @@ public abstract class PlayerMixin {
      * @param player
      */
     private void clear(PlayerEntity player) {
-        player.sendMessage(Text.of(""), true);
+        if(!cleared)
+            player.sendMessage(Text.of(""), true);
+        cleared = true;
     }
 
 }
