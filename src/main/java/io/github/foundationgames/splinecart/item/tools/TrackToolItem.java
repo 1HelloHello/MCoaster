@@ -17,8 +17,8 @@ public class TrackToolItem extends ToolItem {
 
     public final Type type;
 
-    public TrackToolItem(Type type, String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public TrackToolItem(Type type, RegistryKey<Item> registryKey) {
+        super(registryKey);
         this.type = type;
     }
 

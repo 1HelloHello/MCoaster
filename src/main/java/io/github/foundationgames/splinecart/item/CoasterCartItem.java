@@ -18,8 +18,8 @@ public class CoasterCartItem extends ActionItem {
 
     public static final double INITIAL_VELOCITY = 0;
 
-    public CoasterCartItem(String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public CoasterCartItem(RegistryKey<Item> registryKey) {
+        super(registryKey);
     }
 
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stack) {

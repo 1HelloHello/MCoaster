@@ -16,8 +16,8 @@ public class OrientationToolItem extends ToolItem {
 
     public final Type type;
 
-    public OrientationToolItem(Type type, String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public OrientationToolItem(Type type, RegistryKey<Item> registryKey) {
+        super(registryKey);
         this.type = type;
     }
 

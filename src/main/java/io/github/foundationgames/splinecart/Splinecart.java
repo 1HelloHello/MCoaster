@@ -6,7 +6,6 @@ import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
 import io.github.foundationgames.splinecart.event.DyeItemUseEvent;
 import io.github.foundationgames.splinecart.item.*;
 import io.github.foundationgames.splinecart.item.tools.*;
-import io.github.foundationgames.splinecart.util.SUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
@@ -23,12 +22,14 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,47 +37,47 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class Splinecart implements ModInitializer {
+
+    public static final BlockPos OUT_OF_BOUNDS = new BlockPos(0, Integer.MIN_VALUE, 0);
 
 	public static final String MOD_NAME = "splinecart";
 
     public static final Logger LOGGER = LoggerFactory.getLogger("splinecart");
 
-	public static final TrackMarkerBlock TRACK_TIES = SUtil.register(Registries.BLOCK, "track_ties",
-			(i, k) -> new TrackMarkerBlock(AbstractBlock.Settings.copy(Blocks.RAIL).registryKey(k)));
+	public static final TrackMarkerBlock TRACK_TIES = register(Registries.BLOCK, "track_ties",
+			k -> new TrackMarkerBlock(AbstractBlock.Settings.copy(Blocks.RAIL).registryKey(k)));
 	public static final BlockEntityType<TrackMarkerBlockEntity> TRACK_TIES_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, "track_ties",
 			FabricBlockEntityTypeBuilder.create(TrackMarkerBlockEntity::new, TRACK_TIES).build());
 
-	public static final TrackItem TRACK = SUtil.register(Registries.ITEM, "track",
-			(i, k) -> new TrackItem("track", k));
+	public static final TrackItem TRACK = register(Registries.ITEM, "track", TrackItem::new);
 
-	public static final OrientationToolItem HEADING_TOOL = SUtil.register(Registries.ITEM, "heading_tool",
-			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.HEADING, "heading_tool", k));
-	public static final OrientationToolItem PITCHING_TOOL = SUtil.register(Registries.ITEM, "pitching_tool",
-			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.PITCHING, "pitching_tool", k));
-	public static final OrientationToolItem BANKING_TOOL = SUtil.register(Registries.ITEM, "banking_tool",
-			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.BANKING, "banking_tool", k));
-	public static final OrientationToolItem RELATIVE_ORIENTATION_TOOL = SUtil.register(Registries.ITEM, "relative_orientation_tool",
-			(i, k) -> new OrientationToolItem(OrientationToolItem.Type.RELATIVE_ORIENTATION, "relative_orientation_tool", k));
+	public static final OrientationToolItem HEADING_TOOL = register(Registries.ITEM, "heading_tool",
+			k -> new OrientationToolItem(OrientationToolItem.Type.HEADING, k));
+	public static final OrientationToolItem PITCHING_TOOL = register(Registries.ITEM, "pitching_tool",
+			k -> new OrientationToolItem(OrientationToolItem.Type.PITCHING, k));
+	public static final OrientationToolItem BANKING_TOOL = register(Registries.ITEM, "banking_tool",
+			k -> new OrientationToolItem(OrientationToolItem.Type.BANKING, k));
+	public static final OrientationToolItem RELATIVE_ORIENTATION_TOOL = register(Registries.ITEM, "relative_orientation_tool",
+			k -> new OrientationToolItem(OrientationToolItem.Type.RELATIVE_ORIENTATION, k));
 
-	public static final TrackToolItem TRACK_STYLE_TOOL = SUtil.register(Registries.ITEM, "track_style_tool",
-			(i, k) -> new TrackToolItem(TrackToolItem.Type.STYLE, "track_style_tool", k));
-	public static final TrackToolItem TRACK_TYPE_TOOL = SUtil.register(Registries.ITEM, "track_type_tool",
-			(i, k) -> new TrackToolItem(TrackToolItem.Type.TYPE, "track_type_tool", k));
+	public static final TrackToolItem TRACK_STYLE_TOOL = register(Registries.ITEM, "track_style_tool",
+			k -> new TrackToolItem(TrackToolItem.Type.STYLE, k));
+	public static final TrackToolItem TRACK_TYPE_TOOL = register(Registries.ITEM, "track_type_tool",
+			k -> new TrackToolItem(TrackToolItem.Type.TYPE, k));
 
-	public static final PowerToolItem TRACK_POWER_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_power_tool",
-			(i, k) -> new PowerToolItem(PowerToolItem.Type.POWER, "track_power_tool", k));
-	public static final PowerToolItem TRACK_STRENGTH_TOOL_ITEM = SUtil.register(Registries.ITEM, "track_strength_tool",
-			(i, k) -> new PowerToolItem(PowerToolItem.Type.STRENGTH, "track_strength_tool", k));
-	public static final TriggerTool TRIGGER_TOOL = SUtil.register(Registries.ITEM, "trigger_tool",
-			(i, k) -> new TriggerTool("trigger_tool", k));
+	public static final PowerToolItem TRACK_POWER_TOOL_ITEM = register(Registries.ITEM, "track_power_tool",
+			k -> new PowerToolItem(PowerToolItem.Type.POWER, k));
+	public static final PowerToolItem TRACK_STRENGTH_TOOL_ITEM = register(Registries.ITEM, "track_strength_tool",
+			k -> new PowerToolItem(PowerToolItem.Type.STRENGTH, k));
+	public static final TriggerTool TRIGGER_TOOL = register(Registries.ITEM, "trigger_tool", TriggerTool::new);
 
-	public static final CoasterCartItem COASTER_CART_ITEM = SUtil.register(Registries.ITEM, "coaster_cart",
-			(i, k) -> new CoasterCartItem("coaster_cart", k));
+	public static final CoasterCartItem COASTER_CART_ITEM = register(Registries.ITEM, "coaster_cart", CoasterCartItem::new);
 
-	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = SUtil.register(Registries.ENTITY_TYPE, "track_follower",
-			(i, k) -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
+	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = register(Registries.ENTITY_TYPE, "track_follower",
+			k -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
 
 	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
 
@@ -85,8 +86,8 @@ public class Splinecart implements ModInitializer {
 	public static final GameRules.Key<GameRules.IntRule> COASTER_FRICTION =
 			GameRuleRegistry.register("coasterFriction", GameRules.Category.CHAT, GameRuleFactory.createIntRule(20));
 
-	public static final BlockItem TIE_ITEM = SUtil.register(Registries.ITEM, "track_ties",
-			(i, k) -> new BlockItem(TRACK_TIES, new Item.Settings()
+	public static final BlockItem TIE_ITEM = register(Registries.ITEM, "track_ties",
+			k -> new BlockItem(TRACK_TIES, new Item.Settings()
 					.component(DataComponentTypes.LORE,
 							new LoreComponent(List.of(Text.translatable("item.splinecart.track_ties.desc").formatted(Formatting.GRAY)))
 					).useBlockPrefixedTranslationKey().registryKey(k)));
@@ -128,5 +129,11 @@ public class Splinecart implements ModInitializer {
 	public static Identifier id(String id) {
 		return Identifier.of(MOD_NAME, id);
 	}
+
+    public static <V, T extends V> T register(Registry<V> registry, String id, Function<RegistryKey<V>, T> obj) {
+        Identifier identifier = id(id);
+        RegistryKey<V> key = RegistryKey.of(registry.getKey(), identifier);
+        return Registry.register(registry, identifier, obj.apply(key));
+    }
 
 }

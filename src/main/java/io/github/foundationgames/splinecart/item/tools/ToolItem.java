@@ -18,8 +18,8 @@ import net.minecraft.world.World;
  */
 public abstract class ToolItem extends ActionItem {
 
-    public ToolItem(String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public ToolItem(RegistryKey<Item> registryKey) {
+        super(registryKey);
     }
 
     public boolean click(PlayerEntity player, World world, BlockPos pos, boolean rightClick, ItemStack stackInHand) {

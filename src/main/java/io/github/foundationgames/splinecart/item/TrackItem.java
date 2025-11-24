@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 
 public class TrackItem extends ActionItem {
 
-    public TrackItem(String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public TrackItem(RegistryKey<Item> registryKey) {
+        super(registryKey);
     }
 
     @Override

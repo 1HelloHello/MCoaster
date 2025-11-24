@@ -22,8 +22,8 @@ public class PowerToolItem extends ToolItem {
 
     public final Type type;
 
-    public PowerToolItem(Type type, String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public PowerToolItem(Type type, RegistryKey<Item> registryKey) {
+        super(registryKey);
         this.type = type;
     }
 

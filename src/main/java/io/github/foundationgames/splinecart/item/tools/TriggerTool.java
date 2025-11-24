@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class TriggerTool extends ToolItem {
 
-    public TriggerTool(String identifier, RegistryKey<Item> registryKey) {
-        super(identifier, registryKey);
+    public TriggerTool(RegistryKey<Item> registryKey) {
+        super(registryKey);
     }
 
     @Override

@@ -39,18 +39,4 @@ public enum SUtil {;
 
         return new BlockPos(arr[0], arr[1], arr[2]);
     }
-
-    public static <V, T extends V> T register(Registry<V> registry, String id, BiFunction<Identifier, RegistryKey<V>, T> obj) {
-        return register(registry, Identifier.of(Splinecart.MOD_NAME, id), obj);
-    }
-
-    public static <V, T extends V> T register(Registry<V> registry, Identifier id, BiFunction<Identifier, RegistryKey<V>, T> obj) {
-        RegistryKey<V> key = RegistryKey.of(registry.getKey(), id);
-        return Registry.register(registry, id, obj.apply(id, key));
-    }
-
-    public static Vec3d toCenteredVec3d(Vec3i vec) {
-        return new Vec3d(vec.getX() + .5, vec.getY() + .5, vec.getZ() + .5);
-    }
-
 }
