@@ -5,6 +5,7 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
+import io.github.foundationgames.splinecart.util.InterpolationResult;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -66,16 +67,15 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         double approximateTrackLength = pose.translation().distance(nextMarkerPose.translation());
         double n = 20; // when n blocks away from marker, segment density is halved
         int segments = Math.max(1, (int) (CONFIG.instance().getTrackResolution() / 8f * (16 + 2 * approximateTrackLength) * (n / (n + Math.sqrt(distanceToPlayerSquared)))));
-        var origin = new Vector3d(pose.translation());
-        var basis = new Matrix3d(pose.basis());
-        var grad = new Vector3d(0, 0, 1).mul(pose.basis());
+        InterpolationResult res0 = new InterpolationResult();
+        InterpolationResult res1 = new InterpolationResult();
         float totalDist = 0;
 
         for (int i = 0; i < segments; i++) {
             double t0 = (double) i / segments;
             double t1 = (double) (i + 1) / segments;
 
-            totalDist = renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor, t0, t1, totalDist, origin, basis, grad, overlay, o);
+            totalDist = renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor, t0, t1, totalDist, res0, res1, overlay, o);
         }
 
         TrackType trackType = marker.nextType;
@@ -88,7 +88,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 double t0 = (double) i / segments;
                 double t1 = (double) (i + 1) / segments;
 
-                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, origin, basis, grad, overlay, o);
+                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, res0, res1, overlay, o);
             }
         }
         if (trackType.hasDynamic) { // animated overlay
@@ -102,7 +102,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 double t0 = (double) i / segments;
                 double t1 = (double) (i + 1) / segments;
 
-                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, offset, trackColor, t0, t1, totalDist, origin, basis, grad, overlay, o);
+                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, offset, trackColor, t0, t1, totalDist, res0, res1, overlay, o);
             }
         }
 
@@ -112,7 +112,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     @Override
     public boolean rendersOutsideBoundingBox(TrackMarkerBlockEntity blockEntity) {
-        return blockEntity.getNextMarker() != null;
+        return true;
     }
 
     @Override
@@ -154,14 +154,16 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     private float renderPart(World world, MatrixStack.Entry entry, VertexConsumer buffer, Pose start, Pose end,
                              float u0, float u1, float vOffset, Color color, double t0, double t1, float blockProgress,
-                             Vector3d origin0, Matrix3d basis0, Vector3d grad0, int overlay, Vector3f o) {
-        start.interpolate(end, t0, origin0, basis0, grad0);
+                             InterpolationResult res0, InterpolationResult res1, int overlay, Vector3f o) {
+        start.interpolate(end, t0, res0);
+        Vector3d origin0 = res0.translation();
+        Matrix3d basis0 = res0.basis();
+        Vector3d grad0 = res0.gradient();
         var norm0 = new Vector3f(0, 1, 0).mul(basis0);
-
-        var origin1 = new Vector3d(origin0);
-        var basis1 = new Matrix3d(basis0);
-        var grad1 = new Vector3d(grad0);
-        start.interpolate(end, t1, origin1, basis1, grad1);
+        start.interpolate(end, t1, res1);
+        Vector3d origin1 = res1.translation();
+        Matrix3d basis1 = res1.basis();
+        Vector3d grad1 = res1.gradient();
         var norm1 = new Vector3f(0, 1, 0).mul(basis1);
 
         float v0 = blockProgress;
