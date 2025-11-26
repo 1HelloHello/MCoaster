@@ -59,45 +59,35 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         int segments = getSegments(marker.getPos(), nextMarker.getPos(), playerPos);
         InterpolationResult res0 = new InterpolationResult();
         InterpolationResult res1 = new InterpolationResult();
-        float totalDist = 0;
 
-        for (int i = 0; i < segments; i++) {
-            double t0 = (double) i / segments;
-            double t1 = (double) (i + 1) / segments;
-
-            totalDist = renderPart(world, matrices.peek(), buffer, marker, nextMarker, u0, u1, 0, marker.nextColor, t0, t1, totalDist, res0, res1, overlay);
-        }
+        renderTrackTexture(marker, matrices, overlay, segments, world, buffer, 0, marker.nextColor, nextMarker, u0, u1, res0, res1);
 
         TrackType trackType = marker.nextType;
         u0 = trackType.getTextureStart();
         u1 = trackType.getTextureEnd();
         if (trackType.hasStatic) { // renders the overlay (chain track moving, powered magnetic track
             VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
-
-            for (int i = 0; i < segments; i++) {
-                double t0 = (double) i / segments;
-                double t1 = (double) (i + 1) / segments;
-
-                totalDist = renderPart(world, matrices.peek(), olBuffer, marker, nextMarker, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, res0, res1, overlay);
-            }
+            renderTrackTexture(marker, matrices, overlay, segments, world, olBuffer, 0, marker.nextColor, nextMarker, u0, u1, res0, res1);
         }
         if (trackType.hasDynamic) { // animated overlay
             VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
-
             int power = marker.computePower();
             float offset = trackType.progress.apply(power, marker.clientTime);
             Color trackColor = trackType.color.apply(power);
-
-            for (int i = 0; i < segments; i++) {
-                double t0 = (double) i / segments;
-                double t1 = (double) (i + 1) / segments;
-
-                totalDist = renderPart(world, matrices.peek(), olBuffer, marker, nextMarker, u0, u1, offset, trackColor, t0, t1, totalDist, res0, res1, overlay);
-            }
+            renderTrackTexture(marker, matrices, overlay, segments, world, olBuffer, offset, trackColor, nextMarker, u0, u1, res0, res1);
         }
 
 
         matrices.pop();
+    }
+
+    private void renderTrackTexture(TrackMarkerBlockEntity marker, MatrixStack matrices, int overlay, int segments, World world, VertexConsumer buffer, float offset, Color color, TrackMarkerBlockEntity nextMarker, float u0, float u1, InterpolationResult res0, InterpolationResult res1) {
+        float totalDist = 0;
+        for (int i = 0; i < segments; i++) {
+            double t0 = (double) i / segments;
+            double t1 = (double) (i + 1) / segments;
+            totalDist = renderPart(world, matrices.peek(), buffer, marker, nextMarker, u0, u1, offset, color, t0, t1, totalDist, res0, res1, overlay);
+        }
     }
 
     private static int getSegments(BlockPos start, BlockPos end, BlockPos playerPos) {
