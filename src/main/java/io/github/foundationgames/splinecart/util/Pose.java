@@ -19,7 +19,7 @@ public record Pose(Vector3dc translation, Matrix3dc basis) {
         var grad0 = new Vector3d(0, 0, 1).mul(this.basis());
         var grad1 = new Vector3d(0, 0, 1).mul(other.basis());
 
-        cubicHermiteSpline(t, factor, point0, grad0, point1, grad1, res.translation(), res.gradient());
+        cubicHermiteSpline(t, factor, point0, grad0, point1, grad1, res);
         var ngrad = res.gradient().normalize(new Vector3d());
 
         var rot0 = this.basis().getNormalizedRotation(new Quaterniond());
@@ -41,16 +41,15 @@ public record Pose(Vector3dc translation, Matrix3dc basis) {
         }
     }
 
-    public static void cubicHermiteSpline(double t, double factor, Vector3dc clientPos, Vector3dc clientVelocity, Vector3dc serverPos, Vector3dc serverVelocity,
-                                          Vector3d newClientPos, Vector3d newClientVelocity) {
+    public static void cubicHermiteSpline(double t, double factor, Vector3dc clientPos, Vector3dc clientVelocity, Vector3dc serverPos, Vector3dc serverVelocity, InterpolationResult res) {
         var temp = new Vector3d();
         var diff = new Vector3d(serverPos).sub(clientPos);
 
-        newClientVelocity.set(temp.set(diff).mul(6*t - 6*t*t))
+        res.gradient().set(temp.set(diff).mul(6*t - 6*t*t))
                 .add(temp.set(clientVelocity).mul(3*t*t - 4*t + 1).mul(factor))
                 .add(temp.set(serverVelocity).mul(3*t*t - 2*t).mul(factor));
 
-        newClientPos.set(clientPos)
+        res.translation().zero()
                 .add(temp.set(clientVelocity).mul(t*t*t - 2*t*t + t).mul(factor))
                 .add(temp.set(diff).mul(-2*t*t*t + 3*t*t))
                 .add(temp.set(serverVelocity).mul(t*t*t - t*t).mul(factor));

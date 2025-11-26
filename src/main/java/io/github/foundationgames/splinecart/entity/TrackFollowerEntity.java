@@ -115,10 +115,11 @@ public class TrackFollowerEntity extends Entity {
         Vec3d velocity = this.getVelocity();
         Vector3d clientVel = new Vector3d(velocity.getX(), velocity.getY(), velocity.getZ());
 
-        var newClientPos = new Vector3d();
-        var newClientVel = new Vector3d();
-        Pose.cubicHermiteSpline(t, 1, clientPos, clientVel, this.serverPosition, this.serverVelocity,
-                newClientPos, newClientVel);
+        InterpolationResult res = new InterpolationResult();
+        var newClientPos = res.translation();
+        var newClientVel = res.gradient();
+        Pose.cubicHermiteSpline(t, 1, clientPos, clientVel, this.serverPosition, this.serverVelocity, res);
+        newClientPos.add(clientPos).add(0.5, 0.5, 0.5);
         this.setPosition(newClientPos.x(), newClientPos.y(), newClientPos.z());
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }
