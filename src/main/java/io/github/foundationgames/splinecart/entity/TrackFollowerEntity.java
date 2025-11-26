@@ -343,9 +343,6 @@ public class TrackFollowerEntity extends Entity {
             this.trackVelocity += linearPush;
             passenger.setVelocity(Vec3d.ZERO);
         }
-
-        var gradeVec = new Vector3d(0, 1, 0).mul(this.basis);
-        gradeVec.mul(1, 0, 1);
         double power = startE.computePower();
         double strength = startE.computeStrength();
 
@@ -353,7 +350,6 @@ public class TrackFollowerEntity extends Entity {
         this.trackVelocity =
                 startE.nextType.motion.calculate(
                         this.trackVelocity,
-                        gradeVec.length(),
                         power,
                         strength,
                         ((ServerWorld) getWorld()).getGameRules().getInt(Splinecart.COASTER_FRICTION) * 0.0001

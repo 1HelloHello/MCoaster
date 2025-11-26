@@ -79,37 +79,33 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         }
 
         TrackType trackType = marker.nextType;
-        if (trackType.overlay != null) { // renders the overlay (chain track moving, powered magnetic track
-            u0 = trackType.ordinal() * TrackType.INVERSE_CANVAS_SIZE;
-            u1 = u0 + TrackType.INVERSE_CANVAS_SIZE;
-            { // static overlay
-                VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
+        u0 = trackType.getTextureStart();
+        u1 = trackType.getTextureEnd();
+        if (trackType.hasStatic) { // renders the overlay (chain track moving, powered magnetic track
+            VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
 
-                float[] olVOffset = {0};
+            for (int i = 0; i < segments; i++) {
+                double t0 = (double) i / segments;
+                double t1 = (double) (i + 1) / segments;
 
-                for (int i = 0; i < segments; i++) {
-                    double t0 = (double)i / segments;
-                    double t1 = (double)(i + 1) / segments;
-
-                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], TrackColor.WHITE.color, t0, t1, totalDist, origin, basis, grad, overlay);
-                }
+                renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, origin, basis, grad, overlay);
             }
-            { // animated overlay
-                VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
-
-                float[] olVOffset = {0};
-                int power = marker.computePower();
-                Color trackColor = trackType.overlay.calculateEffects(power, marker.clientTime, olVOffset);
-
-                for (int i = 0; i < segments; i++) {
-                    double t0 = (double)i / segments;
-                    double t1 = (double)(i + 1) / segments;
-
-                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], trackColor, t0, t1, totalDist, origin, basis, grad, overlay);
-                }
-            }
-
         }
+        if (trackType.hasDynamic) { // animated overlay
+            VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
+
+            int power = marker.computePower();
+            float offset = trackType.progress.apply(power, marker.clientTime);
+            Color trackColor = trackType.color.apply(power);
+
+            for (int i = 0; i < segments; i++) {
+                double t0 = (double)i / segments;
+                double t1 = (double)(i + 1) / segments;
+
+                renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, offset, trackColor, t0, t1, totalDist, origin, basis, grad, overlay);
+            }
+        }
+
 
         matrices.pop();
     }
