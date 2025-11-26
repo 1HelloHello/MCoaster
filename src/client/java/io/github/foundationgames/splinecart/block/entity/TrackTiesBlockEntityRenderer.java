@@ -6,7 +6,6 @@ import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.InterpolationResult;
-import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -16,6 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
@@ -121,7 +121,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     }
 
 
-    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Pose start) {
+    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Matrix3dc start) {
         matrices.push();
         matrices.translate(0.51, 0.511, 0.512); // 0 -> .5 TODO
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
@@ -130,11 +130,11 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.pop();
     }
 
-    private void renderDebug(Pose pose, MatrixStack.Entry entry, VertexConsumer buffer) {
+    private void renderDebug(Matrix3dc pose, MatrixStack.Entry entry, VertexConsumer buffer) {
         var posMat = entry.getPositionMatrix();
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                posMat.setRowColumn(x, y, (float) pose.basis().getRowColumn(x, y));
+                posMat.setRowColumn(x, y, (float) pose.getRowColumn(x, y));
             }
         }
 

@@ -1,10 +1,9 @@
 package io.github.foundationgames.splinecart.util;
 
-import org.joml.Matrix3dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
-public record Pose(Matrix3dc basis) {
+public record Pose() {
     public static void cubicHermiteSpline(double t, double factor, Vector3dc clientPos, Vector3dc clientVelocity, Vector3dc serverPos, Vector3dc serverVelocity, InterpolationResult res) {
         var temp = new Vector3d();
         var diff = new Vector3d(serverPos).sub(clientPos);

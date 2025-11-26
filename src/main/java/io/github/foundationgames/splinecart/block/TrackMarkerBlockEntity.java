@@ -20,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
@@ -42,7 +43,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
 
-    private Pose pose;
+    private Matrix3d pose;
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
@@ -73,7 +74,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         basis.rotateY(-relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
         basis.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
 
-        this.pose = new Pose(basis);
+        this.pose = basis;
     }
 
     /**
@@ -196,8 +197,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.lastVelocity = lastVelocity;
     }
 
-    public Pose pose() {
-        updatePose();
+    public Matrix3dc pose() {
         return this.pose;
     }
 
@@ -241,6 +241,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         pitching = nbt.getInt("pitching");
         banking = nbt.getInt("banking");
         relative_orientation = nbt.getInt("relative_orientation");
+        updatePose();
     }
 
     @Override
@@ -286,17 +287,17 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public void interpolate(TrackMarkerBlockEntity other, double t, InterpolationResult res) {
-        Pose pose0 = this.pose();
-        Pose pose1 = other.pose();
+        Matrix3dc pose0 = this.pose();
+        Matrix3dc pose1 = other.pose();
         double factor = Math.sqrt(this.pos.getSquaredDistance(other.pos));
-        var grad0 = new Vector3d(0, 0, 1).mul(pose0.basis());
-        var grad1 = new Vector3d(0, 0, 1).mul(pose1.basis());
+        var grad0 = new Vector3d(0, 0, 1).mul(pose0);
+        var grad1 = new Vector3d(0, 0, 1).mul(pose1);
 
         Pose.cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
         var ngrad = res.gradient().normalize(new Vector3d());
 
-        var rot0 = pose0.basis().getNormalizedRotation(new Quaterniond());
-        var rot1 = pose1.basis().getNormalizedRotation(new Quaterniond());
+        var rot0 = pose0.getNormalizedRotation(new Quaterniond());
+        var rot1 = pose1.getNormalizedRotation(new Quaterniond());
 
         var rotT = rot0.nlerp(rot1, t, new Quaterniond());
         res.basis().set(rotT);
