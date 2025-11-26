@@ -9,11 +9,7 @@ import org.joml.Vector3dc;
 
 public record Pose(Matrix3dc basis) {
     public void interpolate(Pose other, BlockPos start, BlockPos end, double t, InterpolationResult res) {
-        double distance = Math.sqrt(start.getSquaredDistance(end));
-        interpolate(other, start, end, t, distance, res);
-    }
-
-    private void interpolate(Pose other, BlockPos start, BlockPos end, double t, double factor, InterpolationResult res) {
+        double factor = Math.sqrt(start.getSquaredDistance(end));
         var grad0 = new Vector3d(0, 0, 1).mul(this.basis());
         var grad1 = new Vector3d(0, 0, 1).mul(other.basis());
 
