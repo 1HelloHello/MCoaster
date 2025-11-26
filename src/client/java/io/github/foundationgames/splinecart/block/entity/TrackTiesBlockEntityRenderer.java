@@ -178,7 +178,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
         pos0 = pos0.add(startp);
         BlockPos pos1 = BlockPos.ofFloored(origin1.x() + 0.5, origin1.y() + 0.5, origin1.z() + 0.5);
-        pos1 = pos1.add(endp);
+        pos1 = pos1.add(startp);
 
         int light0 = WorldRenderer.getLightmapCoordinates(world, pos0);
         int light1 = WorldRenderer.getLightmapCoordinates(world, pos1);
