@@ -58,7 +58,11 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
-        int segments = CONFIG.instance().getTrackResolution() * Math.max((int) pose.translation().distance(nextMarkerPose.translation()), 2);
+        BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
+        double distanceToPlayerSquared = Math.min(marker.getPos().getSquaredDistance(playerPos), marker.getNextMarker().getPos().getSquaredDistance(playerPos));
+        double approximateTrackLength = pose.translation().distance(nextMarkerPose.translation());
+        double n = 20; // when n blocks away from marker, segment density is halved
+        int segments = Math.max(1, (int) (CONFIG.instance().getTrackResolution() / 8f * (16 + 2 * approximateTrackLength) * (n / (n + Math.sqrt(distanceToPlayerSquared)))));
         var origin = new Vector3d(pose.translation());
         var basis = new Matrix3d(pose.basis());
         var grad = new Vector3d(0, 0, 1).mul(pose.basis());

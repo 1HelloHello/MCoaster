@@ -86,9 +86,9 @@ public class Config {
 
     static YetAnotherConfigLib getConfigScreen() {
         var rotate_camera = boolopt("rotate_camera", true, () -> CONFIG.instance().rotateCamera, newVal -> CONFIG.instance().rotateCamera = newVal);
-        var track_resolution = slideropt("track_resolution", 3, 1, 16, () -> CONFIG.instance().trackResolution, newVal -> CONFIG.instance().trackResolution = newVal);
-        var track_render_distance = slideropt("track_render_distance", 8, 4, 32, () -> CONFIG.instance().trackRenderDistance, newVal -> CONFIG.instance().trackRenderDistance = newVal);
-        var show_debug = boolopt("show_debug", false, () -> CONFIG.instance().showDebug, newVal -> CONFIG.instance().showDebug = newVal);
+        var track_resolution = slideropt("track_resolution", 8, 1, 16, () -> CONFIG.instance().trackResolution, newVal -> CONFIG.instance().trackResolution = newVal);
+        var track_render_distance = slideropt("track_render_distance", 16, 4, 32, () -> CONFIG.instance().trackRenderDistance, newVal -> CONFIG.instance().trackRenderDistance = newVal);
+        var show_debug = boolopt("show_debug", true, () -> CONFIG.instance().showDebug, newVal -> CONFIG.instance().showDebug = newVal);
         var suspended_view = boolopt("suspended_view", false, () -> CONFIG.instance().suspendedView, newVal -> CONFIG.instance().suspendedView = newVal);
         var show_speed_info = boolopt("show_speed_info", true, () -> CONFIG.instance().showSpeedInfo, newVal -> CONFIG.instance().showSpeedInfo = newVal);
         var show_speed_info_peak = boolopt("show_speed_info_peak", false, () -> CONFIG.instance().showSpeedInfoPeak, newVal -> CONFIG.instance().showSpeedInfoPeak = newVal);
