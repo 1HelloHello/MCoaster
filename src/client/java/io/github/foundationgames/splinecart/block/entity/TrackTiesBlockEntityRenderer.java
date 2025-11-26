@@ -13,6 +13,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
@@ -44,22 +45,22 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             renderDebugPre(matrices, vertexConsumers, marker.pose());
         }
 
-        var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_TEXTURE));
-        var nextMarker = marker.getNextMarker();
+        TrackMarkerBlockEntity nextMarker = marker.getNextMarker();
         if (nextMarker == null) {
             return;
         }
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
-        float u0 = marker.nextStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
-        float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
         BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
         int segments = getSegments(marker.getPos(), nextMarker.getPos(), playerPos);
         InterpolationResult res0 = new InterpolationResult();
         InterpolationResult res1 = new InterpolationResult();
 
+        float u0 = marker.nextStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
+        float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
+        VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_TEXTURE));
         renderTrackTexture(marker, matrices, overlay, segments, world, buffer, 0, marker.nextColor, nextMarker, u0, u1, res0, res1);
 
         TrackType trackType = marker.nextType;
@@ -76,17 +77,15 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             Color trackColor = trackType.color.apply(power);
             renderTrackTexture(marker, matrices, overlay, segments, world, olBuffer, offset, trackColor, nextMarker, u0, u1, res0, res1);
         }
-
-
         matrices.pop();
     }
 
     private void renderTrackTexture(TrackMarkerBlockEntity marker, MatrixStack matrices, int overlay, int segments, World world, VertexConsumer buffer, float offset, Color color, TrackMarkerBlockEntity nextMarker, float u0, float u1, InterpolationResult res0, InterpolationResult res1) {
-        float totalDist = 0;
+        float totalDist = offset;
         for (int i = 0; i < segments; i++) {
             double t0 = (double) i / segments;
             double t1 = (double) (i + 1) / segments;
-            totalDist = renderPart(world, matrices.peek(), buffer, marker, nextMarker, u0, u1, offset, color, t0, t1, totalDist, res0, res1, overlay);
+            totalDist = renderPart(world, matrices.peek(), buffer, marker, nextMarker, u0, u1, color, t0, t1, totalDist, res0, res1, overlay);
         }
     }
 
@@ -113,7 +112,6 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.translate(0.51, 0.511, 0.512); // 0 -> .5 TODO
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
         renderDebug(start, matrices.peek(), buffer);
-
         matrices.pop();
     }
 
@@ -140,7 +138,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     }
 
     private float renderPart(World world, MatrixStack.Entry entry, VertexConsumer buffer, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end,
-                             float u0, float u1, float vOffset, Color color, double t0, double t1, float blockProgress,
+                             float u0, float u1, Color color, double t0, double t1, float v0,
                              InterpolationResult res0, InterpolationResult res1, int overlay) {
         start.interpolate(end, t0, res0);
         Vector3d origin0 = res0.translation();
@@ -150,17 +148,10 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         start.interpolate(end, t1, res1);
         Vector3d origin1 = res1.translation();
         Matrix3d basis1 = res1.basis();
-        Vector3d grad1 = res1.gradient();
         var norm1 = new Vector3f(0, 1, 0).mul(basis1);
 
-        float v0 = blockProgress;
-        while (v0 > 1) v0 -= 1;
+        v0 = MathHelper.fractionalPart(v0);
         float v1 = v0 + (float) (grad0.length() * (t1 - t0));
-
-        float newBlockProgress = v1;
-
-        v1 = 1 - v1 + vOffset;
-        v0 = 1 - v0 + vOffset;
 
         BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
         pos0 = pos0.add(start.getPos());
@@ -185,6 +176,6 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         point.set(0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
         buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v1).overlay(overlay)
                 .light(light1).normal(entry, norm1);
-        return newBlockProgress;
+        return v1;
     }
 }
