@@ -55,8 +55,9 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         var nextMarkerPose = nextMarker.pose();
 
         matrices.push();
+        matrices.translate(0.5, 0.5, 0.5);
 
-        var o = new Vector3f(pos.getX(), pos.getY(), pos.getZ());
+        var o = pos;
 
         TrackStyle trackStyle = marker.nextStyle;
         float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
@@ -154,7 +155,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     private float renderPart(World world, MatrixStack.Entry entry, VertexConsumer buffer, Pose start, Pose end,
                              float u0, float u1, float vOffset, Color color, double t0, double t1, float blockProgress,
-                             InterpolationResult res0, InterpolationResult res1, int overlay, Vector3f o) {
+                             InterpolationResult res0, InterpolationResult res1, int overlay, BlockPos o) {
         start.interpolate(end, t0, res0);
         Vector3d origin0 = res0.translation();
         Matrix3d basis0 = res0.basis();
@@ -175,25 +176,27 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         v1 = 1 - v1 + vOffset;
         v0 = 1 - v0 + vOffset;
 
-        BlockPos pos0 = BlockPos.ofFloored(origin0.x(), origin0.y(), origin0.z());
-        BlockPos pos1 = BlockPos.ofFloored(origin1.x(), origin1.y(), origin1.z());
+        BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
+        pos0 = pos0.add(o);
+        BlockPos pos1 = BlockPos.ofFloored(origin1.x() + 0.5, origin1.y() + 0.5, origin1.z() + 0.5);
+        pos1 = pos1.add(o);
 
         int light0 = WorldRenderer.getLightmapCoordinates(world, pos0);
         int light1 = WorldRenderer.getLightmapCoordinates(world, pos1);
 
         var point = new Vector3f();
 
-        point.set(0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z()).sub(o);
+        point.set(0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
         buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v0).overlay(overlay)
                 .light(light0).normal(entry, norm0);
-        point.set(-0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z()).sub(o);
+        point.set(-0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
         buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v0).overlay(overlay)
                 .light(light0).normal(entry, norm0);
 
-        point.set(-0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z()).sub(o);
+        point.set(-0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
         buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v1).overlay(overlay)
                 .light(light1).normal(entry, norm1);
-        point.set(0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z()).sub(o);
+        point.set(0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
         buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v1).overlay(overlay)
                 .light(light1).normal(entry, norm1);
         return newBlockProgress;
