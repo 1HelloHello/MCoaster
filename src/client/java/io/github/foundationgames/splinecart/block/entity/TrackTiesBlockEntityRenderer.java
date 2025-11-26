@@ -36,7 +36,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     @Override
     public void render(TrackMarkerBlockEntity marker, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         var pose = marker.pose();
-        var pos = marker.getPos();
+        BlockPos pos = marker.getPos();
         var world = marker.getWorld();
 
         assert world != null;
@@ -53,11 +53,10 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             return;
         }
         var nextMarkerPose = nextMarker.pose();
+        BlockPos endp = nextMarker.getPos();
 
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
-
-        var o = pos;
 
         TrackStyle trackStyle = marker.nextStyle;
         float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
@@ -65,7 +64,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
         BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
         double distanceToPlayerSquared = Math.min(marker.getPos().getSquaredDistance(playerPos), marker.getNextMarker().getPos().getSquaredDistance(playerPos));
-        double approximateTrackLength = pose.translation().distance(nextMarkerPose.translation());
+        double approximateTrackLength = Math.sqrt(pos.getSquaredDistance(endp));
         double n = 20; // when n blocks away from marker, segment density is halved
         int segments = Math.max(1, (int) (CONFIG.instance().getTrackResolution() / 8f * (16 + 2 * approximateTrackLength) * (n / (n + Math.sqrt(distanceToPlayerSquared)))));
         InterpolationResult res0 = new InterpolationResult();
@@ -76,7 +75,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             double t0 = (double) i / segments;
             double t1 = (double) (i + 1) / segments;
 
-            totalDist = renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor, t0, t1, totalDist, res0, res1, overlay, o);
+            totalDist = renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor, t0, t1, totalDist, res0, res1, overlay, pos, endp);
         }
 
         TrackType trackType = marker.nextType;
@@ -89,7 +88,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 double t0 = (double) i / segments;
                 double t1 = (double) (i + 1) / segments;
 
-                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, res0, res1, overlay, o);
+                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, 0, TrackColor.WHITE.color, t0, t1, totalDist, res0, res1, overlay, pos, endp);
             }
         }
         if (trackType.hasDynamic) { // animated overlay
@@ -103,7 +102,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 double t0 = (double) i / segments;
                 double t1 = (double) (i + 1) / segments;
 
-                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, offset, trackColor, t0, t1, totalDist, res0, res1, overlay, o);
+                totalDist = renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, offset, trackColor, t0, t1, totalDist, res0, res1, overlay, pos, endp);
             }
         }
 
@@ -155,13 +154,13 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     private float renderPart(World world, MatrixStack.Entry entry, VertexConsumer buffer, Pose start, Pose end,
                              float u0, float u1, float vOffset, Color color, double t0, double t1, float blockProgress,
-                             InterpolationResult res0, InterpolationResult res1, int overlay, BlockPos o) {
-        start.interpolate(end, t0, res0);
+                             InterpolationResult res0, InterpolationResult res1, int overlay, BlockPos startp, BlockPos endp) {
+        start.interpolate(end,startp, endp, t0, res0);
         Vector3d origin0 = res0.translation();
         Matrix3d basis0 = res0.basis();
         Vector3d grad0 = res0.gradient();
         var norm0 = new Vector3f(0, 1, 0).mul(basis0);
-        start.interpolate(end, t1, res1);
+        start.interpolate(end,startp, endp, t1, res1);
         Vector3d origin1 = res1.translation();
         Matrix3d basis1 = res1.basis();
         Vector3d grad1 = res1.gradient();
@@ -177,9 +176,9 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         v0 = 1 - v0 + vOffset;
 
         BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
-        pos0 = pos0.add(o);
+        pos0 = pos0.add(startp);
         BlockPos pos1 = BlockPos.ofFloored(origin1.x() + 0.5, origin1.y() + 0.5, origin1.z() + 0.5);
-        pos1 = pos1.add(o);
+        pos1 = pos1.add(endp);
 
         int light0 = WorldRenderer.getLightmapCoordinates(world, pos0);
         int light1 = WorldRenderer.getLightmapCoordinates(world, pos1);

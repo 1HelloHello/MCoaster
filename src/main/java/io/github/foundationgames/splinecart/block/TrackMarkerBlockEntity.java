@@ -64,9 +64,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public void updatePose() {
-        BlockPos blockPos = getPos();
-        Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-
         Matrix3d basis = new Matrix3d();
 
         basis.rotateY(-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
@@ -74,7 +71,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         basis.rotateY(-relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
         basis.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
 
-        this.pose = new Pose(pos, basis);
+        this.pose = new Pose(basis);
     }
 
     /**
