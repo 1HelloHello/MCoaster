@@ -65,7 +65,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
         boolean receivedPower = world.getReceivedRedstonePower(pos) != 0;
         if(!redstonePowered && receivedPower) {
             if (world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity marker) {
-                marker.triggers.execute(world);
+                marker.triggers.forEach((t) -> t.execute(world));
             }
         }
         redstonePowered = receivedPower;

@@ -20,16 +20,15 @@ public class TriggerTool extends ToolItem {
 
     @Override
     protected Text getCurrentStateMessage(TrackMarkerBlockEntity marker) {
-        if(marker.triggers.triggers().isEmpty()) {
+        if(marker.triggers.isEmpty()) {
             return Text.of("No triggers saved");
         }
         StringBuilder msg = new StringBuilder();
-        List<TrackMarkerTrigger> triggers = marker.triggers.triggers();
-        for(int i = 0; i < triggers.size(); i++) {
+        for(int i = 0; i < marker.triggers.size(); i++) {
             if(i != 0) {
                 msg.append("      ");
             }
-            msg.append(triggers.get(i).getDisplayString("(%d, %d, %d) p: %s s: %s"));
+            msg.append(marker.triggers.get(i).getDisplayString("(%d, %d, %d) p: %s s: %s"));
         }
         return Text.of(msg.toString());
     }
@@ -58,9 +57,9 @@ public class TriggerTool extends ToolItem {
     }
 
     private boolean removeAllTriggers(PlayerEntity playerEntity, TrackMarkerBlockEntity marker) {
-        if(marker.triggers.triggers().isEmpty())
+        if(marker.triggers.isEmpty())
             return false;
-        marker.triggers.triggers().clear();
+        marker.triggers.clear();
         marker.markDirty();
         sendChatMessage(playerEntity, "Removed all triggers.");
         return true;
@@ -71,8 +70,8 @@ public class TriggerTool extends ToolItem {
         if(marker.triggers.contains(trigger)) {
             return false;
         }
-        marker.triggers.containsPos(trigger.getLocation()).ifPresent(marker.triggers.triggers()::remove);
-        marker.triggers.triggers().add(trigger);
+        marker.triggers.removeIf(t -> trigger.getLocation().equals(t.getLocation()));
+        marker.triggers.add(trigger);
         marker.markDirty();
         sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString("(%d, %d, %d) power: %s setting: %s"));
         return true;

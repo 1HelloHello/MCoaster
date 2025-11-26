@@ -8,6 +8,7 @@ import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -20,8 +21,11 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
 
@@ -40,7 +44,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
-    public TrackMarkerTriggers triggers = new TrackMarkerTriggers();
+    public List<TrackMarkerTrigger> triggers = new ArrayList<>();
 
     private double lastVelocity = 0;
 
@@ -227,7 +231,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         power = nbt.getInt("power");
         strength = nbt.getInt("strength");
-        triggers = new TrackMarkerTriggers((NbtList) nbt.get("triggers"));
+        triggers = nbt.getList("triggers", NbtElement.COMPOUND_TYPE).stream()
+                        .map(e -> (NbtCompound)e)
+                        .map(TrackMarkerTrigger::new)
+                        .collect(Collectors.toList());
 
         lastVelocity = nbt.getDouble("last_velocity");
 
@@ -250,7 +257,9 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putInt("power", this.power);
         nbt.putInt("strength", this.strength);
-        nbt.put("triggers", triggers.getNbt());
+        nbt.put("triggers", triggers.stream()
+                .map(TrackMarkerTrigger::getNbt)
+                .collect(Collectors.toCollection(NbtList::new)));
 
         nbt.putDouble("last_velocity", this.lastVelocity);
 
