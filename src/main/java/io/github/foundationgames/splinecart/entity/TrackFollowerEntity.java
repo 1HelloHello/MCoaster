@@ -321,7 +321,7 @@ public class TrackFollowerEntity extends Entity {
         InterpolationResult res = new InterpolationResult();
         var pos = res.translation();
         var grad = res.gradient();
-        startE.pose().interpolate(endE.pose(), startMarker, endMarker, this.splinePieceProgress, res);
+        Pose.interpolate(startE.pose(), endE.pose(), startMarker, endMarker, this.splinePieceProgress, res);
 
         this.setPosition(pos.x(), pos.y(), pos.z());
         this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
