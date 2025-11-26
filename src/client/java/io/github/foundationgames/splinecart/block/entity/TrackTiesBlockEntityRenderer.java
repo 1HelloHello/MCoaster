@@ -35,16 +35,13 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
     @Override
     public void render(TrackMarkerBlockEntity marker, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        var pose = marker.pose();
-        BlockPos pos = marker.getPos();
-        var world = marker.getWorld();
-
+        World world = marker.getWorld();
         assert world != null;
-        if (!(world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity)) // checks if the Track Marker actually still exists
+        if (!(world.getBlockEntity(marker.getPos()) instanceof TrackMarkerBlockEntity)) // checks if the Track Marker actually still exists
             return;
         marker.clientTime += tickDelta;
         if (marker.hasNoTrackConnected() || MinecraftClient.isHudEnabled() && (CONFIG.instance().showDebug() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
-            renderDebugPre(matrices, vertexConsumers, pose);
+            renderDebugPre(matrices, vertexConsumers, marker.pose());
         }
 
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_TEXTURE));
@@ -52,21 +49,14 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         if (nextMarker == null) {
             return;
         }
-        var nextMarkerPose = nextMarker.pose();
-        BlockPos endp = nextMarker.getPos();
-
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
-        TrackStyle trackStyle = marker.nextStyle;
-        float u0 = trackStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
+        float u0 = marker.nextStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
 
         BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
-        double distanceToPlayerSquared = Math.min(marker.getPos().getSquaredDistance(playerPos), marker.getNextMarker().getPos().getSquaredDistance(playerPos));
-        double approximateTrackLength = Math.sqrt(pos.getSquaredDistance(endp));
-        double n = 20; // when n blocks away from marker, segment density is halved
-        int segments = Math.max(1, (int) (CONFIG.instance().getTrackResolution() / 8f * (16 + 2 * approximateTrackLength) * (n / (n + Math.sqrt(distanceToPlayerSquared)))));
+        int segments = getSegments(marker.getPos(), nextMarker.getPos(), playerPos);
         InterpolationResult res0 = new InterpolationResult();
         InterpolationResult res1 = new InterpolationResult();
         float totalDist = 0;
@@ -108,6 +98,13 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
 
 
         matrices.pop();
+    }
+
+    private static int getSegments(BlockPos start, BlockPos end, BlockPos playerPos) {
+        double distanceToPlayerSquared = Math.min(start.getSquaredDistance(playerPos), end.getSquaredDistance(playerPos));
+        double approximateTrackLength = Math.sqrt(start.getSquaredDistance(end));
+        double n = 20; // when n blocks away from marker, segment density is halved
+        return Math.max(1, (int) (CONFIG.instance().getTrackResolution() / 8f * (16 + 2 * approximateTrackLength) * (n / (n + Math.sqrt(distanceToPlayerSquared)))));
     }
 
     @Override
