@@ -84,13 +84,13 @@ public class TrackFollowerEntity extends Entity {
         if (world.getBlockEntity(endMarkerPos) instanceof TrackMarkerBlockEntity) {
             follower.splinePieceProgress = 0;
         } else {
-            startMarker.triggers.execute(world);
+            startMarker.triggers.forEach((t) -> t.execute(world));
             follower.splinePieceProgress = 1;
             endMarkerPos = startMarkerPos;
             startMarkerPos = startMarker.getPrevTrackMarkerPos();
         }
         if(trackVelocity >= 0) {
-            startMarker.triggers.execute(world);
+            startMarker.triggers.forEach((t) -> t.execute(world));
         }
         follower.trackVelocity = trackVelocity;
         follower.setStretch(startMarkerPos, endMarkerPos);
@@ -364,7 +364,8 @@ public class TrackFollowerEntity extends Entity {
     private void markerTransition(TrackMarkerBlockEntity marker) {
         marker.markDirty();
         if(ticksSinceRemoved == DEFAULT_TICKS_SINCE_REMOVED) {
-            marker.triggers.execute(marker.getWorld());
+            World world = marker.getWorld();
+            marker.triggers.forEach((t) -> t.execute(world));
         }
     }
 
