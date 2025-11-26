@@ -3,33 +3,20 @@ package io.github.foundationgames.splinecart.block;
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.item.tools.PowerToolItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class TrackMarkerTrigger {
-
-    private final BlockPos location;
-    private final int power;
-    private final int strength;
+public record TrackMarkerTrigger(BlockPos location, int power, int strength) {
 
     public TrackMarkerTrigger(NbtCompound compound) {
-        location = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
-        power = compound.getInt("power");
-        strength = compound.getInt("strength");
+        this(new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z")),compound.getInt("power"),compound.getInt("strength"));
     }
 
     public TrackMarkerTrigger(TrackMarkerBlockEntity marker) {
-        this.location = marker.getPos();
-        this.power = marker.getPower();
-        this.strength = marker.getStrength();
-    }
-
-    public TrackMarkerTrigger(BlockPos location, int power, int strength) {
-        this.location = location;
-        this.power = power;
-        this.strength = strength;
+        this(marker.getPos(), marker.getPower(), marker.getStrength());
     }
 
     public boolean execute(World world) {
