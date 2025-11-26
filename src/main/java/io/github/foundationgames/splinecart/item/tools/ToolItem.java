@@ -1,6 +1,5 @@
 package io.github.foundationgames.splinecart.item.tools;
 
-import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.item.ActionItem;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +43,7 @@ public abstract class ToolItem extends ActionItem {
      * @return The full text that should be displayed
      */
     protected Text getCurrentStateMessage(TrackMarkerBlockEntity marker) {
-        String langPath = "item." + Splinecart.MOD_NAME + "." + identifier + ".msg";
+        String langPath = identifier.toTranslationKey("item", "msg");
         MutableText text = Text.translatable(langPath).append(writeCurrentState(marker));
         text.withColor(getTextColor());
         return text;
