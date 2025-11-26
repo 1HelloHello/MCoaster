@@ -70,7 +70,7 @@ public class TriggerTool extends ToolItem {
         if(marker.triggers.contains(trigger)) {
             return false;
         }
-        marker.triggers.removeIf(t -> trigger.getLocation().equals(t.getLocation()));
+        marker.triggers.removeIf(t -> trigger.location().equals(t.location()));
         marker.triggers.add(trigger);
         marker.markDirty();
         sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString("(%d, %d, %d) power: %s setting: %s"));

@@ -78,18 +78,4 @@ public record TrackMarkerTrigger(BlockPos location, int power, int strength) {
                 strength == Integer.MAX_VALUE ? "unset" : PowerToolItem.toFixedPointRepresentation(strength)
         );
     }
-
-    public BlockPos getLocation() {
-        return location;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof TrackMarkerTrigger other) {
-            return this.location.equals(other.location)
-                    && this.strength == other.strength
-                    && this.power == other.power;
-        }
-        return false;
-    }
 }
