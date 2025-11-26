@@ -44,19 +44,23 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private double lastVelocity = 0;
 
-    public int heading = Integer.MAX_VALUE;
+    public int heading;
     public int pitching = 0;
     public int banking = 0;
     public int relative_orientation = 0;
 
     public TrackMarkerBlockEntity(BlockPos pos, BlockState state) {
+        this(pos, state, 0);
+    }
+
+    public TrackMarkerBlockEntity(BlockPos pos, BlockState state, int heading) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
+        this.heading = heading;
         updatePose();
     }
 
     public void updatePose() {
         BlockPos blockPos = getPos();
-        updateHeadingFromBlock();
         Vector3d pos = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
 
         Matrix3d basis = new Matrix3d();
@@ -250,34 +254,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putDouble("last_velocity", this.lastVelocity);
 
-        updateHeadingFromBlock();
         nbt.putInt("heading", this.heading);
         nbt.putInt("pitching", this.pitching);
         nbt.putInt("banking", this.banking);
         nbt.putInt("relative_orientation", this.relative_orientation);
-    }
-
-    private void updateHeadingFromBlock() {
-        if(heading == Integer.MAX_VALUE
-                && world != null
-                && world.getBlockState(getPos()).getBlock() instanceof TrackMarkerBlock block
-                && block.itemPlacementContext != null
-                && block.itemPlacementContext.getPlayer() != null) {
-            heading = (block.itemPlacementContext.getPlayer().isSneaking()
-                    ? round((int) block.itemPlacementContext.getPlayerYaw(), 5) % ORIENTATION_RESOLUTION
-                    : round((int) block.itemPlacementContext.getPlayerYaw(), 45) % ORIENTATION_RESOLUTION);
-            markDirty();
-        }
-    }
-
-    /**
-     * Rounds the value to the nearest multiple of increment.
-     * @param value
-     * @param increment
-     * @return
-     */
-    private static int round(int value, int increment) {
-        return ((value + ORIENTATION_RESOLUTION) + increment / 2) / increment * increment;
     }
 
     @Nullable
