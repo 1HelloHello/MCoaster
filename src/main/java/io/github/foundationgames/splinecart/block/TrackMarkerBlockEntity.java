@@ -4,6 +4,7 @@ import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
+import io.github.foundationgames.splinecart.util.InterpolationResult;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
+import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
 import java.awt.Color;
@@ -283,4 +285,32 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         Objects.requireNonNull(getWorld()).updateListeners(getPos(), getCachedState(), getCachedState(), 3);
     }
 
+    public void interpolate(TrackMarkerBlockEntity other, double t, InterpolationResult res) {
+        Pose pose0 = this.pose();
+        Pose pose1 = other.pose();
+        double factor = Math.sqrt(this.pos.getSquaredDistance(other.pos));
+        var grad0 = new Vector3d(0, 0, 1).mul(pose0.basis());
+        var grad1 = new Vector3d(0, 0, 1).mul(pose1.basis());
+
+        Pose.cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
+        var ngrad = res.gradient().normalize(new Vector3d());
+
+        var rot0 = pose0.basis().getNormalizedRotation(new Quaterniond());
+        var rot1 = pose1.basis().getNormalizedRotation(new Quaterniond());
+
+        var rotT = rot0.nlerp(rot1, t, new Quaterniond());
+        res.basis().set(rotT);
+
+        var basisGrad = new Vector3d(0, 0, 1).mul(res.basis());
+        var axis = ngrad.cross(basisGrad, new Vector3d());
+
+        if (axis.length() > 0) {
+            axis.normalize();
+            double angleToNewBasis = basisGrad.angleSigned(ngrad, axis);
+            if (angleToNewBasis != 0) {
+                new Matrix3d().identity().rotate(angleToNewBasis, axis)
+                        .mul(res.basis(), res.basis()).normal();
+            }
+        }
+    }
 }

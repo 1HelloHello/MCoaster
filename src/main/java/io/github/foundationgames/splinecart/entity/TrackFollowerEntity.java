@@ -321,7 +321,7 @@ public class TrackFollowerEntity extends Entity {
         InterpolationResult res = new InterpolationResult(new Vector3d(), this.basis, new Vector3d());
         var pos = res.translation();
         var grad = res.gradient();
-        Pose.interpolate(startE.pose(), endE.pose(), startMarker, endMarker, this.splinePieceProgress, res);
+        startE.interpolate(endE, this.splinePieceProgress, res);
         Vec3d p = startMarker.toCenterPos();
         pos.add(p.x, p.y, p.z);
 
