@@ -8,15 +8,15 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
 public record Pose(Matrix3dc basis) {
-    public void interpolate(Pose other, BlockPos start, BlockPos end, double t, InterpolationResult res) {
+    public static void interpolate(Pose self, Pose other, BlockPos start, BlockPos end, double t, InterpolationResult res) {
         double factor = Math.sqrt(start.getSquaredDistance(end));
-        var grad0 = new Vector3d(0, 0, 1).mul(this.basis());
+        var grad0 = new Vector3d(0, 0, 1).mul(self.basis());
         var grad1 = new Vector3d(0, 0, 1).mul(other.basis());
 
         cubicHermiteSpline(t, factor, new Vector3d(start.getX(), start.getY(), start.getZ()) , grad0, new Vector3d(end.getX(), end.getY(), end.getZ()), grad1, res);
         var ngrad = res.gradient().normalize(new Vector3d());
 
-        var rot0 = this.basis().getNormalizedRotation(new Quaterniond());
+        var rot0 = self.basis().getNormalizedRotation(new Quaterniond());
         var rot1 = other.basis().getNormalizedRotation(new Quaterniond());
 
         var rotT = rot0.nlerp(rot1, t, new Quaterniond());
