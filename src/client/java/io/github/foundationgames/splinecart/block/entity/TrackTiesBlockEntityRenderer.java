@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.block.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.Pose;
@@ -17,6 +18,8 @@ import net.minecraft.world.World;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
+
+import java.awt.*;
 
 import static io.github.foundationgames.splinecart.config.Config.CONFIG;
 
@@ -68,7 +71,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             double t0 = (double)i / segments;
             double t1 = (double)(i + 1) / segments;
 
-            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor.getVec3f(), t0, t1, totalDist, origin, basis, grad, overlay);
+            renderPart(world, matrices.peek(), buffer, pose, nextMarkerPose, u0, u1, 0, marker.nextColor, t0, t1, totalDist, origin, basis, grad, overlay);
         }
 
         TrackType trackType = marker.nextType;
@@ -79,28 +82,26 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
 
                 float[] olVOffset = {0};
-                Vector3f olColor = new Vector3f(WHITE_FLOAT);
 
                 for (int i = 0; i < segments; i++) {
                     double t0 = (double)i / segments;
                     double t1 = (double)(i + 1) / segments;
 
-                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
+                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], TrackColor.WHITE.color, t0, t1, totalDist, origin, basis, grad, overlay);
                 }
             }
             { // animated overlay
                 VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
 
                 float[] olVOffset = {0};
-                Vector3f olColor = new Vector3f(WHITE_FLOAT);
                 int power = marker.computePower();
-                trackType.overlay.calculateEffects(power, marker.clientTime, olColor, olVOffset);
+                Color trackColor = trackType.overlay.calculateEffects(power, marker.clientTime, olVOffset);
 
                 for (int i = 0; i < segments; i++) {
                     double t0 = (double)i / segments;
                     double t1 = (double)(i + 1) / segments;
 
-                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], olColor, t0, t1, totalDist, origin, basis, grad, overlay);
+                    renderPart(world, matrices.peek(), olBuffer, pose, nextMarkerPose, u0, u1, olVOffset[0], trackColor, t0, t1, totalDist, origin, basis, grad, overlay);
                 }
             }
 
@@ -152,7 +153,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     }
 
     private void renderPart(World world, MatrixStack.Entry entry, VertexConsumer buffer, Pose start, Pose end,
-                            float u0, float u1, float vOffset, Vector3f color, double t0, double t1, double[] blockProgress,
+                            float u0, float u1, float vOffset, Color color, double t0, double t1, double[] blockProgress,
                             Vector3d origin0, Matrix3d basis0, Vector3d grad0, int overlay) {
         start.interpolate(end, t0, origin0, basis0, grad0);
         var norm0 = new Vector3d(0, 1, 0).mul(basis0);
@@ -181,17 +182,17 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         var point = new Vector3f();
 
         point.set(0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
-        buffer.vertex(entry, point).color(color.x(), color.y(), color.z(), 1).texture(u0, v0).overlay(overlay)
+        buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v0).overlay(overlay)
                 .light(light0).normal(entry, (float) norm0.x(), (float) norm0.y(), (float) norm0.z());
         point.set(-0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
-        buffer.vertex(entry, point).color(color.x(), color.y(), color.z(), 1).texture(u1, v0).overlay(overlay)
+        buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v0).overlay(overlay)
                 .light(light0).normal(entry, (float) norm0.x(), (float) norm0.y(), (float) norm0.z());
 
         point.set(-0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
-        buffer.vertex(entry, point).color(color.x(), color.y(), color.z(), 1).texture(u1, v1).overlay(overlay)
+        buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v1).overlay(overlay)
                 .light(light1).normal(entry, (float) norm1.x(), (float) norm1.y(), (float) norm1.z());
         point.set(0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
-        buffer.vertex(entry, point).color(color.x(), color.y(), color.z(), 1).texture(u0, v1).overlay(overlay)
+        buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v1).overlay(overlay)
                 .light(light1).normal(entry, (float) norm1.x(), (float) norm1.y(), (float) norm1.z());
     }
 }

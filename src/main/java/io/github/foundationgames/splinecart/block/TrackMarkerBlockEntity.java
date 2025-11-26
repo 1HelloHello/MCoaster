@@ -2,7 +2,6 @@ package io.github.foundationgames.splinecart.block;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.track.TrackColor;
-import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.Pose;
@@ -21,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 
+import java.awt.*;
 import java.util.Objects;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
@@ -31,7 +31,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public TrackType nextType = TrackType.DEFAULT;
     public TrackStyle nextStyle = TrackStyle.DEFAULT;
-    public TrackColor nextColor = TrackColorPreset.WHITE.get();
+    public Color nextColor = TrackColor.WHITE.color;
 
     private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
@@ -219,7 +219,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nextType = TrackType.read(nbt.getInt("track_type"));
         nextStyle = TrackStyle.read(nbt.getInt("track_style"));
-        nextColor = new TrackColor(nbt.getInt("track_color"));
+        nextColor = new Color(nbt.getInt("track_color"));
 
         power = nbt.getInt("power");
         strength = nbt.getInt("strength");
@@ -242,7 +242,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putInt("track_type", this.nextType.ordinal());
         nbt.putInt("track_style", this.nextStyle.ordinal());
-        nbt.putInt("track_color", this.nextColor.hex());
+        nbt.putInt("track_color", this.nextColor.getRGB());
 
         nbt.putInt("power", this.power);
         nbt.putInt("strength", this.strength);

@@ -2,7 +2,6 @@ package io.github.foundationgames.splinecart.event;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackColor;
-import io.github.foundationgames.splinecart.track.TrackColorPreset;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
@@ -10,6 +9,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
+
+import java.awt.*;
 
 public class DyeItemUseEvent implements UseBlockCallback {
 
@@ -22,13 +23,13 @@ public class DyeItemUseEvent implements UseBlockCallback {
         if(!(world.getBlockEntity(hitResult.getBlockPos()) instanceof TrackMarkerBlockEntity marker)) {
             return ActionResult.PASS;
         }
-        TrackColor trackColor = TrackColorPreset.valueOf(dyeItem.getColor()).get();
+        Color trackColor = TrackColor.valueOf(dyeItem.getColor()).color;
         onColorTrack(marker, trackColor, player.isSneaking());
         return ActionResult.SUCCESS;
     }
 
-    private void onColorTrack(TrackMarkerBlockEntity trackMarker, TrackColor newColor, boolean shiftClicked) {
-        TrackColor oldColor = trackMarker.nextColor;
+    private void onColorTrack(TrackMarkerBlockEntity trackMarker, Color newColor, boolean shiftClicked) {
+        Color oldColor = trackMarker.nextColor;
         TrackMarkerBlockEntity thisMarker = trackMarker;
         do {
             trackMarker.nextColor = newColor;
