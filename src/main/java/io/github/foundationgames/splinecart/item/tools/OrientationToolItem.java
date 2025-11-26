@@ -7,8 +7,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Colors;
 import net.minecraft.world.World;
 
-import java.awt.*;
-
 /**
  * Implements the functionality for all the orientation tools (heading, banking, etc.).
  */
@@ -28,7 +26,6 @@ public class OrientationToolItem extends ToolItem {
         int value = getValueForTool(marker);
         int newVal = (value  + (((rightClick ? clickResolution : -clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
         setValueForTool(marker, newVal);
-        marker.updatePose();
         marker.sync();
         marker.markDirty();
         return true;
@@ -36,19 +33,19 @@ public class OrientationToolItem extends ToolItem {
 
     private int getValueForTool(TrackMarkerBlockEntity marker) {
         return switch (type) {
-            case HEADING -> marker.heading;
-            case PITCHING -> marker.pitching;
-            case BANKING -> marker.banking;
-            case RELATIVE_ORIENTATION -> marker.relative_orientation;
+            case HEADING -> marker.getHeading();
+            case PITCHING -> marker.getPitching();
+            case BANKING -> marker.getBanking();
+            case RELATIVE_ORIENTATION -> marker.getRelativeOrientation();
         };
     }
 
     private void setValueForTool(TrackMarkerBlockEntity marker, int value) {
         switch(type) {
-            case HEADING -> marker.heading = value;
-            case PITCHING -> marker.pitching = value;
-            case BANKING -> marker.banking = value;
-            case RELATIVE_ORIENTATION -> marker.relative_orientation = value;
+            case HEADING -> marker.setHeading(value);
+            case PITCHING -> marker.setPitching(value);
+            case BANKING -> marker.setBanking(value);
+            case RELATIVE_ORIENTATION -> marker.setRelativeOrientation(value);
         }
     }
 
