@@ -2,7 +2,6 @@ package io.github.foundationgames.splinecart.item.tools;
 
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.block.TrackMarkerTrigger;
-import io.github.foundationgames.splinecart.block.TrackMarkerTriggers;
 import io.github.foundationgames.splinecart.mixin_interface.PlayerMixinInterface;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -11,7 +10,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TriggerTool extends ToolItem {
 
@@ -21,11 +20,11 @@ public class TriggerTool extends ToolItem {
 
     @Override
     protected Text getCurrentStateMessage(TrackMarkerBlockEntity marker) {
-        if(marker.triggers.triggers.isEmpty()) {
+        if(marker.triggers.triggers().isEmpty()) {
             return Text.of("No triggers saved");
         }
         StringBuilder msg = new StringBuilder();
-        ArrayList<TrackMarkerTrigger> triggers = marker.triggers.triggers;
+        List<TrackMarkerTrigger> triggers = marker.triggers.triggers();
         for(int i = 0; i < triggers.size(); i++) {
             if(i != 0) {
                 msg.append("      ");
@@ -59,9 +58,9 @@ public class TriggerTool extends ToolItem {
     }
 
     private boolean removeAllTriggers(PlayerEntity playerEntity, TrackMarkerBlockEntity marker) {
-        if(marker.triggers.triggers.isEmpty())
+        if(marker.triggers.triggers().isEmpty())
             return false;
-        marker.triggers = new TrackMarkerTriggers();
+        marker.triggers.triggers().clear();
         marker.markDirty();
         sendChatMessage(playerEntity, "Removed all triggers.");
         return true;
@@ -72,10 +71,8 @@ public class TriggerTool extends ToolItem {
         if(marker.triggers.contains(trigger)) {
             return false;
         }
-        marker.triggers.containsPos(trigger.getLocation()).ifPresent(duplicate -> {
-            marker.triggers.triggers.remove(duplicate);
-        });
-        marker.triggers.triggers.add(trigger);
+        marker.triggers.containsPos(trigger.getLocation()).ifPresent(marker.triggers.triggers()::remove);
+        marker.triggers.triggers().add(trigger);
         marker.markDirty();
         sendChatMessage(playerEntity, "Added new Trigger: " + trigger.getDisplayString("(%d, %d, %d) power: %s setting: %s"));
         return true;

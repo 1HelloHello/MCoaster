@@ -1,29 +1,26 @@
 package io.github.foundationgames.splinecart.block;
 
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class TrackMarkerTriggers {
-
-    public final ArrayList<TrackMarkerTrigger> triggers;
-
-    public TrackMarkerTriggers(ArrayList<TrackMarkerTrigger> triggers) {
-        this.triggers = triggers;
-    }
+public record TrackMarkerTriggers(List<TrackMarkerTrigger> triggers) {
 
     public TrackMarkerTriggers() {
-        triggers = new ArrayList<>();
+        this(new ArrayList<>());
     }
 
     public TrackMarkerTriggers(NbtList list) {
-        triggers = new ArrayList<>();
-        for(int i = 0; i < list.size(); i++) {
-            triggers.add(new TrackMarkerTrigger(list.getCompound(i)));
-        }
+        this(list.stream()
+                .map(e -> e instanceof NbtCompound c ? c : new NbtCompound())
+                .map(TrackMarkerTrigger::new)
+                .collect(Collectors.toList()));
     }
 
     public NbtList getNbt() {
