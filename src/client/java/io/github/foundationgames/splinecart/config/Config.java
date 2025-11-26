@@ -12,6 +12,7 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import io.github.foundationgames.splinecart.Splinecart;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -114,20 +115,20 @@ public class Config {
     }
 
     private static Option<Boolean> boolopt(String name, boolean def, Supplier<Boolean> get, Consumer<Boolean> set) {
-        var id = Splinecart.id(name).toTranslationKey();
+        Identifier id = Splinecart.id(name);
         return Option.<Boolean>createBuilder()
-                .name(Text.translatable("config." + id + ".name"))
-                .description(OptionDescription.of(Text.translatable("config." + id + ".desc")))
+                .name(Text.translatable(id.toTranslationKey("config", "name")))
+                .description(OptionDescription.of(Text.translatable(id.toTranslationKey("config", "name"))))
                 .binding(def, get, set)
                 .controller(TickBoxControllerBuilder::create)
                 .build();
     }
 
     private static Option<Integer> slideropt(String name, int def, int min, int max, Supplier<Integer> get, Consumer<Integer> set) {
-        var id = Splinecart.id(name).toTranslationKey();
+        Identifier id = Splinecart.id(name);
         return Option.<Integer>createBuilder()
-                .name(Text.translatable("config." + id + ".name"))
-                .description(OptionDescription.of(Text.translatable("config." + id + ".desc")))
+                .name(Text.translatable(id.toTranslationKey("config", "name")))
+                .description(OptionDescription.of(Text.translatable(id.toTranslationKey("config", "desc"))))
                 .binding(def, get, set)
                 .controller(o -> IntegerSliderControllerBuilder.create(o).range(min, max).step(1))
                 .build();
