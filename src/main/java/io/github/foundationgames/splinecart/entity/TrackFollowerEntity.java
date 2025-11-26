@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
+import io.github.foundationgames.splinecart.util.InterpolationResult;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -316,9 +317,10 @@ public class TrackFollowerEntity extends Entity {
             startE = prevE;
         }
 
-        var pos = new Vector3d();
-        var grad = new Vector3d(); // Change in position per change in spline progress
-        startE.pose().interpolate(endE.pose(), this.splinePieceProgress, pos, this.basis, grad);
+        InterpolationResult res = new InterpolationResult();
+        var pos = res.translation();
+        var grad = res.gradient();
+        startE.pose().interpolate(endE.pose(), this.splinePieceProgress, res);
 
         this.setPosition(pos.x(), pos.y(), pos.z());
         this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
