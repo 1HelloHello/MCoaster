@@ -43,7 +43,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
 
-    private Matrix3d pose;
+    private final Matrix3d pose = new Matrix3d();
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
@@ -51,10 +51,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private double lastVelocity = 0;
 
-    public int heading;
-    public int pitching = 0;
-    public int banking = 0;
-    public int relative_orientation = 0;
+    private int heading;
+    private int pitching = 0;
+    private int banking = 0;
+    private int relativeOrientation = 0;
 
     public TrackMarkerBlockEntity(BlockPos pos, BlockState state) {
         this(pos, state, 0);
@@ -62,19 +62,15 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public TrackMarkerBlockEntity(BlockPos pos, BlockState state, int heading) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
-        this.heading = heading;
-        updatePose();
+        setHeading(heading);
     }
 
-    public void updatePose() {
-        Matrix3d basis = new Matrix3d();
-
-        basis.rotateY(-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateX(-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateY(-relative_orientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        basis.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-
-        this.pose = basis;
+    private void updatePose() {
+        pose.identity();
+        pose.rotateY(-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        pose.rotateX(-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        pose.rotateY(-relativeOrientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        pose.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
     }
 
     /**
@@ -237,11 +233,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         lastVelocity = nbt.getDouble("last_velocity");
 
-        heading = nbt.getInt("heading");
-        pitching = nbt.getInt("pitching");
-        banking = nbt.getInt("banking");
-        relative_orientation = nbt.getInt("relative_orientation");
-        updatePose();
+        setHeading(nbt.getInt("heading"));
+        setPitching(nbt.getInt("pitching"));
+        setBanking(nbt.getInt("banking"));
+        setRelativeOrientation(nbt.getInt("relative_orientation"));
     }
 
     @Override
@@ -266,7 +261,8 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         nbt.putInt("heading", this.heading);
         nbt.putInt("pitching", this.pitching);
         nbt.putInt("banking", this.banking);
-        nbt.putInt("relative_orientation", this.relative_orientation);
+        nbt.putInt("relative_orientation", this.relativeOrientation);
+
     }
 
     @Nullable
@@ -313,5 +309,41 @@ public class TrackMarkerBlockEntity extends BlockEntity {
                         .mul(res.basis(), res.basis()).normal();
             }
         }
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public void setHeading(int heading) {
+        this.heading = heading;
+        updatePose();
+    }
+
+    public int getPitching() {
+        return pitching;
+    }
+
+    public void setPitching(int pitching) {
+        this.pitching = pitching;
+        updatePose();
+    }
+
+    public int getBanking() {
+        return banking;
+    }
+
+    public void setBanking(int banking) {
+        this.banking = banking;
+        updatePose();
+    }
+
+    public int getRelativeOrientation() {
+        return relativeOrientation;
+    }
+
+    public void setRelativeOrientation(int relativeOrientation) {
+        this.relativeOrientation = relativeOrientation;
+        updatePose();
     }
 }

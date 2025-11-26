@@ -48,19 +48,6 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (world.getBlockEntity(pos) instanceof TrackMarkerBlockEntity tie) {
-            if (!newState.isOf(state.getBlock())) {
-                if (!world.isClient()) tie.onDestroy();
-            } else {
-                tie.updatePose();
-            }
-        }
-
-        super.onStateReplaced(state, world, pos, newState, moved);
-    }
-
-    @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
         boolean receivedPower = world.getReceivedRedstonePower(pos) != 0;
         if(!redstonePowered && receivedPower) {
