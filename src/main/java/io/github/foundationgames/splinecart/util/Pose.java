@@ -1,25 +1,23 @@
 package io.github.foundationgames.splinecart.util;
 
+import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
-public record Pose(Vector3dc translation, Matrix3dc basis) {
-    public void interpolate(Pose other, double t, InterpolationResult res) {
-        double factor = this.translation().distance(other.translation());
-        interpolate(other, t, factor, res);
+public record Pose(Matrix3dc basis) {
+    public void interpolate(Pose other, BlockPos start, BlockPos end, double t, InterpolationResult res) {
+        double distance = Math.sqrt(start.getSquaredDistance(end));
+        interpolate(other, start, end, t, distance, res);
     }
 
-    private void interpolate(Pose other, double t, double factor, InterpolationResult res) {
-        var point0 = res.translation().set(this.translation());
-        var point1 = new Vector3d(other.translation());
-
+    private void interpolate(Pose other, BlockPos start, BlockPos end, double t, double factor, InterpolationResult res) {
         var grad0 = new Vector3d(0, 0, 1).mul(this.basis());
         var grad1 = new Vector3d(0, 0, 1).mul(other.basis());
 
-        cubicHermiteSpline(t, factor, point0, grad0, point1, grad1, res);
+        cubicHermiteSpline(t, factor, new Vector3d(start.getX(), start.getY(), start.getZ()) , grad0, new Vector3d(end.getX(), end.getY(), end.getZ()), grad1, res);
         var ngrad = res.gradient().normalize(new Vector3d());
 
         var rot0 = this.basis().getNormalizedRotation(new Quaterniond());
