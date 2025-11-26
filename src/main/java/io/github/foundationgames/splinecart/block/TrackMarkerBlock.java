@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
-    public ItemPlacementContext itemPlacementContext = null;
+    public @Nullable PlayerEntity player = null;
 
     public static final MapCodec<TrackMarkerBlock> CODEC = createCodec(TrackMarkerBlock::new);
 
@@ -31,8 +31,8 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        this.itemPlacementContext = itemPlacementContext;
-        return this.getDefaultState();
+        player = itemPlacementContext.getPlayer();
+        return super.getPlacementState(itemPlacementContext);
     }
 
     @Override
@@ -93,7 +93,23 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new TrackMarkerBlockEntity(pos, state);
+        int heading;
+        if (player == null) {
+            heading = 0;
+        } else {
+            heading = round((int) player.getYaw(), player.isSneaking() ? 5 : 45) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
+        }
+        return new TrackMarkerBlockEntity(pos, state, heading);
+    }
+
+    /**
+     * Rounds the value to the nearest multiple of increment.
+     * @param value
+     * @param increment
+     * @return
+     */
+    private static int round(int value, int increment) {
+        return ((value + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION) + increment / 2) / increment * increment;
     }
 
     static {
