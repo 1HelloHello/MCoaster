@@ -1,7 +1,7 @@
 package io.github.foundationgames.splinecart.track;
 
 import io.github.foundationgames.splinecart.entity.TrackFollowerEntity;
-import io.github.foundationgames.splinecart.util.SUtil;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -26,8 +26,12 @@ public enum TrackType {
                     : m + (targetSpeed < m ? -1 : 1) * (1.0 / (20 * 20)) * s / 10;
             },
             (p, t, col, v) ->  {
-                int absSpeed = Math.abs(p / 10);
-                col.set(SUtil.REDSTONE_COLOR_LUT[Math.min(absSpeed, 15)]);
+                float strength = Math.min(Math.abs(p) / 1000f, 1);
+                col.set(new Vector3f(
+                        strength * 0.6f + (strength > 0.0f ? 0.4f : 0.3f),
+                        MathHelper.clamp((strength * strength * 0.7f) - 0.5f, 0, 1),
+                        MathHelper.clamp((strength * strength * 0.6f) - 0.7f, 0, 1)
+                ));
             },
             "Magnetic"
     ),
