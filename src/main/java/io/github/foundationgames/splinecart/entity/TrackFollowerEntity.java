@@ -95,7 +95,7 @@ public class TrackFollowerEntity extends Entity {
         }
         follower.trackVelocity = trackVelocity;
         follower.setStretch(startMarkerPos, endMarkerPos);
-        follower.getDataTracker().set(ORIENTATION, startMarker.pose().basis().getNormalizedRotation(new Quaternionf()));
+        follower.getDataTracker().set(ORIENTATION, startMarker.pose().getNormalizedRotation(new Quaternionf()));
         return follower;
     }
 
