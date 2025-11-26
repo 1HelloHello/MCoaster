@@ -115,11 +115,11 @@ public class TrackFollowerEntity extends Entity {
         Vec3d velocity = this.getVelocity();
         Vector3d clientVel = new Vector3d(velocity.getX(), velocity.getY(), velocity.getZ());
 
-        InterpolationResult res = new InterpolationResult();
+        InterpolationResult res = new InterpolationResult(new Vector3d(), this.basis, new Vector3d());
         var newClientPos = res.translation();
         var newClientVel = res.gradient();
         Pose.cubicHermiteSpline(t, 1, clientPos, clientVel, this.serverPosition, this.serverVelocity, res);
-        newClientPos.add(clientPos).add(0.5, 0.5, 0.5);
+        newClientPos.add(clientPos);
         this.setPosition(newClientPos.x(), newClientPos.y(), newClientPos.z());
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }
@@ -318,10 +318,12 @@ public class TrackFollowerEntity extends Entity {
             startE = prevE;
         }
 
-        InterpolationResult res = new InterpolationResult();
+        InterpolationResult res = new InterpolationResult(new Vector3d(), this.basis, new Vector3d());
         var pos = res.translation();
         var grad = res.gradient();
         Pose.interpolate(startE.pose(), endE.pose(), startMarker, endMarker, this.splinePieceProgress, res);
+        Vec3d p = startMarker.toCenterPos();
+        pos.add(p.x, p.y, p.z);
 
         this.setPosition(pos.x(), pos.y(), pos.z());
         this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
