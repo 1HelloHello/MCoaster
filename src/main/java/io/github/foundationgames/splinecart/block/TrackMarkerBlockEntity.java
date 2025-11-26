@@ -47,7 +47,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
-    public List<TrackMarkerTrigger> triggers = new ArrayList<>();
+    public List<TrackMarkerTrigger> triggers = new ArrayList<>(0);
 
     private double lastVelocity = 0;
 
@@ -91,16 +91,13 @@ public class TrackMarkerBlockEntity extends BlockEntity {
             TrackMarkerBlockEntity nextPrevMarker = nextMarker.getPrevMarker();
             nextMarker.removePrevMarker();
             if(nextPrevMarker != null) {
-                nextPrevMarker.updatePose();
                 nextPrevMarker.markDirty();
             }
             nextMarker.prevTrackMarkerPos = getPos();
 
-            nextMarker.updatePose();
             nextMarker.markDirty();
         }
 
-        updatePose();
         markDirty();
     }
 
