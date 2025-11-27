@@ -292,8 +292,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         var rot0 = pose0.getNormalizedRotation(new Quaterniond());
         var rot1 = pose1.getNormalizedRotation(new Quaterniond());
 
-        var rotT = rot0.nlerp(rot1, t, new Quaterniond());
-        res.basis().set(rotT);
+        res.basis().set(rot0.nlerp(rot1, t));
 
         var basisGrad = new Vector3d(0, 0, 1).mul(res.basis());
         var axis = ngrad.cross(basisGrad, new Vector3d());
