@@ -393,11 +393,6 @@ public class TrackFollowerEntity extends Entity {
     }
 
     @Override
-    protected void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
-        positionUpdater.accept(passenger, this.getX(), this.getY(), this.getZ());
-    }
-
-    @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         builder.add(ORIENTATION, new Quaternionf().identity());
     }
