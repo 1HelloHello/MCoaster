@@ -123,12 +123,10 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
                 .normal(entry, 0, 1, 0);
     }
 
-    private record TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start,
-                                 TrackMarkerBlockEntity end, InterpolationResult res0, InterpolationResult res1,
-                                 int segments, int overlay) {
+    private record TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end, InterpolationResult res0, int segments, int overlay) {
 
         public TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end, int segments, int overlay) {
-            this(world, entry, start, end, new InterpolationResult(), new InterpolationResult(), segments, overlay);
+            this(world, entry, start, end, new InterpolationResult(), segments, overlay);
         }
 
         public void renderTrackTexture(float offset, VertexConsumer buffer, Color color, float u0, float u1) {
@@ -139,43 +137,39 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         }
 
         private float renderPart(VertexConsumer buffer, float u0, float u1, Color color, float t0, float t1, float v0) {
+            v0 = MathHelper.fractionalPart(v0);
+            renderSide(buffer, u0, u1, color, t0, v0, true);
+            float v1 = v0 + res0.gradient().length() * (t1 - t0);
+            renderSide(buffer, u0, u1, color, t1, v1, false);
+            return v1;
+        }
+
+        private void renderSide(VertexConsumer buffer, float u0, float u1, Color color, float t0, float v0, boolean positiveFirst) {
             start.interpolate(end, t0, res0);
             Vector3f origin0 = res0.translation();
             Matrix3f basis0 = res0.basis();
-            Vector3f grad0 = res0.gradient();
-            var norm0 = new Vector3f(0, 1, 0).mul(basis0);
-            start.interpolate(end, t1, res1);
-            Vector3f origin1 = res1.translation();
-            Matrix3f basis1 = res1.basis();
-            var norm1 = new Vector3f(0, 1, 0).mul(basis1);
-
-            v0 = MathHelper.fractionalPart(v0);
-            float v1 = v0 + (float) (grad0.length() * (t1 - t0));
+            Vector3f norm0 = new Vector3f(0, 1, 0).mul(basis0);
 
             BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
             pos0 = pos0.add(start.getPos());
-            BlockPos pos1 = BlockPos.ofFloored(origin1.x() + 0.5, origin1.y() + 0.5, origin1.z() + 0.5);
-            pos1 = pos1.add(start.getPos());
 
             int light0 = WorldRenderer.getLightmapCoordinates(world, pos0);
-            int light1 = WorldRenderer.getLightmapCoordinates(world, pos1);
 
             var point = new Vector3f();
 
-            point.set(0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
-            buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v0).overlay(overlay)
-                    .light(light0).normal(entry, norm0);
-            point.set(-0.5, 0, 0).mul(basis0).add((float) origin0.x(), (float) origin0.y(), (float) origin0.z());
+            if (positiveFirst) {
+                point.set(0.5, 0, 0).mul(basis0).add(origin0);
+                buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v0).overlay(overlay)
+                        .light(light0).normal(entry, norm0);
+            }
+            point.set(-0.5, 0, 0).mul(basis0).add(origin0);
             buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v0).overlay(overlay)
                     .light(light0).normal(entry, norm0);
-
-            point.set(-0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
-            buffer.vertex(entry, point).color(color.getRGB()).texture(u1, v1).overlay(overlay)
-                    .light(light1).normal(entry, norm1);
-            point.set(0.5, 0, 0).mul(basis1).add((float) origin1.x(), (float) origin1.y(), (float) origin1.z());
-            buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v1).overlay(overlay)
-                    .light(light1).normal(entry, norm1);
-            return v1;
+            if (!positiveFirst) {
+                point.set(0.5, 0, 0).mul(basis0).add(origin0);
+                buffer.vertex(entry, point).color(color.getRGB()).texture(u0, v0).overlay(overlay)
+                        .light(light0).normal(entry, norm0);
+            }
         }
     }
 }
