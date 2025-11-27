@@ -48,7 +48,6 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
-
         BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
         int segments = getSegments(marker.getPos(), nextMarker.getPos(), playerPos);
         TrackRenderer renderer = new TrackRenderer(world, matrices.peek(), marker, nextMarker, segments, overlay);
@@ -93,22 +92,12 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     }
 
 
-    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Matrix3fc start) {
+    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Matrix3fc pose) {
         matrices.push();
         matrices.translate(0.51, 0.511, 0.512); // 0 -> .5 TODO
-        var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
-        renderDebug(start, matrices.peek(), buffer);
-        matrices.pop();
-    }
-
-    private void renderDebug(Matrix3fc pose, MatrixStack.Entry entry, VertexConsumer buffer) {
-        var posMat = entry.getPositionMatrix();
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                posMat.setRowColumn(x, y, (float) pose.getRowColumn(x, y));
-            }
-        }
-
+        VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
+        MatrixStack.Entry entry = matrices.peek();
+        entry.getPositionMatrix().set3x3(pose);
         buffer.vertex(entry, 1, 0, 1).color(Color.WHITE.getRGB()).texture(0, 0)
                 .overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
                 .normal(entry, 0, 1, 0);
@@ -121,6 +110,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         buffer.vertex(entry, 1, 0, 0).color(Color.WHITE.getRGB()).texture(0, 1)
                 .overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
                 .normal(entry, 0, 1, 0);
+        matrices.pop();
     }
 
     private record TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end, InterpolationResult res0, int segments, int overlay) {
