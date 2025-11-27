@@ -77,7 +77,7 @@ public class Splinecart implements ModInitializer {
 	public static final CoasterCartItem COASTER_CART_ITEM = register(Registries.ITEM, "coaster_cart", CoasterCartItem::new);
 
 	public static final EntityType<TrackFollowerEntity> TRACK_FOLLOWER = register(Registries.ENTITY_TYPE, "track_follower",
-			k -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).build(k));
+			k -> EntityType.Builder.<TrackFollowerEntity>create(TrackFollowerEntity::new, SpawnGroup.MISC).trackingTickInterval(2).dimensions(0.25f, 0.25f).passengerAttachments(0).build(k));
 
 	public static final TagKey<EntityType<?>> CARTS = TagKey.of(RegistryKeys.ENTITY_TYPE, id("carts"));
 
