@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +19,7 @@ public class EntityMixin {
     @Inject(method = "setPosition(DDD)V",
             at = @At("TAIL"))
     private void splinecart$getOnTrackIfNecessary(double x, double y, double z, CallbackInfo info) {
-        Entity self = (Entity)(Object)this;
+        Entity self = (Entity) (Object) this;
         var world = self.getWorld();
         if (world.isClient() || !self.getType().isIn(Splinecart.CARTS) || self.getVehicle() != null || self.getVelocity().horizontalLengthSquared() < 0.00005) {
             return;
@@ -35,7 +36,7 @@ public class EntityMixin {
     @Inject(method = "getCameraPosVec(F)Lnet/minecraft/util/math/Vec3d;",
             at = @At("RETURN"), cancellable = true)
     private void splinecart$readjustCameraPos(float tickDelta, CallbackInfoReturnable<Vec3d> info) {
-        var self = (Entity)(Object)this;
+        var self = (Entity) (Object) this;
         var vehicle = self.getVehicle();
         while (vehicle != null) {
             if (vehicle instanceof TrackFollowerEntity trackFollower) {
@@ -57,13 +58,13 @@ public class EntityMixin {
 
     @Inject(method = "getEyePos()Lnet/minecraft/util/math/Vec3d;", cancellable = true, at = @At("HEAD"))
     private void splinecart$modifySuffocationCheck(CallbackInfoReturnable<Vec3d> info) {
-        var self = (Entity)(Object)this;
+        var self = (Entity) (Object) this;
         var vehicle = self.getVehicle();
         while (vehicle != null) {
             if (vehicle instanceof TrackFollowerEntity trackFollower) {
                 var world = self.getWorld();
-                var diff = new Vec3d(self.getX(), self.getEyeY(), self.getZ()).subtract(trackFollower.getPos());
-                var eyePos = new Vector3d(diff.getX(), diff.getY(), diff.getZ());
+                var diff = self.getPos().subtract(trackFollower.getPos());
+                var eyePos = new Vector3f((float) diff.getX(), (float) diff.getY(), (float) diff.getZ());
                 if (world.isClient()) {
                     var rot = new Quaternionf();
                     trackFollower.getClientOrientation(rot, 0);

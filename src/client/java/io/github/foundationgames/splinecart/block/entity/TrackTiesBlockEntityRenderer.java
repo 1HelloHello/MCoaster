@@ -2,7 +2,6 @@ package io.github.foundationgames.splinecart.block.entity;
 
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
-import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.InterpolationResult;
@@ -15,12 +14,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
+import org.joml.*;
 
 import java.awt.*;
+import java.lang.Math;
 
 import static io.github.foundationgames.splinecart.config.Config.CONFIG;
 
@@ -96,7 +93,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
     }
 
 
-    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Matrix3dc start) {
+    private void renderDebugPre(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Matrix3fc start) {
         matrices.push();
         matrices.translate(0.51, 0.511, 0.512); // 0 -> .5 TODO
         var buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(POSE_TEXTURE_DEBUG));
@@ -104,7 +101,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.pop();
     }
 
-    private void renderDebug(Matrix3dc pose, MatrixStack.Entry entry, VertexConsumer buffer) {
+    private void renderDebug(Matrix3fc pose, MatrixStack.Entry entry, VertexConsumer buffer) {
         var posMat = entry.getPositionMatrix();
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -137,21 +134,19 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         public void renderTrackTexture(float offset, VertexConsumer buffer, Color color, float u0, float u1) {
             float totalDist = offset;
             for (int i = 0; i < segments; i++) {
-                double t0 = (double) i / segments;
-                double t1 = (double) (i + 1) / segments;
-                totalDist = renderPart(buffer, u0, u1, color, t0, t1, totalDist);
+                totalDist = renderPart(buffer, u0, u1, color, (float) i / segments, (float) (i + 1) / segments, totalDist);
             }
         }
 
-        private float renderPart(VertexConsumer buffer, float u0, float u1, Color color, double t0, double t1, float v0) {
+        private float renderPart(VertexConsumer buffer, float u0, float u1, Color color, float t0, float t1, float v0) {
             start.interpolate(end, t0, res0);
-            Vector3d origin0 = res0.translation();
-            Matrix3d basis0 = res0.basis();
-            Vector3d grad0 = res0.gradient();
+            Vector3f origin0 = res0.translation();
+            Matrix3f basis0 = res0.basis();
+            Vector3f grad0 = res0.gradient();
             var norm0 = new Vector3f(0, 1, 0).mul(basis0);
             start.interpolate(end, t1, res1);
-            Vector3d origin1 = res1.translation();
-            Matrix3d basis1 = res1.basis();
+            Vector3f origin1 = res1.translation();
+            Matrix3f basis1 = res1.basis();
             var norm1 = new Vector3f(0, 1, 0).mul(basis1);
 
             v0 = MathHelper.fractionalPart(v0);
