@@ -48,9 +48,9 @@ public class CoasterCartItem extends ActionItem {
 
         MinecartEntity minecart = AbstractMinecartEntity.create(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5,
                 EntityType.MINECART, SpawnReason.COMMAND, stack, player);
-        world.spawnEntity(minecart);
         assert minecart != null;
         minecart.startRiding(follower, true);
+        world.spawnEntity(minecart);
         if(!rightClick) {
             player.startRiding(minecart);
         }
