@@ -18,10 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Quaternionf;
-import org.joml.Vector3d;
+import org.joml.*;
 
 import java.util.LinkedList;
 
@@ -35,7 +32,7 @@ public class TrackFollowerEntity extends Entity {
 
     private BlockPos startMarker;
     private BlockPos endMarker;
-    private double splinePieceProgress = 0; // t
+    private float splinePieceProgress = 0; // t
     private double motionScale; // t-distance per block
     private double trackVelocity; // velocity in blocks / tick
 
@@ -45,7 +42,7 @@ public class TrackFollowerEntity extends Entity {
     private int oriInterpSteps;
 
     private static final TrackedData<Quaternionf> ORIENTATION = DataTracker.registerData(TrackFollowerEntity.class, TrackedDataHandlerRegistry.QUATERNION_F);
-    private final Matrix3d basis = new Matrix3d().identity();
+    private final Matrix3f basis = new Matrix3f();
 
     private final Quaternionf lastClientOrientation = new Quaternionf();
     private final Quaternionf clientOrientation = new Quaternionf();
@@ -115,12 +112,11 @@ public class TrackFollowerEntity extends Entity {
         Vec3d velocity = this.getVelocity();
         Vector3d clientVel = new Vector3d(velocity.getX(), velocity.getY(), velocity.getZ());
 
-        InterpolationResult res = new InterpolationResult(new Vector3d(), this.basis, new Vector3d());
+        InterpolationResult res = new InterpolationResult(new Vector3f(), this.basis, new Vector3f());
         var newClientPos = res.translation();
         var newClientVel = res.gradient();
-        Pose.cubicHermiteSpline(t, 1, clientPos, clientVel, this.serverPosition, this.serverVelocity, res);
-        newClientPos.add(clientPos);
-        this.setPosition(newClientPos.x(), newClientPos.y(), newClientPos.z());
+        Pose.cubicHermiteSpline((float)t, 1, clientPos, new Vector3f(clientVel), this.serverPosition, new Vector3f(this.serverVelocity), res);
+        this.setPosition((double) newClientPos.x() + clientPos.x, (double) newClientPos.y() + clientPos.y, (double) newClientPos.z() + clientPos.z);
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }
 
@@ -217,7 +213,7 @@ public class TrackFollowerEntity extends Entity {
         return this.clientMotion;
     }
 
-    public Matrix3dc getServerBasis() {
+    public Matrix3fc getServerBasis() {
         return this.basis;
     }
 
@@ -287,7 +283,7 @@ public class TrackFollowerEntity extends Entity {
             return;
         }
 
-        this.splinePieceProgress += this.trackVelocity * this.motionScale;
+        this.splinePieceProgress += (float) (this.trackVelocity * this.motionScale);
         if (this.splinePieceProgress > 1) {
             this.splinePieceProgress = 0;
             endE.setLastVelocity(super.getVelocity().length());
@@ -318,14 +314,12 @@ public class TrackFollowerEntity extends Entity {
             startE = prevE;
         }
 
-        InterpolationResult res = new InterpolationResult(new Vector3d(), this.basis, new Vector3d());
+        InterpolationResult res = new InterpolationResult(new Vector3f(), this.basis, new Vector3f());
         var pos = res.translation();
         var grad = res.gradient();
         startE.interpolate(endE, this.splinePieceProgress, res);
-        Vec3d p = startMarker.toCenterPos();
-        pos.add(p.x, p.y, p.z);
 
-        this.setPosition(pos.x(), pos.y(), pos.z());
+        this.setPosition((double) pos.x() + startMarker.getX() + 0.5, (double) pos.y() + startMarker.getY() + 0.5, (double) pos.z() + startMarker.getZ() + 0.5);
         this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
 
         if (grad.length() != 0) {
@@ -335,7 +329,7 @@ public class TrackFollowerEntity extends Entity {
         var ngrad = new Vector3d(grad).normalize();
         var gravity = -ngrad.y() * GRAVITY;
 
-        double dt = this.trackVelocity * this.motionScale; // Change in spline progress per tick
+        float dt = (float) (this.trackVelocity * this.motionScale); // Change in spline progress per tick
         grad.mul(dt); // Change in position per tick (velocity)
         this.setVelocity(grad.x(), grad.y(), grad.z());
 
@@ -418,7 +412,7 @@ public class TrackFollowerEntity extends Entity {
 
         this.trackVelocity = nbt.getDouble("track_velocity");
         this.motionScale = nbt.getDouble("motion_scale");
-        this.splinePieceProgress = nbt.getDouble("spline_piece_progress");
+        this.splinePieceProgress = (float) nbt.getDouble("spline_piece_progress");
     }
 
     @Override

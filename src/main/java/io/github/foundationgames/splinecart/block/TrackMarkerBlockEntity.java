@@ -19,12 +19,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
+import org.joml.*;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +40,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
 
-    private final Matrix3d pose = new Matrix3d();
+    private final Matrix3f pose = new Matrix3f();
 
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
@@ -67,10 +64,10 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     private void updatePose() {
         pose.identity();
-        pose.rotateY(-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        pose.rotateX(-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        pose.rotateY(-relativeOrientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
-        pose.rotateZ(-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION));
+        pose.rotateY((float) (-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateX((float) (-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateY((float) (-relativeOrientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateZ((float) (-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
     }
 
     /**
@@ -190,7 +187,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.lastVelocity = lastVelocity;
     }
 
-    public Matrix3dc pose() {
+    public Matrix3fc pose() {
         return this.pose;
     }
 
@@ -279,29 +276,29 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         Objects.requireNonNull(getWorld()).updateListeners(getPos(), getCachedState(), getCachedState(), 3);
     }
 
-    public void interpolate(TrackMarkerBlockEntity other, double t, InterpolationResult res) {
-        Matrix3dc pose0 = this.pose();
-        Matrix3dc pose1 = other.pose();
-        double factor = Math.sqrt(this.pos.getSquaredDistance(other.pos));
-        var grad0 = new Vector3d(0, 0, 1).mul(pose0);
-        var grad1 = new Vector3d(0, 0, 1).mul(pose1);
+    public void interpolate(TrackMarkerBlockEntity other, float t, InterpolationResult res) {
+        Matrix3fc pose0 = this.pose();
+        Matrix3fc pose1 = other.pose();
+        float factor = MathHelper.sqrt((float) this.pos.getSquaredDistance(other.pos));
+        var grad0 = new Vector3f(0, 0, 1).mul(pose0);
+        var grad1 = new Vector3f(0, 0, 1).mul(pose1);
 
         Pose.cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
-        var ngrad = res.gradient().normalize(new Vector3d());
+        var ngrad = res.gradient().normalize(new Vector3f());
 
-        var rot0 = pose0.getNormalizedRotation(new Quaterniond());
-        var rot1 = pose1.getNormalizedRotation(new Quaterniond());
+        var rot0 = pose0.getNormalizedRotation(new Quaternionf());
+        var rot1 = pose1.getNormalizedRotation(new Quaternionf());
 
         res.basis().set(rot0.nlerp(rot1, t));
 
-        var basisGrad = new Vector3d(0, 0, 1).mul(res.basis());
-        var axis = ngrad.cross(basisGrad, new Vector3d());
+        var basisGrad = new Vector3f(0, 0, 1).mul(res.basis());
+        var axis = ngrad.cross(basisGrad, new Vector3f());
 
         if (axis.length() > 0) {
             axis.normalize();
-            double angleToNewBasis = basisGrad.angleSigned(ngrad, axis);
+            float angleToNewBasis = basisGrad.angleSigned(ngrad, axis);
             if (angleToNewBasis != 0) {
-                new Matrix3d().identity().rotate(angleToNewBasis, axis)
+                new Matrix3f().identity().rotate(angleToNewBasis, axis)
                         .mul(res.basis(), res.basis()).normal();
             }
         }
