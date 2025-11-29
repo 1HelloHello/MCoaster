@@ -1,5 +1,6 @@
 package io.github.foundationgames.splinecart.item.tools;
 
+import io.github.foundationgames.splinecart.util.Pose;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -21,37 +22,37 @@ public class OrientationToolItem extends ToolItem {
 
     @Override
     public boolean use(TrackMarkerBlockEntity marker, PlayerEntity player, World world, boolean rightClick) {
-        int clickResolution = player.isSneaking() ? 5 : TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 8;
+        int clickResolution = player.isSneaking() ? 5 : Pose.ORIENTATION_RESOLUTION / 8;
 
-        int value = getValueForTool(marker);
-        int newVal = (value  + (((rightClick ? clickResolution : -clickResolution) + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION))) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
-        setValueForTool(marker, newVal);
+        int value = getValueForTool(marker.pose);
+        int newVal = (value  + (((rightClick ? clickResolution : -clickResolution) + Pose.ORIENTATION_RESOLUTION))) % Pose.ORIENTATION_RESOLUTION;
+        setValueForTool(marker.pose, newVal);
         marker.sync();
         marker.markDirty();
         return true;
     }
 
-    private int getValueForTool(TrackMarkerBlockEntity marker) {
+    private int getValueForTool(Pose pose) {
         return switch (type) {
-            case HEADING -> marker.getHeading();
-            case PITCHING -> marker.getPitching();
-            case BANKING -> marker.getBanking();
-            case RELATIVE_ORIENTATION -> marker.getRelativeOrientation();
+            case HEADING -> pose.getHeading();
+            case PITCHING -> pose.getPitching();
+            case BANKING -> pose.getBanking();
+            case RELATIVE_ORIENTATION -> pose.getRelativeOrientation();
         };
     }
 
-    private void setValueForTool(TrackMarkerBlockEntity marker, int value) {
+    private void setValueForTool(Pose pose, int value) {
         switch(type) {
-            case HEADING -> marker.setHeading(value);
-            case PITCHING -> marker.setPitching(value);
-            case BANKING -> marker.setBanking(value);
-            case RELATIVE_ORIENTATION -> marker.setRelativeOrientation(value);
+            case HEADING -> pose.setHeading(value);
+            case PITCHING -> pose.setPitching(value);
+            case BANKING -> pose.setBanking(value);
+            case RELATIVE_ORIENTATION -> pose.setRelativeOrientation(value);
         }
     }
 
     @Override
     protected String writeCurrentState(TrackMarkerBlockEntity marker) {
-        int value = getValueForTool(marker);
+        int value = getValueForTool(marker.pose);
         return type == Type.HEADING
                 ? valToQuarterDirection(value) + " (" + value + ")"
                 : valToOrientation(value);
@@ -66,10 +67,10 @@ public class OrientationToolItem extends ToolItem {
         if(val == 0) {
             return "0";
         }
-        if(val <= TrackMarkerBlockEntity.ORIENTATION_RESOLUTION / 2) {
+        if(val <= Pose.ORIENTATION_RESOLUTION / 2) {
             return val + "°";
         }
-        return "-" + (TrackMarkerBlockEntity.ORIENTATION_RESOLUTION - val) + "°";
+        return "-" + (Pose.ORIENTATION_RESOLUTION - val) + "°";
     }
 
     private static String valToQuarterDirection(int val) {

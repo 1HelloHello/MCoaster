@@ -3,7 +3,6 @@ package io.github.foundationgames.splinecart.entity;
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.util.InterpolationResult;
-import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -92,7 +91,7 @@ public class TrackFollowerEntity extends Entity {
         }
         follower.trackVelocity = trackVelocity;
         follower.setStretch(startMarkerPos, endMarkerPos);
-        follower.getDataTracker().set(ORIENTATION, startMarker.pose().getNormalizedRotation(new Quaternionf()));
+        follower.getDataTracker().set(ORIENTATION, startMarker.pose.pose().getNormalizedRotation(new Quaternionf()));
         return follower;
     }
 
@@ -115,7 +114,7 @@ public class TrackFollowerEntity extends Entity {
         InterpolationResult res = new InterpolationResult(new Vector3f(), this.basis, new Vector3f());
         var newClientPos = res.translation();
         var newClientVel = res.gradient();
-        Pose.cubicHermiteSpline((float)t, 1, clientPos, new Vector3f(clientVel), this.serverPosition, new Vector3f(this.serverVelocity), res);
+        TrackMarkerBlockEntity.cubicHermiteSpline((float)t, 1, clientPos, new Vector3f(clientVel), this.serverPosition, new Vector3f(this.serverVelocity), res);
         this.setPosition((double) newClientPos.x() + clientPos.x, (double) newClientPos.y() + clientPos.y, (double) newClientPos.z() + clientPos.z);
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }

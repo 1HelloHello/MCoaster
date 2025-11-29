@@ -38,7 +38,7 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
             return;
         marker.clientTime += tickDelta;
         if (marker.hasNoTrackConnected() || MinecraftClient.isHudEnabled() && (CONFIG.instance().showDebug() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())) {
-            renderDebugPre(matrices, vertexConsumers, marker.pose());
+            renderDebugPre(matrices, vertexConsumers, marker.pose.pose());
         }
 
         TrackMarkerBlockEntity nextMarker = marker.getNextMarker();
