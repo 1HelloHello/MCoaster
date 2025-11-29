@@ -66,6 +66,7 @@ public class Pose {
         pitching = nbt.getInt("pitching");
         banking = nbt.getInt("banking");
         relativeOrientation = nbt.getInt("relative_orientation");
+        updatePose();
     }
 
     public void writeNbt(NbtCompound nbt) {

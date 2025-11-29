@@ -166,25 +166,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.lastVelocity = lastVelocity;
     }
 
-
-    /**
-     * Gets called when the Track Marker Block gets broken.
-     */
-    public void onDestroy() {
-        TrackMarkerBlockEntity prevMarker = getPrevMarker();
-        if (prevMarker != null) {
-            prevMarker.nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
-            prevMarker.sync();
-            prevMarker.markDirty();
-        }
-        TrackMarkerBlockEntity nextMarker = getNextMarker();
-        if (nextMarker != null) {
-            nextMarker.prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
-            nextMarker.sync();
-            nextMarker.markDirty();
-        }
-    }
-
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         prevTrackMarkerPos = NbtHelper.toBlockPos(nbt, "prev").orElse(Splinecart.OUT_OF_BOUNDS);
