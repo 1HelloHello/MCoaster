@@ -254,17 +254,15 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         }
     }
 
-    public static void cubicHermiteSpline(float t, float factor, Vector3dc clientPos, Vector3fc clientVelocity, Vector3dc serverPos, Vector3fc serverVelocity, InterpolationResult res) {
-        var temp = new Vector3f();
+    public static void cubicHermiteSpline(float t, float distance, Vector3dc clientPos, Vector3fc clientVelocity, Vector3dc serverPos, Vector3fc serverVelocity, InterpolationResult res) {
         var diff = new Vector3f(new Vector3d(serverPos).sub(clientPos));
 
-        res.gradient().set(temp.set(diff).mul(6*t - 6*t*t))
-                .add(temp.set(clientVelocity).mul(3*t*t - 4*t + 1).mul(factor))
-                .add(temp.set(serverVelocity).mul(3*t*t - 2*t).mul(factor));
+        diff.mul(6*t - 6*t*t, res.gradient());
+        clientVelocity.mulAdd((3*t*t - 4*t + 1) * distance, res.gradient(),  res.gradient());
+        serverVelocity.mulAdd((3*t*t - 2*t) * distance, res.gradient(), res.gradient());
 
-        res.translation().zero()
-                .add(temp.set(clientVelocity).mul(t*t*t - 2*t*t + t).mul(factor))
-                .add(temp.set(diff).mul(-2*t*t*t + 3*t*t))
-                .add(temp.set(serverVelocity).mul(t*t*t - t*t).mul(factor));
+        clientVelocity.mul((t*t*t - 2*t*t + t) * distance, res.translation());
+        diff.mulAdd(-2*t*t*t + 3*t*t, res.translation(), res.translation());
+        serverVelocity.mulAdd((t*t*t - t*t) * distance, res.translation(), res.translation());
     }
 }
