@@ -4,7 +4,6 @@ import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.track.TrackColor;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
-import io.github.foundationgames.splinecart.util.InterpolationResult;
 import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,9 +16,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -224,45 +221,5 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
     public void sync() {
         Objects.requireNonNull(getWorld()).updateListeners(getPos(), getCachedState(), getCachedState(), 3);
-    }
-
-    public void interpolate(TrackMarkerBlockEntity other, float t, InterpolationResult res) {
-        Matrix3fc pose0 = this.pose.pose();
-        Matrix3fc pose1 = other.pose.pose();
-        float factor = MathHelper.sqrt((float) this.pos.getSquaredDistance(other.pos));
-        var grad0 = new Vector3f(0, 0, 1).mul(pose0);
-        var grad1 = new Vector3f(0, 0, 1).mul(pose1);
-
-        cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
-        var ngrad = res.gradient().normalize(new Vector3f());
-
-        var rot0 = pose0.getNormalizedRotation(new Quaternionf());
-        var rot1 = pose1.getNormalizedRotation(new Quaternionf());
-
-        res.basis().set(rot0.nlerp(rot1, t));
-
-        var basisGrad = new Vector3f(0, 0, 1).mul(res.basis());
-        var axis = ngrad.cross(basisGrad, new Vector3f());
-
-        if (axis.length() > 0) {
-            axis.normalize();
-            float angleToNewBasis = basisGrad.angleSigned(ngrad, axis);
-            if (angleToNewBasis != 0) {
-                new Matrix3f().identity().rotate(angleToNewBasis, axis)
-                        .mul(res.basis(), res.basis()).normal();
-            }
-        }
-    }
-
-    public static void cubicHermiteSpline(float t, float distance, Vector3dc clientPos, Vector3fc clientVelocity, Vector3dc serverPos, Vector3fc serverVelocity, InterpolationResult res) {
-        var diff = new Vector3f(new Vector3d(serverPos).sub(clientPos));
-
-        diff.mul(6*t - 6*t*t, res.gradient());
-        clientVelocity.mulAdd((3*t*t - 4*t + 1) * distance, res.gradient(),  res.gradient());
-        serverVelocity.mulAdd((3*t*t - 2*t) * distance, res.gradient(), res.gradient());
-
-        clientVelocity.mul((t*t*t - 2*t*t + t) * distance, res.translation());
-        diff.mulAdd(-2*t*t*t + 3*t*t, res.translation(), res.translation());
-        serverVelocity.mulAdd((t*t*t - t*t) * distance, res.translation(), res.translation());
     }
 }

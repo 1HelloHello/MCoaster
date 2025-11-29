@@ -5,6 +5,7 @@ import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
 import io.github.foundationgames.splinecart.util.InterpolationResult;
+import io.github.foundationgames.splinecart.util.Interpolator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -113,10 +114,10 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.pop();
     }
 
-    private record TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end, InterpolationResult res0, int segments, int overlay) {
+    private record TrackRenderer(World world, MatrixStack.Entry entry, Interpolator interpolator, int segments, int overlay, BlockPos pos0) {
 
         public TrackRenderer(World world, MatrixStack.Entry entry, TrackMarkerBlockEntity start, TrackMarkerBlockEntity end, int segments, int overlay) {
-            this(world, entry, start, end, new InterpolationResult(), segments, overlay);
+            this(world, entry, Interpolator.create(start, end), segments, overlay, start.getPos());
         }
 
         public void renderTrackTexture(float offset, VertexConsumer buffer, Color color, float u0, float u1) {
@@ -129,19 +130,19 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         private float renderPart(VertexConsumer buffer, float u0, float u1, Color color, float t0, float t1, float v0) {
             v0 = MathHelper.fractionalPart(v0);
             renderSide(buffer, u0, u1, color, t0, v0, true);
-            float v1 = v0 + res0.gradient().length() * (t1 - t0);
+            float v1 = v0 + interpolator.res().gradient().length() * (t1 - t0);
             renderSide(buffer, u0, u1, color, t1, v1, false);
             return v1;
         }
 
         private void renderSide(VertexConsumer buffer, float u0, float u1, Color color, float t0, float v0, boolean positiveFirst) {
-            start.interpolate(end, t0, res0);
-            Vector3f origin0 = res0.translation();
-            Matrix3f basis0 = res0.basis();
+            interpolator.interpolate(t0);
+            Vector3f origin0 = interpolator.res().translation();
+            Matrix3f basis0 = interpolator.res().basis();
             Vector3f norm0 = new Vector3f(0, 1, 0).mul(basis0);
 
             BlockPos pos0 = BlockPos.ofFloored(origin0.x() + 0.5, origin0.y() + 0.5, origin0.z() + 0.5);
-            pos0 = pos0.add(start.getPos());
+            pos0 = pos0.add(this.pos0);
 
             int light0 = WorldRenderer.getLightmapCoordinates(world, pos0);
 

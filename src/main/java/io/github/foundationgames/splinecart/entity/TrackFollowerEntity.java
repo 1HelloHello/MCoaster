@@ -3,6 +3,7 @@ package io.github.foundationgames.splinecart.entity;
 import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.util.InterpolationResult;
+import io.github.foundationgames.splinecart.util.Interpolator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -41,7 +42,7 @@ public class TrackFollowerEntity extends Entity {
     private int oriInterpSteps;
 
     private static final TrackedData<Quaternionf> ORIENTATION = DataTracker.registerData(TrackFollowerEntity.class, TrackedDataHandlerRegistry.QUATERNION_F);
-    private final Matrix3f basis = new Matrix3f();
+    private Matrix3f basis = new Matrix3f();
 
     private final Quaternionf lastClientOrientation = new Quaternionf();
     private final Quaternionf clientOrientation = new Quaternionf();
@@ -114,7 +115,7 @@ public class TrackFollowerEntity extends Entity {
         InterpolationResult res = new InterpolationResult(new Vector3f(), this.basis, new Vector3f());
         var newClientPos = res.translation();
         var newClientVel = res.gradient();
-        TrackMarkerBlockEntity.cubicHermiteSpline((float)t, 1, clientPos, new Vector3f(clientVel), this.serverPosition, new Vector3f(this.serverVelocity), res);
+        Interpolator.cubicHermiteSpline((float)t, 1, new Vector3f(new Vector3d(serverPosition).sub(clientPos)), new Vector3f(clientVel), new Vector3f(this.serverVelocity), res);
         this.setPosition((double) newClientPos.x() + clientPos.x, (double) newClientPos.y() + clientPos.y, (double) newClientPos.z() + clientPos.z);
         this.setVelocity(newClientVel.x(), newClientVel.y(), newClientVel.z());
     }
@@ -313,11 +314,12 @@ public class TrackFollowerEntity extends Entity {
             startE = prevE;
         }
 
-        InterpolationResult res = new InterpolationResult(new Vector3f(), this.basis, new Vector3f());
+        Interpolator interpolator = Interpolator.create(startE, endE);
+        interpolator.interpolate(this.splinePieceProgress);
+        InterpolationResult res = interpolator.res();
         var pos = res.translation();
         var grad = res.gradient();
-        startE.interpolate(endE, this.splinePieceProgress, res);
-
+        basis = res.basis();
         this.setPosition((double) pos.x() + startMarker.getX() + 0.5, (double) pos.y() + startMarker.getY() + 0.5, (double) pos.z() + startMarker.getZ() + 0.5);
         this.getDataTracker().set(ORIENTATION, this.basis.getNormalizedRotation(new Quaternionf()));
 
