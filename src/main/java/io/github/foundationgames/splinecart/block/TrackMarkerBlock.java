@@ -2,6 +2,7 @@ package io.github.foundationgames.splinecart.block;
 
 import com.mojang.serialization.MapCodec;
 import io.github.foundationgames.splinecart.item.ActionItem;
+import io.github.foundationgames.splinecart.util.Pose;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,13 +81,12 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        int heading;
+        TrackMarkerBlockEntity marker = new TrackMarkerBlockEntity(pos, state);
         if (player == null) {
-            heading = 0;
-        } else {
-            heading = round((int) player.getYaw(), player.isSneaking() ? 5 : 45) % TrackMarkerBlockEntity.ORIENTATION_RESOLUTION;
+            return marker;
         }
-        return new TrackMarkerBlockEntity(pos, state, heading);
+        marker.pose.setHeading(round((int) player.getYaw(), player.isSneaking() ? 5 : 45) % Pose.ORIENTATION_RESOLUTION);
+        return marker;
     }
 
     /**
@@ -96,7 +96,7 @@ public class TrackMarkerBlock extends Block implements BlockEntityProvider {
      * @return
      */
     private static int round(int value, int increment) {
-        return ((value + TrackMarkerBlockEntity.ORIENTATION_RESOLUTION) + increment / 2) / increment * increment;
+        return ((value + Pose.ORIENTATION_RESOLUTION) + increment / 2) / increment * increment;
     }
 
     static {

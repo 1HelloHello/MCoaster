@@ -1,22 +1,77 @@
 package io.github.foundationgames.splinecart.util;
 
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.MathHelper;
+import org.joml.Matrix3f;
+import org.joml.Matrix3fc;
 
-public record Pose() {
-    public static void cubicHermiteSpline(float t, float factor, Vector3dc clientPos, Vector3fc clientVelocity, Vector3dc serverPos, Vector3fc serverVelocity, InterpolationResult res) {
-        var temp = new Vector3f();
-        var diff = new Vector3f(new Vector3d(serverPos).sub(clientPos));
+public class Pose {
+    public static final int ORIENTATION_RESOLUTION = 360;
+    private final Matrix3f pose = new Matrix3f();
+    private int heading = 0;
+    private int pitching = 0;
+    private int banking = 0;
+    private int relativeOrientation = 0;
 
-        res.gradient().set(temp.set(diff).mul(6*t - 6*t*t))
-                .add(temp.set(clientVelocity).mul(3*t*t - 4*t + 1).mul(factor))
-                .add(temp.set(serverVelocity).mul(3*t*t - 2*t).mul(factor));
+    public Matrix3fc pose() {
+        return this.pose;
+    }
 
-        res.translation().zero()
-                .add(temp.set(clientVelocity).mul(t*t*t - 2*t*t + t).mul(factor))
-                .add(temp.set(diff).mul(-2*t*t*t + 3*t*t))
-                .add(temp.set(serverVelocity).mul(t*t*t - t*t).mul(factor));
+    private void updatePose() {
+        pose.identity();
+        pose.rotateY((float) (-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateX((float) (-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateY((float) (-relativeOrientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+        pose.rotateZ((float) (-banking * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public void setHeading(int heading) {
+        this.heading = heading;
+        updatePose();
+    }
+
+    public int getPitching() {
+        return pitching;
+    }
+
+    public void setPitching(int pitching) {
+        this.pitching = pitching;
+        updatePose();
+    }
+
+    public int getBanking() {
+        return banking;
+    }
+
+    public void setBanking(int banking) {
+        this.banking = banking;
+        updatePose();
+    }
+
+    public int getRelativeOrientation() {
+        return relativeOrientation;
+    }
+
+    public void setRelativeOrientation(int relativeOrientation) {
+        this.relativeOrientation = relativeOrientation;
+        updatePose();
+    }
+
+    public void readNbt(NbtCompound nbt) {
+        heading = nbt.getInt("heading");
+        pitching = nbt.getInt("pitching");
+        banking = nbt.getInt("banking");
+        relativeOrientation = nbt.getInt("relative_orientation");
+    }
+
+    public void writeNbt(NbtCompound nbt) {
+        nbt.putInt("heading", heading);
+        nbt.putInt("pitching", pitching);
+        nbt.putInt("banking", banking);
+        nbt.putInt("relative_orientation", relativeOrientation);
     }
 }

@@ -28,9 +28,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TrackMarkerBlockEntity extends BlockEntity {
-
-    public static final int ORIENTATION_RESOLUTION = 360;
-
     public float clientTime = 0;
 
     public TrackType nextType = TrackType.DEFAULT;
@@ -40,34 +37,16 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     private BlockPos nextTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
     private BlockPos prevTrackMarkerPos = Splinecart.OUT_OF_BOUNDS;
 
-    private final Matrix3f pose = new Matrix3f();
-
     private int power = Integer.MAX_VALUE;
     private int strength = Integer.MAX_VALUE;
     public List<TrackMarkerTrigger> triggers = new ArrayList<>(0);
 
     private double lastVelocity = 0;
 
-    private int heading;
-    private int pitching = 0;
-    private int banking = 0;
-    private int relativeOrientation = 0;
+    public final Pose pose = new Pose();
 
     public TrackMarkerBlockEntity(BlockPos pos, BlockState state) {
-        this(pos, state, 0);
-    }
-
-    public TrackMarkerBlockEntity(BlockPos pos, BlockState state, int heading) {
         super(Splinecart.TRACK_TIES_BE, pos, state);
-        setHeading(heading);
-    }
-
-    private void updatePose() {
-        pose.identity();
-        pose.rotateY((float) (-heading * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
-        pose.rotateX((float) (-pitching * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
-        pose.rotateY((float) (-relativeOrientation * MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
-        pose.rotateZ((float) (-banking* MathHelper.PI * ((double) 2 / ORIENTATION_RESOLUTION)));
     }
 
     /**
@@ -187,9 +166,6 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         this.lastVelocity = lastVelocity;
     }
 
-    public Matrix3fc pose() {
-        return this.pose;
-    }
 
     /**
      * Gets called when the Track Marker Block gets broken.
@@ -227,10 +203,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         lastVelocity = nbt.getDouble("last_velocity");
 
-        setHeading(nbt.getInt("heading"));
-        setPitching(nbt.getInt("pitching"));
-        setBanking(nbt.getInt("banking"));
-        setRelativeOrientation(nbt.getInt("relative_orientation"));
+        pose.readNbt(nbt);
     }
 
     @Override
@@ -252,11 +225,7 @@ public class TrackMarkerBlockEntity extends BlockEntity {
 
         nbt.putDouble("last_velocity", this.lastVelocity);
 
-        nbt.putInt("heading", this.heading);
-        nbt.putInt("pitching", this.pitching);
-        nbt.putInt("banking", this.banking);
-        nbt.putInt("relative_orientation", this.relativeOrientation);
-
+        pose.writeNbt(nbt);
     }
 
     @Nullable
@@ -277,13 +246,13 @@ public class TrackMarkerBlockEntity extends BlockEntity {
     }
 
     public void interpolate(TrackMarkerBlockEntity other, float t, InterpolationResult res) {
-        Matrix3fc pose0 = this.pose();
-        Matrix3fc pose1 = other.pose();
+        Matrix3fc pose0 = this.pose.pose();
+        Matrix3fc pose1 = other.pose.pose();
         float factor = MathHelper.sqrt((float) this.pos.getSquaredDistance(other.pos));
         var grad0 = new Vector3f(0, 0, 1).mul(pose0);
         var grad1 = new Vector3f(0, 0, 1).mul(pose1);
 
-        Pose.cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
+        cubicHermiteSpline(t, factor, new Vector3d(this.pos.getX(), this.pos.getY(), this.pos.getZ()) , grad0, new Vector3d(other.pos.getX(), other.pos.getY(), other.pos.getZ()), grad1, res);
         var ngrad = res.gradient().normalize(new Vector3f());
 
         var rot0 = pose0.getNormalizedRotation(new Quaternionf());
@@ -304,39 +273,17 @@ public class TrackMarkerBlockEntity extends BlockEntity {
         }
     }
 
-    public int getHeading() {
-        return heading;
-    }
+    public static void cubicHermiteSpline(float t, float factor, Vector3dc clientPos, Vector3fc clientVelocity, Vector3dc serverPos, Vector3fc serverVelocity, InterpolationResult res) {
+        var temp = new Vector3f();
+        var diff = new Vector3f(new Vector3d(serverPos).sub(clientPos));
 
-    public void setHeading(int heading) {
-        this.heading = heading;
-        updatePose();
-    }
+        res.gradient().set(temp.set(diff).mul(6*t - 6*t*t))
+                .add(temp.set(clientVelocity).mul(3*t*t - 4*t + 1).mul(factor))
+                .add(temp.set(serverVelocity).mul(3*t*t - 2*t).mul(factor));
 
-    public int getPitching() {
-        return pitching;
-    }
-
-    public void setPitching(int pitching) {
-        this.pitching = pitching;
-        updatePose();
-    }
-
-    public int getBanking() {
-        return banking;
-    }
-
-    public void setBanking(int banking) {
-        this.banking = banking;
-        updatePose();
-    }
-
-    public int getRelativeOrientation() {
-        return relativeOrientation;
-    }
-
-    public void setRelativeOrientation(int relativeOrientation) {
-        this.relativeOrientation = relativeOrientation;
-        updatePose();
+        res.translation().zero()
+                .add(temp.set(clientVelocity).mul(t*t*t - 2*t*t + t).mul(factor))
+                .add(temp.set(diff).mul(-2*t*t*t + 3*t*t))
+                .add(temp.set(serverVelocity).mul(t*t*t - t*t).mul(factor));
     }
 }
