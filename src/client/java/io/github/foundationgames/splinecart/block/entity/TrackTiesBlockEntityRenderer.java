@@ -4,7 +4,6 @@ import io.github.foundationgames.splinecart.Splinecart;
 import io.github.foundationgames.splinecart.block.TrackMarkerBlockEntity;
 import io.github.foundationgames.splinecart.track.TrackStyle;
 import io.github.foundationgames.splinecart.track.TrackType;
-import io.github.foundationgames.splinecart.util.InterpolationResult;
 import io.github.foundationgames.splinecart.util.Interpolator;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -49,30 +48,41 @@ public class TrackTiesBlockEntityRenderer implements BlockEntityRenderer<TrackMa
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
-        BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
-        int segments = getSegments(marker.getPos(), nextMarker.getPos(), playerPos);
-        TrackRenderer renderer = new TrackRenderer(world, matrices.peek(), marker, nextMarker, segments, overlay);
+        renderTrack(marker, nextMarker, vertexConsumers, overlay, matrices, world);
+        matrices.pop();
+        TrackMarkerBlockEntity prevMarker = marker.getPrevMarker();
+        if(prevMarker != null && prevMarker.getNextMarker() != marker) {
+            matrices.push();
+            matrices.translate(prevMarker.getPos().subtract(marker.getPos()).toCenterPos());
+            renderTrack(prevMarker, marker, vertexConsumers, overlay, matrices, world);
+            matrices.pop();
+        }
+    }
 
-        float u0 = marker.nextStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
+    private static void renderTrack(TrackMarkerBlockEntity startMarker, TrackMarkerBlockEntity endMarker, VertexConsumerProvider vertexConsumers, int overlay, MatrixStack matrices, World world) {
+        BlockPos playerPos = MinecraftClient.getInstance().cameraEntity.getBlockPos();
+        int segments = getSegments(startMarker.getPos(), endMarker.getPos(), playerPos);
+        TrackRenderer renderer = new TrackRenderer(world, matrices.peek(), startMarker, endMarker, segments, overlay);
+
+        float u0 = startMarker.nextStyle.ordinal() * TrackStyle.INVERSE_CANVAS_SIZE;
         float u1 = u0 + TrackStyle.INVERSE_CANVAS_SIZE;
         VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_TEXTURE));
-        renderer.renderTrackTexture(0, buffer, marker.nextColor, u0, u1);
+        renderer.renderTrackTexture(0, buffer, startMarker.nextColor, u0, u1);
 
-        TrackType trackType = marker.nextType;
+        TrackType trackType = startMarker.nextType;
         u0 = trackType.getTextureStart();
         u1 = trackType.getTextureEnd();
         if (trackType.hasStatic) { // renders the overlay (chain track moving, powered magnetic track
             VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_OVERLAY_TEXTURE));
-            renderer.renderTrackTexture(0, olBuffer, marker.nextColor, u0, u1);
+            renderer.renderTrackTexture(0, olBuffer, startMarker.nextColor, u0, u1);
         }
         if (trackType.hasDynamic) { // animated overlay
             VertexConsumer olBuffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TRACK_ANIMATION_OVERLAY_TEXTURE));
-            int power = marker.computePower();
-            float offset = trackType.progress.apply(power, marker.clientTime);
+            int power = startMarker.computePower();
+            float offset = trackType.progress.apply(power, startMarker.clientTime);
             Color trackColor = trackType.color.apply(power);
             renderer.renderTrackTexture(offset, olBuffer, trackColor, u0, u1);
         }
-        matrices.pop();
     }
 
     private static int getSegments(BlockPos start, BlockPos end, BlockPos playerPos) {
