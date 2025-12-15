@@ -28,6 +28,7 @@ public abstract class PlayerMixin {
     private void tick(CallbackInfo info) {
         // return if the player is sitting in a coaster cart
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
+        clear(player);
         Entity vehicle = player.getVehicle();
         while (vehicle != null) {
             if (vehicle instanceof TrackFollowerEntity trackFollower) {
@@ -38,8 +39,7 @@ public abstract class PlayerMixin {
                             CONFIG.instance().showSpeedInfoForce(),
                             CONFIG.instance().showImperial()),
                             true);
-                }else {
-                    clear(player);
+                    cleared = false;
                 }
                 return;
             }
@@ -47,20 +47,17 @@ public abstract class PlayerMixin {
         }
         // return if the player doesn't have a tool item in their hand
         if(!(player.getInventory().getMainHandStack().getItem() instanceof ToolItem item)) {
-            clear(player);
             return;
         }
         // return if the player isn't looking at a block
         World world = player.getWorld();
         HitResult hit = player.raycast(5, 0, false);
         if(hit.getType() != HitResult.Type.BLOCK) {
-            clear(player);
             return;
         }
         // return if the player isn't looking at a track marker
         BlockHitResult blockHitResult = (BlockHitResult) hit;
         if(!(world.getBlockEntity(blockHitResult.getBlockPos()) instanceof TrackMarkerBlockEntity trackMarker)) {
-            clear(player);
             return;
         }
         item.sendCurrentStateMessage(player, trackMarker);
@@ -71,6 +68,7 @@ public abstract class PlayerMixin {
      * Clears the display message of the player
      * @param player
      */
+    @Unique
     private void clear(PlayerEntity player) {
         if(!cleared)
             player.sendMessage(Text.of(""), true);
