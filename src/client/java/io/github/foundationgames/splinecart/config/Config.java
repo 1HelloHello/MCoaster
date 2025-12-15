@@ -33,11 +33,11 @@ public class Config {
     @SerialEntry
     boolean rotateCamera = true;
     @SerialEntry
-    int trackResolution = 3;
+    int trackResolution = 8;
     @SerialEntry
-    int trackRenderDistance = 8;
+    int trackRenderDistance = 32;
     @SerialEntry
-    boolean showDebug = true;
+    boolean showTrackOverlay = true;
     @SerialEntry
     boolean suspendedView = false;
     @SerialEntry
@@ -61,8 +61,8 @@ public class Config {
         return trackRenderDistance;
     }
 
-    public boolean showDebug() {
-        return showDebug;
+    public boolean showTrackOverlay() {
+        return showTrackOverlay;
     }
 
     public boolean suspendedView() {
@@ -88,8 +88,8 @@ public class Config {
     static YetAnotherConfigLib getConfigScreen() {
         var rotate_camera = boolopt("rotate_camera", true, () -> CONFIG.instance().rotateCamera, newVal -> CONFIG.instance().rotateCamera = newVal);
         var track_resolution = slideropt("track_resolution", 8, 1, 16, () -> CONFIG.instance().trackResolution, newVal -> CONFIG.instance().trackResolution = newVal);
-        var track_render_distance = slideropt("track_render_distance", 16, 4, 32, () -> CONFIG.instance().trackRenderDistance, newVal -> CONFIG.instance().trackRenderDistance = newVal);
-        var show_debug = boolopt("show_debug", true, () -> CONFIG.instance().showDebug, newVal -> CONFIG.instance().showDebug = newVal);
+        var track_render_distance = slideropt("track_render_distance", 32, 4, 32, () -> CONFIG.instance().trackRenderDistance, newVal -> CONFIG.instance().trackRenderDistance = newVal);
+        var show_track_overlay = boolopt("show_track_overlay", true, () -> CONFIG.instance().showTrackOverlay, newVal -> CONFIG.instance().showTrackOverlay = newVal);
         var suspended_view = boolopt("suspended_view", false, () -> CONFIG.instance().suspendedView, newVal -> CONFIG.instance().suspendedView = newVal);
         var show_speed_info = boolopt("show_speed_info", true, () -> CONFIG.instance().showSpeedInfo, newVal -> CONFIG.instance().showSpeedInfo = newVal);
         var show_speed_info_peak = boolopt("show_speed_info_peak", false, () -> CONFIG.instance().showSpeedInfoPeak, newVal -> CONFIG.instance().showSpeedInfoPeak = newVal);
@@ -102,7 +102,7 @@ public class Config {
                         .option(rotate_camera)
                         .option(track_resolution)
                         .option(track_render_distance)
-                        .option(show_debug)
+                        .option(show_track_overlay)
                         .option(suspended_view)
                         .option(show_speed_info)
                         .option(show_speed_info_peak)
@@ -118,7 +118,7 @@ public class Config {
         Identifier id = Splinecart.id(name);
         return Option.<Boolean>createBuilder()
                 .name(Text.translatable(id.toTranslationKey("config", "name")))
-                .description(OptionDescription.of(Text.translatable(id.toTranslationKey("config", "name"))))
+                .description(OptionDescription.of(Text.translatable(id.toTranslationKey("config", "desc"))))
                 .binding(def, get, set)
                 .controller(TickBoxControllerBuilder::create)
                 .build();
